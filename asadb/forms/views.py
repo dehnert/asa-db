@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 import datetime
 
-def fysm_by_years(request, _year, year, _category, category, ):
+def fysm_by_years(request, year, category, ):
     if year is None: year = datetime.date.today().year
     queryset = forms.models.FYSM.objects.filter(year=year).order_by('group__name')
     category_obj = None

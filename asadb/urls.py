@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     ),
 
     # FYSM
-    url(r'^fysm/((\d+)/)?(([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
+    url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
