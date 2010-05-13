@@ -2,6 +2,7 @@ import forms.models
 import groups.models
 import settings
 
+from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import list_detail
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -76,6 +77,7 @@ class FYSMRequestForm(ModelForm):
             'tags',
         )
 
+@user_passes_test(lambda u: u.is_authenticated())
 def fysm_manage(request, group, ):
     year = datetime.date.today().year
     group_obj = get_object_or_404(groups.models.Group, pk=group)
