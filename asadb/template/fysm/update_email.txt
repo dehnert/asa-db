@@ -1,0 +1,18 @@
+{% autoescape off %}
+Hi officers of {{group.name}},
+   The user {{submitter.first_name}} {{submitter.last_name}} ({{submitter.username}}) has updated your entry in the ASA's First Year Summer Mailing.
+   
+The new information is:
+   
+Request information:
+Display name:   {{fysm.display_name}}
+Website:        {{fysm.website}}
+Join URL:       {{fysm.join_url}}
+Contact email:  {{fysm.contact_email}}
+Tags:           {{fysm.tags.all}}
+
+Please return to {{request.build_absolute_uri}} to update this further.
+
+Thanks,
+{{ sender }}
+{% endautoescape %}
