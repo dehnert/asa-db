@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load formtags %}
 
 {% block title %}First Year Summer Mailing{% endblock %}
 {% block content %}
@@ -8,6 +9,14 @@
 {% if category %}
 <h2>{{category.name}} Groups</h2>
 <p>{{category.blurb}}</p>
+<p><a href='{% url fysm year %}'>Return to all categories</a></p>
+{% else %}
+<h3>Limit Group Categories</h3>
+<ul>
+{% for cat in categories %}
+<li><a href='{% url fysm year cat.slug %}'>{{cat}}</a></li>
+{% endfor %}
+</ul>
 {% endif %}
 
 {% for fysm in fysm_list %}
@@ -18,7 +27,7 @@
     </div>
     <p class='data'>{{fysm.description}}</p>
     <p class='join'><a href='{{fysm.website}}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
-    <p class='tags'>tags: {{fysm.tags.all}}</p>
+    <p class='tags'>tags: {{fysm|format_categories:year}}</p>
 </div>
 {% endfor %}
 

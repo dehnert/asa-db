@@ -11,7 +11,7 @@ def fysm_by_years(request, year, category, ):
     if category != None:
         category_obj = get_object_or_404(forms.models.FYSMTag, slug=category)
         queryset = queryset.filter(tags=category_obj)
-    print queryset
+    categories = forms.models.FYSMTag.objects.all()
     return list_detail.object_list(
         request,
         queryset=queryset,
@@ -21,5 +21,6 @@ def fysm_by_years(request, year, category, ):
             "year": year,
             "pagename": "fysm",
             "category": category_obj,
+            "categories": categories,
         }
     )
