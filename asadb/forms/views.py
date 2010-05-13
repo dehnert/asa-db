@@ -34,7 +34,7 @@ def select_group(request, url_name_after, pagename='homepage', ):
 
     context = {
         'form':form,
-        'pagename':'request_reimbursement',
+        'pagename':pagename,
     }
     return render_to_response('forms/select.html', context, context_instance=RequestContext(request), )
 
