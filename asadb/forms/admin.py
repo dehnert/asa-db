@@ -4,16 +4,18 @@ from django.contrib import admin
 class FYSMAdmin(admin.ModelAdmin):
     list_display = (
         'group',
+        'display_name',
         'year',
         'website',
         'contact_email',
     )
-    list_display_links = ('group', 'year', )
+    list_display_links = ('group', 'display_name', 'year', )
 
-class FYSMTagsAdmin(admin.ModelAdmin):
+class FYSMTagAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )
+    prepopulated_fields = {"slug": ("name",)}
 
 admin.site.register(forms.models.FYSM, FYSMAdmin)
-admin.site.register(forms.models.FYSMTags, FYSMTagsAdmin)
+admin.site.register(forms.models.FYSMTag, FYSMTagAdmin)

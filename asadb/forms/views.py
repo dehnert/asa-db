@@ -4,9 +4,13 @@ from django.shortcuts import render_to_response, get_object_or_404
 
 import datetime
 
-def fysm_by_years(request, _, year):
+def fysm_by_years(request, _year, year, _category, category, ):
     if year is None: year = datetime.date.today().year
     queryset = forms.models.FYSM.objects.filter(year=year).order_by('group__name')
+    category_obj = None
+    if category != None:
+        category_obj = get_object_or_404(forms.models.FYSMTag, slug=category)
+        queryset = queryset.filter(tags=category_obj)
     print queryset
     return list_detail.object_list(
         request,
@@ -16,5 +20,6 @@ def fysm_by_years(request, _, year):
         extra_context={
             "year": year,
             "pagename": "fysm",
+            "category": category_obj,
         }
     )
