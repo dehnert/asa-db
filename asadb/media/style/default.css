@@ -1,0 +1,69 @@
+body
+{
+    padding: 1em;
+    background-color: #ddd;
+}
+#content
+{
+    margin: 0;
+    margin-top: 5px;
+    padding: 1em;
+    min-height: 15em;
+    border: 1px solid #888;
+    background-color: white;
+}
+ul.tab-navigation
+{
+    margin-left: 0;
+    padding-left: 0;
+    display: inline;
+}
+ul.tab-navigation li
+{
+    margin-left: 0;
+    margin-right: -10px;
+    padding: 2px 15px 5px;
+    border: 1px solid #888;
+    background: white;
+    list-style: none;
+    display: inline;
+    border-top-left-radius:          15px;
+    -webkit-border-top-left-radius:  15px;
+    -moz-border-radius-topleft:      15px;
+    border-top-right-radius:         15px;
+    -webkit-border-top-right-radius: 15px;
+    -moz-border-radius-topright:     15px;
+}
+ul.tab-navigation li.selected
+{
+    background: #99f;
+    position: relative;
+    z-index: 10;
+}
+
+#content > .curuser
+{
+    margin-top: -1em;
+    margin-right: -1em;
+    float: right;
+    background-color: #99f;
+    border: 1px solid #888;
+
+    text-align: right;
+    line-height: 100%;
+}
+#content > .curuser p
+{
+    margin: 0.2em;
+}
+
+/* Reset some stuff */
+h1, h2, h3, th
+{
+    font-family: "Trebuchet MS", sans-serif;
+}
+ul
+{
+    padding-left: 1em;
+    margin-left: 0;
+}

@@ -1,0 +1,148 @@
+tr.sect-head td, tr.sect-head th
+{
+    padding-top: 1em;
+    text-decoration: underline;
+}
+table.pretty-table
+{
+    border-collapse: collapse;
+}
+table.pretty-table th, table.pretty-table td
+{
+    border: 1px solid black;
+    padding: 2px;
+}
+table.pretty-table th
+{
+    background: #99F;
+}
+ul.errorlist
+{
+    color: red;
+}
+
+div.messagebox
+{
+    padding: 0 10px 10px 10px;
+    margin: 2em 0;
+    border: 1px solid;
+    width: 50%;
+}
+div.messagebox > h3
+{
+    margin: 0 -10px;
+    padding: 2px 10px;
+    margin-bottom: 1em;
+}
+
+div.infobox
+{
+    background-color: #afa;
+    border-color: #0f0;
+}
+
+div.infobox h3 {
+    background: #6f6;
+}
+
+div.warnbox
+{
+    background-color: #ffdf60;
+    border-color: #ffbf00;
+}
+
+div.warnbox h3 {
+    background: #faba00;
+}
+
+div.errorbox
+{
+    background-color: #faa;
+    border-color: red;
+}
+
+div.errorbox h3 {
+    background: #f88;
+}
+
+span.username
+{
+    font-family: "Courier", monospace;
+}
+
+
+/********
+ * FYSM *
+ ********/
+.single-fysm-entry
+{
+    max-width:600px;
+    clear:both;
+    border: 1px solid #666;
+    margin: 10px auto;
+}
+
+.single-fysm-entry h3
+{
+    margin: 0 0 5px 0;
+    padding: 2px 10px;
+    background: #BE2933;
+}
+
+.single-fysm-entry h3 a
+{
+    color:#fcfcfc;
+    text-decoration: none;
+}
+
+.single-fysm-entry h3 a:hover
+{
+    text-decoration: underline;
+}
+
+.single-fysm-entry .logo, .single-fysm-entry .nologo
+{
+    float: left;
+    width: 100px;
+    background: #eee;
+    border: 2px solid black;
+    margin: 10px 20px 10px;
+    text-align: center;
+    /*max-height: 104px;*/
+}
+
+.single-fysm-entry .nologo
+{
+    width: 100px;
+    height: 100px;
+    line-height: 90px;
+}
+
+.single-fysm-entry .logo img
+{
+    max-width:100px;
+    max-height:100px;
+}
+
+.single-fysm-entry .data
+{
+    text-align: justify;
+    margin: 10px 20px;
+}
+
+.single-fysm-entry .join
+{
+    clear:both;
+    margin: 10px 20px;
+}
+
+.single-fysm-entry .tags
+{
+    margin: 10px 0px 0px;
+    background: #ddd;
+    border-top: 1px solid #666;
+    padding: 4px;
+    text-align: center;
+    font-size: smaller;
+}
+
