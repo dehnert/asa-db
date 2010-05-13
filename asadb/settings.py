@@ -98,3 +98,5 @@ INSTALLED_APPS = (
     'groups',
     'forms',
 )
+
+from local_settings_after import *
