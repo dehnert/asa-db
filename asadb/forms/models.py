@@ -8,6 +8,7 @@ class FYSM(models.Model):
     group = models.ForeignKey(groups.models.Group)
     year = models.IntegerField()
     website = models.URLField()
+    join_url = models.URLField()
     contact_email = models.EmailField()
     description = models.TextField()
     logo = models.ImageField(upload_to='fysm/logos', )
@@ -19,3 +20,6 @@ class FYSM(models.Model):
 class FYSMTags(models.Model):
     name = models.CharField(max_length=10)
     blurb = models.TextField()
+
+    def __str__(self, ):
+        return self.name

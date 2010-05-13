@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}First Year Summer Mailing{% endblock %}
+{% block content %}
+
+<h2>First Year Summer Mailing ({{year}})</h2>
+
+{% for fysm in fysm_list %}
+<div class='single-fysm-entry'>
+    <h3>{{fysm.group.name}}</h3>
+    <div class='logo'>
+        <img src='{{ MEDIA_URL }}{{fysm.logo}}'>
+    </div>
+    <p class='data'>{{fysm.description}}</p>
+    <p class='join'><a href='{{fysm.website}}'>Join {{fysm.group.name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
+    <p class='tags'>tags: {{fysm.tags.all}}</p>
+</div>
+{% endfor %}
+
+{% endblock %}
+

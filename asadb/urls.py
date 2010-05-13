@@ -1,11 +1,14 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.views import login, logout
+from django.views.generic import list_detail
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
 import settings
+
+import forms.views
 
 urlpatterns = patterns('',
     # Example:
@@ -16,6 +19,9 @@ urlpatterns = patterns('',
         {'template': 'index.html', 'extra_context': { 'pagename':'homepage' }, },
         name='homepage',
     ),
+
+    # FYSM
+    url(r'^fysm/((\d+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
