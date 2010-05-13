@@ -35,6 +35,7 @@ if __name__ == '__main__':
         d = dictize_line(header, line)
         print d
         g = groups.models.Group()
+        g.pk                = d['ASA_STUDENT_GROUP_KEY']
         g.name              = d['STUDENT_GROUP_NAME']
         g.abbreviation      = d['STUDENT_GROUP_ACRONYM']
         g.description       = d['STUDENT_GROUP_DESCRIPTION']
