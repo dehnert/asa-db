@@ -21,12 +21,12 @@
 
 {% for fysm in fysm_list %}
 <div class='single-fysm-entry'>
-    <h3>{{fysm.display_name}}</h3>
+    <h3><a href='{{fysm.website}}'>{{fysm.display_name}}</a></h3>
     <div class='logo'>
         <img src='{{ MEDIA_URL }}{{fysm.logo}}'>
     </div>
     <p class='data'>{{fysm.description}}</p>
-    <p class='join'><a href='{{fysm.website}}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
+    <p class='join'><a href='{{fysm.join_url}}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
     <p class='tags'>tags: {{fysm|format_categories:year}}</p>
 </div>
 {% endfor %}
