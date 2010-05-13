@@ -1,4 +1,10 @@
 # Django settings for asadb project.
+import os
+import sys
+
+SITE_ROOT = os.path.normpath(os.path.dirname(__file__))
+SITE_WEB_PATH = ''
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -37,17 +43,17 @@ from local_settings import *
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = SITE_ROOT + '/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = SITE_WEB_PATH + '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = SITE_WEB_PATH + '/media/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'e_8xq=+r)nh=!tvvw19x9j*slkafcded5_=bhagyxo6bfehz3%'
