@@ -10,7 +10,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('ASA Database Team', 'asa-db@mit.edu',),
 )
 
 MANAGERS = ADMINS
