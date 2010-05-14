@@ -146,3 +146,8 @@ span.username
     font-size: smaller;
 }
 
+.fysm-submit td
+{
+    max-width: 30em;
+    font-size: smaller;
+}
