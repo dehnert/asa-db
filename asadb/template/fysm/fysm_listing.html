@@ -11,7 +11,7 @@
 <p>{{category.blurb}}</p>
 <p><a href='{% url fysm year %}'>Return to all categories</a></p>
 {% else %}
-<h3>Limit Group Categories</h3>
+<h3>View by Category</h3>
 <ul>
 {% for cat in categories %}
 <li><a href='{% url fysm year cat.slug %}'>{{cat}}</a></li>
