@@ -7,7 +7,7 @@ class Group(models.Model):
     description = models.TextField()
     activity_category = models.ForeignKey('ActivityCategory', null=True, blank=True, )
     website_url = models.URLField()
-    constitution_url = models.URLField()
+    constitution_url = models.TextField(blank=True)
     meeting_times = models.TextField(blank=True)
     advisor_name = models.CharField(max_length=100, blank=True)
     num_undergrads = models.IntegerField(null=True, blank=True, )
@@ -18,7 +18,7 @@ class Group(models.Model):
     officer_email = models.EmailField()
     main_account_id = models.IntegerField(null=True, blank=True, )
     funding_account_id = models.IntegerField(null=True, blank=True, )
-    athena_locker = models.CharField(max_length=20)
+    athena_locker = models.CharField(max_length=20, blank=True)
     recognition_date = models.DateField()
     update_date = models.DateTimeField()
     updater = models.CharField(max_length=30) # match Django username field
