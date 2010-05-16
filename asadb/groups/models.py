@@ -14,7 +14,7 @@ class Group(models.Model):
     num_grads = models.IntegerField(null=True, blank=True, )
     num_community = models.IntegerField(null=True, blank=True, )
     num_other = models.IntegerField(null=True, blank=True, )
-    group_email = models.EmailField()
+    group_email = models.EmailField(blank=True, )
     officer_email = models.EmailField()
     main_account_id = models.IntegerField(null=True, blank=True, )
     funding_account_id = models.IntegerField(null=True, blank=True, )
