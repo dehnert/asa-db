@@ -157,6 +157,30 @@ span.username
     font-size: smaller;
 }
 
+.fysm-detail
+{
+    height: 100%;
+    width: 100%;
+}
+
+.fysm-detail .single-fysm-entry
+{
+    margin: 0 auto;
+}
+
+.fysm-detail td
+{
+    padding: 0;
+}
+.fysm-join
+{
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 /* Reset some stuff */
 h1, h2, h3, th
 {

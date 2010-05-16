@@ -74,6 +74,19 @@ def fysm_by_years(request, year, category, ):
         }
     )
 
+def fysm_view(request, year, submission, ):
+    return list_detail.object_detail(
+        request,
+        forms.models.FYSM.objects,
+        object_id=submission,
+        template_name="fysm/fysm_detail.html",
+        template_object_name="fysm",
+        extra_context={
+            "year": year,
+            "pagename": "fysm",
+        },
+    )
+
 def select_group_fysm(request, ):
     qobj = Q(activity_category__name='Dorm') | Q(activity_category__name='FSILG')
     queryset = groups.models.Group.objects.filter(~qobj)
