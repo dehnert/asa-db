@@ -6,14 +6,15 @@ from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import list_detail
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.template import Context, Template
+from django.template.loader import get_template
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.mail import send_mail, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField
-from django.core.mail import send_mail, mail_admins
-from django.template import Context, Template
-from django.template.loader import get_template
+from django.db.models import Q
 
 import datetime
 
@@ -23,15 +24,20 @@ import datetime
 
 class SelectGroupForm(Form):
     group = ModelChoiceField(queryset=groups.models.Group.objects.all())
+    def __init__(self, queryset=None, *args, **kwargs):
+        super(SelectGroupForm, self).__init__(*args, **kwargs)
+        if queryset is not None:
+            self.fields["group"].queryset = queryset
 
-def select_group(request, url_name_after, pagename='homepage', ):
+def select_group(request, url_name_after, pagename='homepage', queryset=None, ):
     if request.method == 'POST': # If the form has been submitted...
-        form = SelectGroupForm(request.POST) # A form bound to the POST data
+        # A form bound to the POST data
+        form = SelectGroupForm(request.POST, queryset=queryset, )
         if form.is_valid(): # All validation rules pass
             group = form.cleaned_data['group'].id
             return HttpResponseRedirect(reverse(url_name_after, args=[group],)) # Redirect after POST
     else:
-        form = SelectGroupForm() # An unbound form
+        form = SelectGroupForm(queryset=queryset, ) # An unbound form
 
     context = {
         'form':form,
@@ -62,6 +68,16 @@ def fysm_by_years(request, year, category, ):
             "category": category_obj,
             "categories": categories,
         }
+    )
+
+def select_group_fysm(request, ):
+    qobj = Q(activity_category__name='Dorm') | Q(activity_category__name='FSILG')
+    queryset = groups.models.Group.objects.filter(~qobj)
+    return select_group(
+        request,
+        url_name_after='fysm-manage',
+        pagename='fysm',
+        queryset=queryset,
     )
 
 class FYSMRequestForm(ModelForm):

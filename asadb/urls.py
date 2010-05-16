@@ -23,12 +23,9 @@ urlpatterns = patterns('',
     # FYSM
     url(
         r'^fysm/submit/select/$',
-        forms.views.select_group,
-        {
-            'url_name_after': 'fysm-manage',
-            'pagename': 'fysm',
-        },
-        name='fysm-select', ),
+        forms.views.select_group_fysm,
+        name='fysm-select',
+    ),
     url(r'^fysm/submit/manage/(\d+)/$', forms.views.fysm_manage, name='fysm-manage', ),
     url(r'^fysm/submit/thanks/(\d+)/$', forms.views.fysm_thanks, name='fysm-thanks', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
