@@ -8,8 +8,8 @@ register = template.Library()
 def format_categories(fysm, year):
     print year
     snippets = ["<a href='%s'>%s</a>" % (
-        reverse('fysm', args=[year, tag.slug, ]),
-        tag,
-    ) for tag in fysm.tags.all()]
-    # Mark this as safe. This assumes that the tags are safe...
+        reverse('fysm', args=[year, category.slug, ]),
+        category,
+    ) for category in fysm.categories.all()]
+    # Mark this as safe. This assumes that the categories are safe...
     return django.utils.safestring.mark_safe(", ".join(snippets))

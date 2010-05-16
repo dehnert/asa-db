@@ -58,9 +58,9 @@ def fysm_by_years(request, year, category, ):
     queryset = forms.models.FYSM.objects.filter(year=year).order_by('group__name')
     category_obj = None
     if category != None:
-        category_obj = get_object_or_404(forms.models.FYSMTag, slug=category)
-        queryset = queryset.filter(tags=category_obj)
-    categories = forms.models.FYSMTag.objects.all()
+        category_obj = get_object_or_404(forms.models.FYSMCategory, slug=category)
+        queryset = queryset.filter(categories=category_obj)
+    categories = forms.models.FYSMCategory.objects.all()
     return list_detail.object_list(
         request,
         queryset=queryset,
@@ -94,7 +94,7 @@ class FYSMRequestForm(ModelForm):
             'contact_email',
             'description',
             'logo',
-            'tags',
+            'categories',
         )
 
 @user_passes_test(lambda u: u.is_authenticated())

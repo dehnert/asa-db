@@ -11,11 +11,11 @@ class FYSMAdmin(admin.ModelAdmin):
     )
     list_display_links = ('group', 'display_name', 'year', )
 
-class FYSMTagAdmin(admin.ModelAdmin):
+class FYSMCategoryAdmin(admin.ModelAdmin):
     list_display = (
         'name',
     )
     prepopulated_fields = {"slug": ("name",)}
 
 admin.site.register(forms.models.FYSM, FYSMAdmin)
-admin.site.register(forms.models.FYSMTag, FYSMTagAdmin)
+admin.site.register(forms.models.FYSMCategory, FYSMCategoryAdmin)

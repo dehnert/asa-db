@@ -9,7 +9,7 @@ Display name:   {{fysm.display_name}}
 Website:        {{fysm.website}}
 Join URL:       {{fysm.join_url}}
 Contact email:  {{fysm.contact_email}}
-Tags:           {{fysm.tags.all}}
+Categories:     {{fysm.categories.all}}
 
 Please return to {{request.build_absolute_uri}} to update this further.
 

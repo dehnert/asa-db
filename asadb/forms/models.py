@@ -13,12 +13,12 @@ class FYSM(models.Model):
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
     description = models.TextField(help_text="Explain in about three or four sentences what your group does and why incoming freshmen should get involved.")
     logo = models.ImageField(upload_to='fysm/logos', )
-    tags = models.ManyToManyField('FYSMTag', blank=True, )
+    categories = models.ManyToManyField('FYSMCategory', blank=True, )
 
     class Meta:
         verbose_name = "FYSM submission"
 
-class FYSMTag(models.Model):
+class FYSMCategory(models.Model):
     name = models.CharField(max_length=10)
     slug = models.SlugField()
     blurb = models.TextField()
@@ -27,4 +27,5 @@ class FYSMTag(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "FYSM tag"
+        verbose_name = "FYSM category"
+        verbose_name_plural = "FYSM categories"
