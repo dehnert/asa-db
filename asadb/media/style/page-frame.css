@@ -56,14 +56,3 @@ ul.tab-navigation li.selected
 {
     margin: 0.2em;
 }
-
-/* Reset some stuff */
-h1, h2, h3, th
-{
-    font-family: "Trebuchet MS", sans-serif;
-}
-ul
-{
-    padding-left: 1em;
-    margin-left: 0;
-}
