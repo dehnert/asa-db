@@ -136,12 +136,17 @@ span.username
     margin: 10px 20px;
 }
 
+.single-fysm-entry .fysm-body
+{
+    margin-bottom: 10px;
+}
+
 .single-fysm-entry .tags
 {
-    margin: 10px 0px 0px;
     background: #ddd;
     border-top: 1px solid #666;
     padding: 4px;
+    margin: 0px;
     text-align: center;
     font-size: smaller;
 }
