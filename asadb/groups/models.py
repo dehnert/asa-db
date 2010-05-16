@@ -7,7 +7,7 @@ class Group(models.Model):
     description = models.TextField()
     activity_category = models.ForeignKey('ActivityCategory', null=True, blank=True, )
     website_url = models.URLField()
-    constitution_url = models.TextField(blank=True)
+    constitution_url = models.CharField(max_length=200, blank=True)
     meeting_times = models.TextField(blank=True)
     advisor_name = models.CharField(max_length=100, blank=True)
     num_undergrads = models.IntegerField(null=True, blank=True, )
