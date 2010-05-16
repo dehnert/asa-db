@@ -24,7 +24,11 @@ import datetime
 
 class SelectGroupForm(Form):
     group = ModelChoiceField(queryset=groups.models.Group.objects.all())
-    def __init__(self, queryset=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        queryset = None
+        if 'queryset' in kwargs:
+            queryset = kwargs['queryset']
+            del kwargs['queryset']
         super(SelectGroupForm, self).__init__(*args, **kwargs)
         if queryset is not None:
             self.fields["group"].queryset = queryset
