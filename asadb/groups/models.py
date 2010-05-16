@@ -31,3 +31,6 @@ class Group(models.Model):
 
 class ActivityCategory(models.Model):
     name = models.CharField(max_length=50)
+
+    def __str__(self, ):
+        return self.name
