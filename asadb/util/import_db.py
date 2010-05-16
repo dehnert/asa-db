@@ -43,6 +43,7 @@ if __name__ == '__main__':
         try:
             g.activity_category = groups.models.ActivityCategory.objects.get(name=cat_name)
         except groups.models.ActivityCategory.DoesNotExist:
+            print ">> Unknown category '%s' on group '%s'" % (cat_name, g.name, )
             pass
         g.website_url       = d['WEBSITE_URL']
         g.constitution_url  = d['CONSTITUTION_WEB_URL']
