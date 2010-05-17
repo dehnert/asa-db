@@ -75,6 +75,16 @@ def fysm_by_years(request, year, category, ):
     )
 
 def fysm_view(request, year, submission, ):
+    submit_obj = get_object_or_404(forms.models.FYSM, pk=submission,)
+    all = forms.models.FYSM.objects.only("id", "display_name", )
+    try:
+        prev = all.filter(display_name__lt=submit_obj.display_name).order_by("-display_name")[0]
+    except IndexError:
+        prev = None
+    try:
+        next = all.filter(display_name__gt=submit_obj.display_name).order_by("display_name")[0]
+    except IndexError:
+        next = None
     return list_detail.object_detail(
         request,
         forms.models.FYSM.objects,
@@ -84,6 +94,8 @@ def fysm_view(request, year, submission, ):
         extra_context={
             "year": year,
             "pagename": "fysm",
+            "prev": prev,
+            "next": next,
         },
     )
 

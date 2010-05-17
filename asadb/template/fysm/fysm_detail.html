@@ -1,11 +1,25 @@
-{% extends "base-plain.html" %}
+{% extends "base.html" %}
 {% load formcats %}
 
 {% block title %}{{fysm.display_name}} (FYSM){% endblock %}
 {% block content %}
 <div class='fysm-detail'>
+
+<div class='fysm-navstrip'>
+{% if prev %}
+<p><a class='back'    href='{% url fysm-view year prev.pk %}'>&laquo; {{prev.display_name}}</a></p>
+{% endif %}
+{% if next %}
+<p><a class='forward' href='{% url fysm-view year next.pk %}'>{{next.display_name}} &raquo;</a></p>
+{% endif %}
+<p class='up'><a href='{% url fysm year %}'>Up to Index</a></p>
+<div style='clear: both;'></div>
+</div>
+
 <div class='single-fysm-entry'>
-    <h3><a href='{{fysm.website}}'>{{fysm.display_name}}</a></h3>
+    <h3>
+        <a href='{{fysm.website}}'>{{fysm.display_name}}</a>
+    </h3>
     <div class='fysm-body'>
     <div class='logo'>
         {% if fysm.logo %}
@@ -24,8 +38,6 @@
     <p class='tags'>categories: {{fysm|format_categories:year}}</p>
     {% endif %}
 </div>
-<iframe src='{{fysm.join_url}}' class='fysm-join' height='100%'>
-    <p><a href='{{fysm.join_url}}'>Learn about joining {{fysm.display_name}}</a></p>
-</iframe>
+
 {% endblock %}
 

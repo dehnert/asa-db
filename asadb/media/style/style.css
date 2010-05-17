@@ -89,13 +89,13 @@ span.username
     background: #BE2933;
 }
 
-.single-fysm-entry h3 a
+.single-fysm-entry h3 a, .fysm-navstrip a
 {
     color:#fcfcfc;
     text-decoration: none;
 }
 
-.single-fysm-entry h3 a:hover
+.single-fysm-entry h3 a:hover, .fysm-navstrip a:hover
 {
     text-decoration: underline;
 }
@@ -157,29 +157,29 @@ span.username
     font-size: smaller;
 }
 
-.fysm-detail
+.fysm-detail .back    { float: left;  }
+.fysm-detail .forward { float: right; }
+.fysm-detail .up      { text-align: center; }
+.fysm-detail h3
 {
-    height: 100%;
-    width: 100%;
+    text-align: center;
+    clear: both;
 }
 
-.fysm-detail .single-fysm-entry
+.fysm-navstrip
 {
-    margin: 0 auto;
-}
-
-.fysm-detail td
-{
-    padding: 0;
-}
-.fysm-join
-{
-    display: block;
-    width: 100%;
-    height: 100%;
+    clear: both;
     margin: 0;
-    padding: 0;
+    margin-top: 3em;
+    padding: 0.5em 1em;
+    background: #BE2933;
 }
+
+.fysm-navstrip p
+{
+    margin: 0;
+}
+
 
 /* Reset some stuff */
 h1, h2, h3, th
