@@ -36,9 +36,14 @@ ul.tab-navigation li
 }
 ul.tab-navigation li.selected
 {
-    background: #99f;
+    background: #BE2933;
+    color: white;
     position: relative;
     z-index: 10;
+}
+ul.tab-navigation li.selected a
+{
+    color: white;
 }
 
 #content > .curuser
@@ -46,7 +51,8 @@ ul.tab-navigation li.selected
     margin-top: -1em;
     margin-right: -1em;
     float: right;
-    background-color: #99f;
+    background: #BE2933;
+    color: white;
     border: 1px solid #888;
 
     text-align: right;
@@ -55,4 +61,8 @@ ul.tab-navigation li.selected
 #content > .curuser p
 {
     margin: 0.2em;
+}
+#content > .curuser a
+{
+    color: white;
 }
