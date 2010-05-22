@@ -21,7 +21,7 @@
 
 {% for fysm in fysm_list %}
 <div class='single-fysm-entry'>
-    <h3><a href='{{fysm.website}}'>{{fysm.display_name}}</a></h3>
+    <h3><a href='{% url fysm-view year fysm.pk %}'>{{fysm.display_name}}</a></h3>
     <div class='fysm-body'>
     <div class='logo'>
         {% if fysm.logo %}
