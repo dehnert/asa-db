@@ -31,7 +31,7 @@
         {% endif %}
     </div>
     <p class='data'>{{fysm.description}}</p>
-    <p class='join'><a href='{{fysm.join_url}}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
+    <p class='join'><a href='{% url fysm-link year "join" fysm.pk %}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
     </div>
     {% if fysm.tags %}
     <p class='tags'>tags: {{fysm.tags}}</p>

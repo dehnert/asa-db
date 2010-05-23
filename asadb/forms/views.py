@@ -99,6 +99,18 @@ def fysm_view(request, year, submission, ):
         },
     )
 
+def fysm_link(request, year, link_type, submission, ):
+    submit_obj = get_object_or_404(forms.models.FYSM, pk=submission,)
+    if submit_obj.year != int(year):
+        raise Http404("Year mismatch: fysm.year='%s', request's year='%s'" % (submit_obj.year, year, ))
+    if link_type == 'join':
+        url = submit_obj.join_url
+    elif link_type == 'website':
+        url = submit_obj.website
+    else:
+        raise Http404("Unknown link type")
+    return HttpResponseRedirect(url)
+
 def select_group_fysm(request, ):
     qobj = Q(activity_category__name='Dorm') | Q(activity_category__name='FSILG')
     queryset = groups.models.Group.objects.filter(~qobj)
