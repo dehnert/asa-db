@@ -6,6 +6,7 @@ import os, errno
 import settings
 import groups.models
 from util.misc import log_and_ignore_failures, mkdir_p
+import util.previews
 
 class FYSM(models.Model):
     group = models.ForeignKey(groups.models.Group)
@@ -72,16 +73,23 @@ class PagePreview(models.Model):
     url = models.URLField()
     image = models.ImageField(upload_to='page-previews', blank=True, )
 
+    never_updated = datetime.datetime.utcfromtimestamp(0) # Never updated
+    update_interval = datetime.timedelta(hours=23)
+
+    def image_filename(self, ):
+        return os.path.join(settings.MEDIA_ROOT, self.image.name)
+
+
     @classmethod
     def allocate_page_preview(cls, filename, url, ):
         preview = PagePreview()
-        preview.update_time = datetime.datetime.utcfromtimestamp(0) # Never updated
+        preview.update_time = cls.never_updated
         preview.url = url
-        preview.image = 'page-previews/%s.png' % (filename, )
-        image_filename = os.path.join(settings.MEDIA_ROOT, preview.image.name)
+        preview.image = 'page-previews/%s.jpg' % (filename, )
+        image_filename = preview.image_filename()
         mkdir_p(os.path.dirname(image_filename))
         try:
-            os.symlink('no-preview.png', image_filename)
+            os.symlink('no-preview.jpg', image_filename)
         except OSError as exc:
             if exc.errno == errno.EEXIST:
                 pass
@@ -90,11 +98,34 @@ class PagePreview(models.Model):
         return preview
 
     def update_preview(self, ):
-        pass
+        self.update_time = datetime.datetime.now()
+        self.save()
+        failure = util.previews.generate_webpage_preview(self.url, self.image_filename(), )
+        if failure:
+            self.update_time = self.never_updated
+            self.save()
 
     @classmethod
     def previews_needing_updates(cls, interval=None, ):
         if interval is None:
-            interval = datetime.timedelta(days=1)
+            interval = cls.update_interval
         before = datetime.datetime.now() - interval
-        return cls.objects.filter(update_time__le=before)
+        return cls.objects.filter(update_time__lte=before)
+
+    @classmethod
+    def update_outdated_previews(cls, interval=None, ):
+        previews = cls.previews_needing_updates(interval)
+        now = datetime.datetime.now()
+        update_list = []
+        previews_dict = {}
+        for preview in previews:
+            update_list.append((preview.url, preview.image_filename(), ))
+            previews_dict[preview.url] = preview
+            preview.update_time = now
+            preview.save()
+        failures = util.previews.generate_webpage_previews(update_list)
+        for url, msg in failures:
+            print "%s: %s" % (url, msg, )
+            preview = previews_dict[url]
+            preview.update_time = cls.never_updated
+            preview.save()
