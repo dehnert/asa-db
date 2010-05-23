@@ -57,9 +57,12 @@ def fysm_by_years(request, year, category, ):
     if year is None: year = datetime.date.today().year
     queryset = forms.models.FYSM.objects.filter(year=year).order_by('group__name')
     category_obj = None
+    category_name = 'main'
     if category != None:
         category_obj = get_object_or_404(forms.models.FYSMCategory, slug=category)
+        category_name = category_obj.name
         queryset = queryset.filter(categories=category_obj)
+    forms.models.FYSMView.record_metric(request=request, fysm=None, year=year, page=category_name, )
     categories = forms.models.FYSMCategory.objects.all()
     return list_detail.object_list(
         request,
@@ -85,6 +88,7 @@ def fysm_view(request, year, submission, ):
         next = all.filter(display_name__gt=submit_obj.display_name).order_by("display_name")[0]
     except IndexError:
         next = None
+    forms.models.FYSMView.record_metric(request=request, fysm=submit_obj, year=year, page="detail", )
     return list_detail.object_detail(
         request,
         forms.models.FYSM.objects,
@@ -109,6 +113,7 @@ def fysm_link(request, year, link_type, submission, ):
         url = submit_obj.website
     else:
         raise Http404("Unknown link type")
+    forms.models.FYSMView.record_metric(request=request, fysm=submit_obj, year=year, page=link_type, )
     return HttpResponseRedirect(url)
 
 def select_group_fysm(request, ):
