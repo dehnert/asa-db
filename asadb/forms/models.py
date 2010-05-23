@@ -2,7 +2,9 @@ from django.db import models
 
 import datetime
 
+import settings
 import groups.models
+from util.misc import log_and_ignore_failures
 
 class FYSM(models.Model):
     group = models.ForeignKey(groups.models.Group)
@@ -30,3 +32,25 @@ class FYSMCategory(models.Model):
     class Meta:
         verbose_name = "FYSM category"
         verbose_name_plural = "FYSM categories"
+
+class FYSMView(models.Model):
+    fysm = models.ForeignKey(FYSM, blank=True, )
+    year = models.IntegerField(null=True, blank=True, )
+    page = models.CharField(max_length=20, blank=True, )
+    referer = models.URLField(verify_exists=False)
+    user_agent = models.CharField(max_length=255)
+    source_ip = models.IPAddressField()
+    source_user = models.CharField(max_length=30, blank=True, )
+
+    @staticmethod
+    @log_and_ignore_failures(logfile=settings.LOGFILE)
+    def record_metric(request, fysm=None, year=None, page=None, ):
+        record = FYSMView()
+        record.fysm = fysm
+        record.year = year
+        record.page = page
+        record.referer = request.META['HTTP_REFERER']
+        record.user_agent = request.META['HTTP_USER_AGENT']
+        record.source_ip = request.META['REMOTE_ADDR']
+        record.source_user = request.user.username
+        record.save()
