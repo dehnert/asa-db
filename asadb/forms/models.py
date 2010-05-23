@@ -1,10 +1,11 @@
 from django.db import models
 
 import datetime
+import os, errno
 
 import settings
 import groups.models
-from util.misc import log_and_ignore_failures
+from util.misc import log_and_ignore_failures, mkdir_p
 
 class FYSM(models.Model):
     group = models.ForeignKey(groups.models.Group)
@@ -17,6 +18,15 @@ class FYSM(models.Model):
     logo = models.ImageField(upload_to='fysm/logos', blank=True, )
     tags = models.CharField(max_length=100, blank=True, help_text="Specify some free-form, comma-delimited tags for your group", )
     categories = models.ManyToManyField('FYSMCategory', blank=True, help_text="Put your group into whichever of our categories seem applicable.", )
+    join_preview = models.ForeignKey('PagePreview', null=True, )
+
+    def save(self, *args, **kwargs):
+        if self.join_preview is None or self.join_url != self.join_preview.url:
+            self.join_preview = PagePreview.allocate_page_preview(
+                filename='fysm/%d/group%d'%(self.year, self.group.pk, ),
+                url=self.join_url,
+            )
+        super(FYSM, self).save(*args, **kwargs) # Call the "real" save() method.
 
     class Meta:
         verbose_name = "FYSM submission"
@@ -56,3 +66,35 @@ class FYSMView(models.Model):
         record.source_ip = request.META['REMOTE_ADDR']
         record.source_user = request.user.username
         record.save()
+
+class PagePreview(models.Model):
+    update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
+    url = models.URLField()
+    image = models.ImageField(upload_to='page-previews', blank=True, )
+
+    @classmethod
+    def allocate_page_preview(cls, filename, url, ):
+        preview = PagePreview()
+        preview.update_time = datetime.datetime.utcfromtimestamp(0) # Never updated
+        preview.url = url
+        preview.image = 'page-previews/%s.png' % (filename, )
+        image_filename = os.path.join(settings.MEDIA_ROOT, preview.image.name)
+        mkdir_p(os.path.dirname(image_filename))
+        try:
+            os.symlink('no-preview.png', image_filename)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST:
+                pass
+            else: raise
+        preview.save()
+        return preview
+
+    def update_preview(self, ):
+        pass
+
+    @classmethod
+    def previews_needing_updates(cls, interval=None, ):
+        if interval is None:
+            interval = datetime.timedelta(days=1)
+        before = datetime.datetime.now() - interval
+        return cls.objects.filter(update_time__le=before)
