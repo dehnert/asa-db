@@ -1,5 +1,6 @@
 *.pyc
 asa-db.sqlite
+asa-db.log
 local_settings.py
 local_settings_after.py
 asadb/media/fysm/logos/
