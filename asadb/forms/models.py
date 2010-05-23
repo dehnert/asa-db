@@ -34,10 +34,11 @@ class FYSMCategory(models.Model):
         verbose_name_plural = "FYSM categories"
 
 class FYSMView(models.Model):
-    fysm = models.ForeignKey(FYSM, blank=True, )
+    when = models.DateTimeField(default=datetime.datetime.now)
+    fysm = models.ForeignKey(FYSM, null=True, blank=True, )
     year = models.IntegerField(null=True, blank=True, )
     page = models.CharField(max_length=20, blank=True, )
-    referer = models.URLField(verify_exists=False)
+    referer = models.URLField(verify_exists=False, null=True, )
     user_agent = models.CharField(max_length=255)
     source_ip = models.IPAddressField()
     source_user = models.CharField(max_length=30, blank=True, )
@@ -49,7 +50,8 @@ class FYSMView(models.Model):
         record.fysm = fysm
         record.year = year
         record.page = page
-        record.referer = request.META['HTTP_REFERER']
+        if 'HTTP_REFERER' in request.META:
+            record.referer = request.META['HTTP_REFERER']
         record.user_agent = request.META['HTTP_USER_AGENT']
         record.source_ip = request.META['REMOTE_ADDR']
         record.source_user = request.user.username
