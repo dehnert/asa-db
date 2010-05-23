@@ -157,9 +157,9 @@ span.username
     font-size: smaller;
 }
 
-.fysm-detail .back    { float: left;  }
-.fysm-detail .forward { float: right; }
-.fysm-detail .up      { text-align: center; }
+.fysm-detail .back    { text-align: left;  float: left;  }
+.fysm-detail .forward { text-align: right; float: right; }
+.fysm-detail .up      { text-align: center; margin: auto; }
 .fysm-detail h3
 {
     text-align: center;
@@ -170,7 +170,6 @@ span.username
 {
     clear: both;
     margin: 0;
-    margin-top: 3em;
     padding: 0.5em 1em;
     background: #BE2933;
 }
@@ -178,6 +177,7 @@ span.username
 .fysm-navstrip p
 {
     margin: 0;
+    min-width: 30%;
 }
 
 

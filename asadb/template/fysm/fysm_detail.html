@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base-plain.html" %}
 {% load formcats %}
 
 {% block title %}{{fysm.display_name}} (FYSM){% endblock %}
@@ -6,13 +6,18 @@
 <div class='fysm-detail'>
 
 <div class='fysm-navstrip'>
-{% if prev %}
-<p><a class='back'    href='{% url fysm-view year prev.pk %}'>&laquo; {{prev.display_name}}</a></p>
-{% endif %}
-{% if next %}
-<p><a class='forward' href='{% url fysm-view year next.pk %}'>{{next.display_name}} &raquo;</a></p>
-{% endif %}
+<p class='back'>{% if prev %}
+<a href='{% url fysm-view year prev.pk %}'>&laquo; Previous: {{prev.display_name}}</a>
+{%else%}&nbsp;
+{% endif %}</p>
+
+<p class='forward'>{% if next %}
+<a href='{% url fysm-view year next.pk %}'>Next: {{next.display_name}} &raquo;</a>
+{%else%}&nbsp;
+{% endif %}</p>
+
 <p class='up'><a href='{% url fysm year %}'>Up to Index</a></p>
+
 <div style='clear: both;'></div>
 </div>
 
