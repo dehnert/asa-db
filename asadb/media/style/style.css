@@ -82,20 +82,20 @@ span.username
     margin: 10px auto;
 }
 
-.single-fysm-entry h3
+.single-fysm-entry h3, .fysm-summarystrip h3
 {
     margin: 0 0 5px 0;
     padding: 2px 10px;
     background: #BE2933;
 }
 
-.single-fysm-entry h3 a, .fysm-navstrip a
+.single-fysm-entry h3 a, .fysm-navstrip a, .fysm-summarystrip a
 {
     color:#fcfcfc;
     text-decoration: none;
 }
 
-.single-fysm-entry h3 a:hover, .fysm-navstrip a:hover
+.single-fysm-entry h3 a:hover, .fysm-navstrip a:hover, .fysm-summarystrip a:hover
 {
     text-decoration: underline;
 }
@@ -157,27 +157,46 @@ span.username
     font-size: smaller;
 }
 
-.fysm-detail .back    { text-align: left;  float: left;  }
-.fysm-detail .forward { text-align: right; float: right; }
-.fysm-detail .up      { text-align: center; margin: auto; }
-.fysm-detail h3
+.fysm-detail .back,
+.fysm-summarystrip .contact
+{ text-align: left;  float: left; }
+.fysm-detail .forward,
+.fysm-summarystrip .website
+{ text-align: right; float: right; }
+.fysm-detail .up,
+.fysm-summarystrip .display-name
+{ text-align: center; margin: auto; }
+
+.fysm-detail .single-fysm-entry h3
 {
     text-align: center;
     clear: both;
 }
 
-.fysm-navstrip
+.fysm-navstrip, .fysm-summarystrip
 {
     clear: both;
     margin: 0;
     padding: 0.5em 1em;
     background: #BE2933;
+    border-bottom: 1px solid black;
 }
 
-.fysm-navstrip p
+.fysm-navstrip p, .fysm-summarystrip p
 {
     margin: 0;
     min-width: 30%;
+}
+
+.fysm-detail .join-preview
+{
+    max-width: 600px;
+    margin: 1em auto;
+}
+.fysm-detail .join-preview img
+{
+    max-width: 600px;
+    display: block;
 }
 
 

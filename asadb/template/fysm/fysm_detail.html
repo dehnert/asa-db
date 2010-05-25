@@ -21,10 +21,21 @@
 <div style='clear: both;'></div>
 </div>
 
+<div class='fysm-summarystrip'>
+<p class='contact'><a href='mailto:{{fysm.contact_email}}'>Contact: {{fysm.contact_email}}</a></p>
+<p class='website'><a href='{% url fysm-link year "website" fysm.pk %}'>Website</a></p>
+<h3 class='display-name'>{{fysm.display_name}}</h3>
+</div>
+
+{% if fysm.join_preview.image.url %}
+<div class='join-preview'>
+<a href='{% url fysm-link year "join" fysm.pk %}'>
+<img src='{{fysm.join_preview.image.url}}' />
+</a>
+</div>
+{% endif %}
+
 <div class='single-fysm-entry'>
-    <h3>
-        <a href='{{fysm.website}}'>{{fysm.display_name}}</a>
-    </h3>
     <div class='fysm-body'>
     <div class='logo'>
         {% if fysm.logo %}
@@ -34,8 +45,8 @@
         {% endif %}
     </div>
     <p class='data'>{{fysm.description}}</p>
-    <p class='join'><a href='{{fysm.join_url}}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
     </div>
+    <div style='clear: both;'></div>
     {% if fysm.tags %}
     <p class='tags'>tags: {{fysm.tags}}</p>
     {% endif %}
