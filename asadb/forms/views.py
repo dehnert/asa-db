@@ -194,6 +194,7 @@ def fysm_manage(request, group, ):
         'group':group_obj,
         'fysm':fysm_obj,
         'form':form,
+        'categories':forms.models.FYSMCategory.objects.all(),
         'pagename':'fysm',
     }
     return render_to_response('fysm/submit.html', context, context_instance=RequestContext(request), )

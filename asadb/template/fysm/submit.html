@@ -15,5 +15,26 @@
 </table>
 </form>
 
+<h2>Categories</h2>
+
+<p>Below you can find the descriptions of the categories that you can choose among.</p>
+
+<table class='pretty-table'>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+</tr>
+</thead>
+<tbody>
+{% for category in categories %}
+<tr>
+    <th>{{category.name}}</th>
+    <td>{{category.blurb}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
 </div>
 {% endblock %}
