@@ -43,6 +43,7 @@ class FYSMCategory(models.Model):
     class Meta:
         verbose_name = "FYSM category"
         verbose_name_plural = "FYSM categories"
+        ordering = ['name', ]
 
 class FYSMView(models.Model):
     when = models.DateTimeField(default=datetime.datetime.now)
