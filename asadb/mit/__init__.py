@@ -46,7 +46,8 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
         return user
 
 def scripts_login(request, **kwargs):
-    if request.META['HTTP_HOST'] == 'localhost':
+    host = request.META['HTTP_HOST'].split(':')[0]
+    if host == 'localhost':
         return login(request, **kwargs)
     elif request.META['SERVER_PORT'] == '444':
         if request.user.is_authenticated():
@@ -64,6 +65,5 @@ def scripts_login(request, **kwargs):
             return login(request, **kwargs)
     else:
         # Move to port 444
-        host = request.META['HTTP_HOST'].split(':')[0]
         redirect_to = "https://%s:444%s" % (host, request.META['REQUEST_URI'], )
         return HttpResponseRedirect(redirect_to)
