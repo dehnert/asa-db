@@ -6,11 +6,19 @@ from forms.models import *
 class Migration:
     
     def forwards(self, orm):
-        "Write your forwards migration here"
+        
+        # Changing field 'FYSMCategory.name'
+        # (to signature: django.db.models.fields.CharField(max_length=25))
+        db.alter_column('forms_fysmcategory', 'name', orm['forms.fysmcategory:name'])
+        
     
     
     def backwards(self, orm):
-        "Write your backwards migration here"
+        
+        # Changing field 'FYSMCategory.name'
+        # (to signature: django.db.models.fields.CharField(max_length=10))
+        db.alter_column('forms_fysmcategory', 'name', orm['forms.fysmcategory:name'])
+        
     
     
     models = {
