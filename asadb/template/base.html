@@ -10,8 +10,9 @@
   </head>
   <body>
     <ul class='tab-navigation'>
-        <li{% ifequal pagename "homepage" %} class='selected'{% endifequal %}><a href="{% url homepage %}">Home</a></li>
-        <li{% ifequal pagename "fysm"     %} class='selected'{% endifequal %}><a href="{% url fysm     %}">FYSM</a></li>
+        <li{% ifequal pagename "homepage" %} class='selected'{% endifequal %}><a href="{% url homepage   %}">Home</a></li>
+        <li{% ifequal pagename "groups"   %} class='selected'{% endifequal %}><a href="{% url group-list %}">Groups</a></li>
+        <li{% ifequal pagename "fysm"     %} class='selected'{% endifequal %}><a href="{% url fysm       %}">FYSM</a></li>
     </ul>
     <div id='content'>
         {% if user.is_authenticated %}

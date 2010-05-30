@@ -41,6 +41,7 @@ urlpatterns = patterns('',
         {
             'queryset': groups.models.Group.objects.all(),
             'template_object_name': 'group',
+            'extra_context': {'pagename': 'groups', },
         },
         name='group-list',
     ),
