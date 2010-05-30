@@ -2,7 +2,7 @@ import forms.models
 import groups.models
 import settings
 
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.views.generic import list_detail
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -53,6 +53,7 @@ def select_group(request, url_name_after, pagename='homepage', queryset=None, ):
 # FIRST-YEAR SUMMER MAILING #
 #############################
 
+@login_required
 def fysm_by_years(request, year, category, ):
     if year is None: year = datetime.date.today().year
     queryset = forms.models.FYSM.objects.filter(year=year).order_by('group__name')
@@ -77,6 +78,7 @@ def fysm_by_years(request, year, category, ):
         }
     )
 
+@login_required
 def fysm_view(request, year, submission, ):
     submit_obj = get_object_or_404(forms.models.FYSM, pk=submission,)
     all = forms.models.FYSM.objects.only("id", "display_name", )
@@ -140,7 +142,7 @@ class FYSMRequestForm(ModelForm):
             'categories',
         )
 
-@user_passes_test(lambda u: u.is_authenticated())
+@login_required
 def fysm_manage(request, group, ):
     year = datetime.date.today().year
     group_obj = get_object_or_404(groups.models.Group, pk=group)
