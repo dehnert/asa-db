@@ -10,6 +10,8 @@ import settings
 
 import forms.views
 
+import groups.models
+
 urlpatterns = patterns('',
     # Example:
     # (r'^asadb/', include('asadb.foo.urls')),
@@ -31,6 +33,17 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/view/(\d+)/$', forms.views.fysm_view, name='fysm-view', ),
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
+
+    # Group list
+    url(
+        r'^groups/$',
+        list_detail.object_list,
+        {
+            'queryset': groups.models.Group.objects.all(),
+            'template_object_name': 'group',
+        },
+        name='group-list',
+    ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}MIT Student Groups{% endblock %}
+{% block content %}
+
+<h1>MIT Student Groups</h1>
+
+<table class='pretty-table'>
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Meeting Time</th>
+    </tr>
+</thead>
+<tbody>
+{% for group in group_list %}
+    <tr>
+        <td>{% if group.website_url %}<a href='{{group.website_url}}'>{% endif %}{{group.name}}{%if group.website_url%}</a>{%endif%}</td>
+        <td>{{group.meeting_times}}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
