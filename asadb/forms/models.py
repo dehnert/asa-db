@@ -33,7 +33,7 @@ class FYSM(models.Model):
         verbose_name = "FYSM submission"
 
 class FYSMCategory(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=25)
     slug = models.SlugField()
     blurb = models.TextField()
 
