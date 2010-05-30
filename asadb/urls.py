@@ -38,7 +38,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/login/',  login,  name='login', ),
+    url(r'^accounts/login/',  'mit.scripts_login',  name='login', ),
     url(r'^accounts/logout/', logout, name='logout', ),
 )
 
