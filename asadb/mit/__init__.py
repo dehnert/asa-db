@@ -1,7 +1,11 @@
 from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib.auth.backends import RemoteUserBackend
+from django.contrib.auth.views import login
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
+import settings
 
 def zephyr(msg, clas='remit', instance='log', rcpt='adehnert',):
     import os
@@ -40,3 +44,26 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
         except ObjectDoesNotExist:
             print "Failed to retrieve autocreated group"
         return user
+
+def scripts_login(request, **kwargs):
+    if request.META['HTTP_HOST'] == 'localhost':
+        return login(request, **kwargs)
+    elif request.META['SERVER_PORT'] == '444':
+        if request.user.is_authenticated():
+            # They're already authenticated --- go ahead and redirect
+            if 'redirect_field_name' in kwargs:
+                redirect_field_name = kwargs['redirect_field_names']
+            else:
+                from django.contrib.auth import REDIRECT_FIELD_NAME
+                redirect_field_name = REDIRECT_FIELD_NAME
+            redirect_to = request.REQUEST.get(redirect_field_name, '')
+            if not redirect_to or '//' in redirect_to or ' ' in redirect_to:
+                redirect_to = settings.LOGIN_REDIRECT_URL
+            return HttpResponseRedirect(redirect_to)
+        else:
+            return login(request, **kwargs)
+    else:
+        # Move to port 444
+        host = request.META['HTTP_HOST'].split(':')[0]
+        redirect_to = "https://%s:444%s" % (host, request.META['REQUEST_URI'], )
+        return HttpResponseRedirect(redirect_to)
