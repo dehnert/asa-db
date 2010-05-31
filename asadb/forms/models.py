@@ -13,7 +13,7 @@ class FYSM(models.Model):
     display_name = models.CharField(max_length=50)
     year = models.IntegerField()
     website = models.URLField()
-    join_url = models.URLField(help_text="<p>If you have a specific web page for students interested in joining your group, you can link to it here. If you want, this can basically be little more than a single image, similar to slides in previous years. However, you can also make it a video, interactive content, or whatever other creative material you can think of.</p><p>An image of the page will be snapshotted daily, and displayed on your group's FYSM detail page. It should first update sometime in the fifteen minutes after you first submit.</p>")
+    join_url = models.URLField(help_text="<p>If you have a specific web page for students interested in joining your group, you can link to it here. If you want, this can be a single image, similar to slides in previous years. You can also make it a video, interactive content, or whatever other creative material you can think of.</p><p>An image of the page will be snapshotted daily, and displayed on your group's FYSM detail page. It should first update sometime in the fifteen minutes after you first submit.</p>")
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
     description = models.TextField(help_text="Explain in about three or four sentences what your group does and why incoming freshmen should get involved.")
     logo = models.ImageField(upload_to='fysm/logos', blank=True, )
