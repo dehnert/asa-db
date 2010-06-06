@@ -10,6 +10,7 @@ Website:        {{fysm.website}}
 Join URL:       {{fysm.join_url}}
 Contact email:  {{fysm.contact_email}}
 Logo filename:  {{fysm.logo}}
+Slide filename: {{fysm.slide}}
 Tags:           {{fysm.tags}}
 Categories:     {{fysm.categories.all}}
 

@@ -4,3 +4,4 @@ asa-db.log
 local_settings.py
 local_settings_after.py
 asadb/media/fysm/logos/
+asadb/media/fysm/slides/

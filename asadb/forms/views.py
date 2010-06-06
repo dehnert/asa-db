@@ -138,6 +138,7 @@ class FYSMRequestForm(ModelForm):
             'contact_email',
             'description',
             'logo',
+            'slide',
             'tags',
             'categories',
         )
