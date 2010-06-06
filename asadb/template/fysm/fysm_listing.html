@@ -1,11 +1,14 @@
-{% extends "base.html" %}
+{% extends "base-plain.html" %}
 {% load formcats %}
 
 {% block title %}First Year Summer Mailing{% endblock %}
 {% block content %}
 
-<h2>First Year Summer Mailing ({{year}})</h2>
+<div class='fysm-summarystrip'>
+<h3 class='display-name'>First Year Summer Mailing ({{year}})</h3>
+</div>
 
+<div style='padding: 1em;'>
 {% if category %}
 <h2>{{category.name}} Groups</h2>
 <p>{{category.blurb}}</p>
@@ -18,6 +21,7 @@
 {% endfor %}
 </ul>
 {% endif %}
+</div>
 
 {% for fysm in fysm_list %}
 <div class='single-fysm-entry'>
