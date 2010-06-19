@@ -6,7 +6,7 @@ SITE_ROOT = os.path.normpath(os.path.dirname(__file__))
 SITE_WEB_PATH = ''
 
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
