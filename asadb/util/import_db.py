@@ -29,7 +29,7 @@ def convert_to_int(number):
 
 if __name__ == '__main__':
     indb = sys.stdin
-    reader = csv.reader(indb, delimiter='$')
+    reader = csv.reader(indb)
     header = reader.next()
     for line in reader:
         d = dictize_line(header, line)
