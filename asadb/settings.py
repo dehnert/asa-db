@@ -12,6 +12,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('ASA Database Team', 'asa-db@mit.edu',),
 )
+SERVER_EMAIL = 'asa-db-auto@mit.edu'
 
 MANAGERS = ADMINS
 
