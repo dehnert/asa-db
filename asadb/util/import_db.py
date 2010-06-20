@@ -18,6 +18,10 @@ def dictize_line(header, line,):
         line_dict[key]=elem
     return line_dict
 
+def canonicalize_email(email):
+    if '@' in email: return email
+    else: return email + "@mit.edu"
+
 def db_parse_date(string):
     return datetime.datetime.strptime(string, '%d-%b-%y').date()
 
@@ -53,8 +57,8 @@ if __name__ == '__main__':
         g.num_grads         = convert_to_int(d['NUM_OF_GRADUATE'])
         g.num_community     = convert_to_int(d['NUM_OF_COMMUNITY'])
         g.num_other         = convert_to_int(d['NUM_OF_OTHERS'])
-        g.group_email       = d['STUDENT_GROUP_EMAIL']
-        g.officer_email     = d['OFFICER_EMAIL']
+        g.group_email       = canonicalize_email(d['STUDENT_GROUP_EMAIL'])
+        g.officer_email     = canonicalize_email(d['OFFICER_EMAIL'])
         g.main_account_id   = convert_to_int(d['MAIN_ACCOUNT_ID'])
         g.funding_account_id= convert_to_int(d['FUNDING_ACCOUNT_ID'])
         g.athena_locker     = d['ATHENA_LOCKER']
