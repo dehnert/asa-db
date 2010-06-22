@@ -8,6 +8,38 @@
 <h3 class='display-name'>First Year Summer Mailing ({{year}})</h3>
 </div>
 
+<div style='margin: 1em;'>
+<p>Hello incoming MIT students!</p>
+
+<p>Student activities play an important role in student life at MIT - they're a
+great place to meet people, practice old skills and learn new ones, have fun,
+and give back to the community.  Undergraduate and graduate students, along
+with other MIT community members, participate in more than 450 recognized
+activities and organizations.  Below is an overview of some of these student
+groups compiled by the <a href="http://web.mit.edu/asa">Association of Student
+Activities (ASA)</a>.</p>
+
+<p>If you can't find a particular group or activity, remember that these are
+just some of the more than 450 groups recognized by the ASA.  You can also look
+at a current listing of activities on the <a
+href="http://web.mit.edu/asa/resources/group-list.html">ASA website</a>. If you
+still can't find what you're looking for, then you can apply to <a
+href="http://web.mit.edu/asa/start/index.html">start your own group</a>.</p>
+
+<p>The ASA also organizes an Activities Midway during Orientation with booths
+for more than 200 groups, lots of giveaways, and some performances.  The Midway
+is the afternoon of Friday, September 3 in the Johnson Athletic Center.</p>
+
+<p>You can learn more about the ASA and MIT student activities in general on <a
+href="http://web.mit.edu/asa">our website</a>.</p>
+
+<p>We look forward to seeing you in fall!</p>
+
+<p>Sincerely,</p>
+<p>-<a href="http://web.mit.edu/asa/about/board-members.html">The ASA Executive Board</a></p>
+
+</div>
+
 <div style='padding: 1em;'>
 {% if category %}
 <h2>{{category.name}} Groups</h2>
@@ -15,6 +47,7 @@
 <p><a href='{% url fysm year %}'>Return to all categories</a></p>
 {% else %}
 <h3>View by Category</h3>
+<p>In addition to the complete index below, you can click on one of these categories to look at a specific type of groups.</p>
 <ul>
 {% for cat in categories %}
 <li><a href='{% url fysm year cat.slug %}'>{{cat}}</a></li>
