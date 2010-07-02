@@ -168,11 +168,16 @@ def fysm_manage(request, group, ):
         if form.is_valid(): # All validation rules pass
             request_obj = form.save()
 
+            view_path = reverse('fysm-view', args=[year, request_obj.pk, ])
+            view_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
+                 request.get_host(), view_path)
+
             # Send email
             tmpl = get_template('fysm/update_email.txt')
             ctx = Context({
                 'group': group_obj,
                 'fysm': fysm_obj,
+                'view_uri': view_uri,
                 'submitter': request.user,
                 'request': request,
                 'sender': "ASA FYSM team",

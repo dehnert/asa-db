@@ -14,7 +14,7 @@ Slide filename: {{fysm.slide}}
 Tags:           {{fysm.tags}}
 Categories:     {{fysm.categories.all}}
 
-Please return to {{request.build_absolute_uri}} to update this further.
+Please return to {{request.build_absolute_uri}} to update this further, or view your entry at {{view_uri}}.
 
 Thanks,
 {{ sender }}
