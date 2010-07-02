@@ -10,7 +10,7 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail, mail_admins
+from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField
@@ -183,16 +183,17 @@ def fysm_manage(request, group, ):
                 'sender': "ASA FYSM team",
             })
             body = tmpl.render(ctx)
-            recipients = ['asa-fysm@mit.edu', group_obj.officer_email, ]
-            send_mail(
-                'FYSM entry for "%s" updated by "%s"' % (
+            email = EmailMessage(
+                subject='FYSM entry for "%s" updated by "%s"' % (
                     group_obj.name,
                     request.user,
                 ),
-                body,
-                'asa-fysm@mit.edu',
-                recipients,
+                body=body,
+                from_email='asa-fysm@mit.edu',
+                to=[group_obj.officer_email, ],
+                bcc=['asa-fysm@mit.edu', ]
             )
+            email.send()
             return HttpResponseRedirect(reverse('fysm-thanks', args=[fysm_obj.pk],)) # Redirect after POST
 
     else:
