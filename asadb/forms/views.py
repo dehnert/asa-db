@@ -191,7 +191,7 @@ def fysm_manage(request, group, ):
                 body=body,
                 from_email='asa-fysm@mit.edu',
                 to=[group_obj.officer_email, ],
-                bcc=['asa-fysm@mit.edu', ]
+                bcc=['asa-fysm-submissions@mit.edu', ]
             )
             email.send()
             return HttpResponseRedirect(reverse('fysm-thanks', args=[fysm_obj.pk],)) # Redirect after POST
