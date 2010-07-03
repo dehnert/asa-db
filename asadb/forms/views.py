@@ -190,7 +190,7 @@ def fysm_manage(request, group, ):
                 ),
                 body=body,
                 from_email='asa-fysm@mit.edu',
-                to=[group_obj.officer_email, ],
+                to=[group_obj.officer_email, request.user.email, ],
                 bcc=['asa-fysm-submissions@mit.edu', ]
             )
             email.send()

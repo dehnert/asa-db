@@ -22,4 +22,6 @@ Please return to {{request.build_absolute_uri}} to update this further, or view 
 
 Thanks,
 {{ sender }}
+
+P.S. Please check the recipients of this message. If {{group.officer_email}} is not your group's officers' list, please have your president, treasurer, or a financial signatory contact asa-exec@mit.edu so that we can update the ASA Database and ensure that you receive important announcements from the ASA.
 {% endautoescape %}
