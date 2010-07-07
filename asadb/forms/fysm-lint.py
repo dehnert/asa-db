@@ -97,6 +97,7 @@ def send_emails(objs, template, sender, bcc_recipient, subject_func, recipient_f
                 to=recipient_func(obj),
                 bcc=[bcc_recipient,]
             )
+            print subject, results
             email.send()
 
 if __name__ == '__main__':
