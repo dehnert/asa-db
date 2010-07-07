@@ -1,0 +1,19 @@
+{% autoescape off %}
+Hi officers of {{obj.display_name}},
+   Somebody recently submitted a FYSM entry on behalf of your group. We'd like to encourage you to review your entry as it appears on the FYSM website main page (http://asa.scripts.mit.edu/forms/fysm/, any relevant category pages, and in the slide view (http://asa.scripts.mit.edu/forms/{% url fysm-view obj.year obj.pk %}). You can return to {% url fysm-manage obj.pk %}; please do so by the end of Thursday.
+{% if results %}
+We performed an automated scan of your entry to try to detect common problems.
+
+We've attempted to mark the priority of the issues; high indicates that we're fairly confident that you have an issue, and if you don't fix it we may do so ourselves, or punt you from the FYSM; medium indicates that we're either fairly confident that you'll want to make a change because it'll look better, or suspect that you have an issue that might cause us to punt you from the FYSM if unchanged; and low means that we think you might have something to change to make you look better.
+
+The results are:
+{% for result in results %}* {{result.heading}} [{{result.level}}]
+{% endfor %}
+{% for result in results %}
+== {{result.heading}} [{{result.level}}] ==
+{{result.body}}
+{% endfor %}
+{% endif %}
+Thanks,
+ASA FYSM team
+{% endautoescape %}
