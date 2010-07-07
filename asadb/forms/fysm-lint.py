@@ -39,7 +39,7 @@ def check_display_name(fysm):
 def check_image_field(fysm, label, image):
     good_ext = ['png', 'jpg', 'jpeg', 'gif', ]
     ext = image.name.rsplit('.')[-1]
-    convert_msg = 'You should convert it to a PNG (or possibly GIF, if it is essentially all text; or JPEG, if it is mostly images).',
+    convert_msg = 'You should convert it to a PNG (or possibly GIF, if it is essentially all text; or JPEG, if it is mostly images).'
     if not image.name:
         return {
             'heading': 'No %s provided' % (label, ),
@@ -49,13 +49,13 @@ def check_image_field(fysm, label, image):
     if ext.lower() in ['tif', 'tiff', ]:
         return {
             'heading': 'Undesirable TIFF file submitted for %s' % (label, ),
-            'body':    'You submitted a TIFF file for your %s. TIFF files are generally large and poorly supported by browsers. ' % (label, ) + convert_msg,
+            'body':    ('You submitted a TIFF file for your %s. TIFF files are generally large and poorly supported by browsers. ' % (label, )) + convert_msg,
             'level':   LEVEL_HIGH,
         }
     if ext.lower() in ['bmp', ]:
         return {
             'heading': 'Undesirable BMP file submitted for %s' % (label, ),
-            'body':    'You submitted a BMP file for your %s. BMP files are generally extremely large. ' % (label, ) + convert_msg,
+            'body':    ('You submitted a BMP file for your %s. BMP files are generally extremely large. ' % (label, )) + convert_msg,
             'level':   LEVEL_HIGH,
         }
     if not ext.lower() in good_ext:
