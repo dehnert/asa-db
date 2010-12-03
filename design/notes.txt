@@ -1,0 +1,77 @@
+Based on meeting on 2010-12-02.
+Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
+
+* Categories as a many-to-many relationship is nice
+    * Need to think some more about what categories are reasonable
+    * Probably want to occassionally go yell at people about having too many
+* Officer-y fields / associating people with groups
+    * Multiple presidents
+    * Multiple treasurers
+    * Add some field of "people we trust enough for office access control, mailbox control, etc."
+    * Financial signatories
+    * Reservation signatories
+    * Set a standard cap for each of these fields, but allow increasing it
+        * Probably: ASA can exceed the cap when adding, not "ASA can increase the self-service cap"
+* Self-service enhancements
+    * Allow self-service officer's list updating
+        * Send mail to ASA Exec
+        * Send mail to GSC Funding Board or Finboard, as applicable
+    * Self-service constitution updating?
+        * Update mail?
+* Send mail on updates?
+    * Signatory updates to the groups?
+    * Treasurer updates to Kerri?
+* Associating notes with groups
+    * Groups leaving notes for themselves   (notes by group)
+    * ASA Exec leaving notes for groups     (notes to group)
+    * ASA/SAO for funding board             (funding notes)
+    * ASA internal notes                    (ASA notes)
+* Funding board access
+    * Viewing funding status
+    * Viewing account numbers
+    * Membership numbers
+    * Basically everything but notes
+* Office access
+    * Do this per-space
+    * Assign each space a space category (e.g., storage, office, etc.)
+        * Shared office / office --- script to run occasionally to auto-update?
+    * Cap number of people with access from a group by space category
+    * Office ACL?
+* Make sure the status options are generally changeable
+    * Status: Active, Suspended, Derecognized
+    * Class: various, editable by us
+        * Dorm/FSILG
+        * Standard
+        * Sponsored
+* Indicate what mode you're in
+    * Nice, but not needed
+* What info is available
+    * MIT-public
+        * Name
+        * Acronym
+        * Recognition date
+        * Last updated date
+        * Officer email
+        * Locker name
+        * President / treasurer / financial signatories / people who can update record
+        * Description
+        * Category
+        * Constitution
+        * Website URL
+* Fields in the DB
+    * Kill meeting times
+    * Add membership description
+    * Validate constitution and website links on submit
+    * Make copies of constitutions (cron job) (keeping old versions)
+* Cron job to get warnings
+    * Check link validity
+    * Check president/treasurer student status
+    * Check list existence
+
+Things to ask stakeholders about:
+* Why does SAO use the printed signatory list?
+    * Would a more useful signatory report be good for them?
+    * Do they want update mail?
+* Why does CAC use a printed list?
+    * Same as above.
+* Ask Accounts if they care about the DB
