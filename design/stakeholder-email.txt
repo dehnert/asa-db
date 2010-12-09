@@ -1,0 +1,18 @@
+I'm a member of the Association of Student Activities Exec board and am working on gathering requirements for a replacement for the ASA Database (https://sisapp.mit.edu/asa/home.do). The current ASA database software is difficult to modify; this is a problem as it is buggy and no longer matches the ASA's needs (for example, support for allocating office space doesn't match the procedures that we now want to use).
+
+I'm reaching out to you as I know your office uses the ASA database, and wanted to solicit your input on the replacement process. I'd like to know:
+1) Can you generally describe what tasks you try to accomplish using the database?
+2) What functionality do you use? (For example, looking up the president or reservation signatories of groups directly in the database? Generating reports with information for printing and referring to later?)
+3) What functionality do you use, but wished it worked slightly differently so you could use it more effectively? (For example, do you use an HTML report but wish you could get it as CSV file you could open in Excel instead?)
+4) Is there completely new functionality that you'd like to see? (For example, would it be useful if the database sent an email to your office every time a signatory was changed for a group, or a weekly summary email with changes?)
+5) I believe several offices currently use printed signatory lists to check authorization. Is that something that you're happy with? Would a more useful report with signatories for all the groups be valuable? Better lookup of single groups? Change notifications?
+5) Who is a good contact point from your office to talk to? Would you be interested in an in person meeting to talk about your needs?
+
+While we haven't decided how a replacement will be developed, one possibility is that I'll be writing it myself over winter break and IAP. Consequently, a reply by December 15th would be appreciated.
+
+If you have any concerns or suggestions for this process or the database, I'd appreciate letting me know.
+
+Thanks,
+Alex Dehnert
+Undergraduate Member-at-large
+ASA Executive Board
