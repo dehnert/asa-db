@@ -2,7 +2,7 @@ I'm a member of the Association of Student Activities Exec board and am working 
 
 While Accounts' interaction with the database is more limited than several other offices on campus, you do have some interaction. At the moment, I think your direct interaction is limited to just receiving requests for new lockers and mailing lists to be created. If there's anything we can do to make that more smoothly with the new database, we'd be interested in hearing. We're also interested in whether you see support requests from student groups that a better ASA Database could reduce.
 
-Currently, I plan on developing the database myself over winter break and IAP, rather than the ASA outsourcing it to another group. Consequently, a reply by December 15th would be appreciated.
+Currently, we plan on developing the database ourselves over winter break and IAP, rather than the ASA outsourcing it to another group. Consequently, a reply by December 15th would be appreciated.
 
 In general, if you have any concerns or suggestions for this process or the database, I'd appreciate you letting me know.
 
