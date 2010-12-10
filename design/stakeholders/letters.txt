@@ -1,0 +1,4 @@
+Some effort is being made to contact stakeholders before getting started. The emails and recipients are:
+CAC, Schedules, and SAO: most-offices-pre.txt
+Accounts: accounts-pre.txt
+Funding boards (UA, GSC): funding-pre.txt
