@@ -1,4 +1,17 @@
 Some effort is being made to contact stakeholders before getting started. The emails and recipients are:
-CAC, Schedules, and SAO: most-offices-pre.txt
-Accounts: accounts-pre.txt
-Funding boards (UA, GSC): funding-pre.txt
+
+Groups: CAC, Schedules, and SAO
+Recipients: laflynn@mit.edu, aeerwin@mit.edu, kamills@mit.edu, campus-activities@mit.edu, pwalsh@mit.edu, schedules@mit.edu
+Letter: most-offices-pre.txt
+
+Group: Accounts
+Recipient: accounts@mit.edu
+Letter: accounts-pre.txt
+
+Group: Funding boards (UA, GSC)
+Recipients: finboard@mit.edu, ua-treasurer@mit.edu, gsc-treasurer@mit.edu
+Letter: funding-pre.txt
+
+Group: Folks interested in the ASA
+Recipients: asa-minutes@mit.edu, asa-exec@mit.edu
+Letter: interested-pre.txt
