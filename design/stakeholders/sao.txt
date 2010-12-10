@@ -1,0 +1,24 @@
+I'm a member of the Association of Student Activities Exec board and am working on gathering requirements for a replacement for the ASA Database (https://sisapp.mit.edu/asa/home.do). The current ASA database software is difficult to modify; this is a problem as it is buggy, cumbersome for students and administrators to use, and no longer meets the ASA's needs: for example, the forms to request office space, mailboxes, and bulletin board space do not have the information we need to make these decisions, so we have run one-off forms for these requests separate from the DB for several years.
+
+I'm reaching out to you as I know your office uses the ASA database, and wanted to solicit your input on the replacement process. I'd like to know:
+
+1) Can you generally describe what tasks you try to accomplish using the database?
+
+2) What functionality do you use? (For example, looking up group signatory information online, generating and printing reports for later reference, etc.)
+
+3) What functionality do you use, but wished it worked slightly differently so you could use it more effectively? (For example, do you wish the info on web pages were available as an Excel spreadsheet also?)
+
+4) Is there completely new functionality that you'd like to see? (For example, would it be useful if the database notified your office of signatory changes by e-mail?)
+
+5) I believe several offices currently use printed signatory lists.  Are you happy with this setup, or are there changes that would make the online interface more usable?
+
+6) Who is a good contact point from your office to talk to? Would you be interested in meeting in person to discuss your use of the database?
+
+Currently, I plan on developing the database myself over winter break and IAP, rather than the ASA outsourcing it to another group. Consequently, a reply by December 15th would be appreciated.
+
+In general, if you have any concerns or suggestions for this process or the database, I'd appreciate you letting me know.
+
+Thanks,
+Alex Dehnert
+Undergraduate Member-at-large
+ASA Executive Board
