@@ -75,3 +75,11 @@ Things to ask stakeholders about:
 * Why does CAC use a printed list?
     * Same as above.
 * Ask Accounts if they care about the DB
+
+Stakeholders:
+* SAO
+* SAFO
+* CAC
+* Schedules
+* Account
+* Funding boards (UA, GSC)
