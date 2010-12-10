@@ -1,0 +1,18 @@
+I'm a member of the Association of Student Activities Exec board and am working on gathering requirements for a replacement for the ASA Database (https://sisapp.mit.edu/asa/home.do). The current ASA database software is difficult to modify; this is a problem as it is buggy, cumbersome for students and administrators to use, and no longer meets the ASA's needs: for example, the forms to request office space, mailboxes, and bulletin board space do not have the information we need to make these decisions, so we have run one-off forms for these requests separate from the DB for several years.
+
+As part of this work, we're trying to determine how we can make the ASA database more useful. At the moment, I don't believe the funding boards have access to the database, and we're wondering if there's access that would be useful.
+
+Several features that we thought might be useful include:
+* Sending emails when the officer's list in the database is updated
+* Making information like funding status, account numbers, membership numbers available to funding board members
+
+We'd love to hear if there are other features you'd find useful.
+
+Currently, we plan on developing the database ourselves over winter break and IAP, rather than the ASA outsourcing it to another group. Consequently, a reply by December 15th would be appreciated.
+
+In general, if you have any concerns or suggestions for this process or the database, I'd appreciate you letting me know.
+
+Thanks,
+Alex Dehnert
+Undergraduate Member-at-large
+ASA Executive Board
