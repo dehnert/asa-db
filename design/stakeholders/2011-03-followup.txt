@@ -1,3 +1,10 @@
+Subject: Followup on ASA database
+To: laflynn@mit.edu, kamills@mit.edu, pwalsh@mit.edu, pdc@mit.edu, aeerwin@mit.edu, campus-activities@mit.edu, schedules@mit.edu
+CC: asa-db@mit.edu, asa-exec@mit.edu
+Reply-To: asa-db@mit.edu
+Attachment: /mit/asa/Scripts/django/asa-db/design/notes.txt
+Attachment: /mit/asa/Scripts/django/asa-db/design/stakeholders/pre/responses.txt
+
 Hi again,
    I contacted all of you back in December about what functionality you wanted in the ASA database. After getting distracted by other commitments, I'm finally resuming work on this.
 
