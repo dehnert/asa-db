@@ -1,5 +1,7 @@
 Some effort is being made to contact stakeholders before getting started. The emails and recipients are:
 
+The subject line for all of these is: "Input on new ASA database"
+
 Groups: CAC, Schedules, and SAO
 Recipients: laflynn@mit.edu, aeerwin@mit.edu, kamills@mit.edu, campus-activities@mit.edu, pwalsh@mit.edu, schedules@mit.edu
 Letter: most-offices-pre.txt

@@ -1,6 +1,6 @@
-I'm a member of the Association of Student Activities Exec board and am working on gathering requirements for a replacement for the ASA Database (https://sisapp.mit.edu/asa/home.do). The current ASA database software is difficult to modify; this is a problem as it is buggy, cumbersome for students and administrators to use, and no longer meets the ASA's needs: for example, the forms to request office space, mailboxes, and bulletin board space do not have the information we need to make these decisions, so we have run one-off forms for these requests separate from the DB for several years.
+As you probably know, I'm working on gathering requirements for a replacement for the ASA Database (https://sisapp.mit.edu/asa/home.do). The current ASA database software is difficult to modify; this is a problem as it is buggy, cumbersome for students and administrators to use, and no longer meets the ASA's needs: for example, the forms to request office space, mailboxes, and bulletin board space do not have the information we need to make these decisions, so we have run one-off forms for these requests separate from the DB for several years.
 
-I'm reaching out to you as I know your office uses the ASA database, and wanted to solicit your input on the replacement process. I'd like to know:
+I wanted to solicit your input on the replacement process. I'd like to know:
 
 1) Can you generally describe what tasks you try to accomplish using the database?
 
