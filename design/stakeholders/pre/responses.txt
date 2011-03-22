@@ -1,0 +1,36 @@
+Typical use:
+    * typically use the database to find email addresses and to see/change signatories [Alicia]
+    * Account numbers, signatories, funding group [Kerri]
+    * CAC [jbsmith]
+        * Look up reservation signatories to process space/promotional requests.
+        * Look up presidents and treasurers to authorize door access changes.
+        * Look up presidents/treasurers/group e-mail addresses to get in touch with groups about student office changes, upcoming events, etc...
+
+* Contacting groups
+    - sent reminder emails to groups to update their signatories and president/treasurer [Alicia]
+    - Ability to send emails to group from DB if info needs to be updated, need to email all financial signatories [Kerri]
+* Update emails
+    - Signatory change notification [emails] [Kerri]
+    - Reservation signatory change emails [jbsmith]
+    - Clearer new group recognition emails --- e.g., include the funding type [Kerri]
+* Report generation
+    - designated each student group under a specific category (political, cultural, performance, etc.) - this distinction would be given out when recognized [Alicia]
+    - was search-able by any field, more specifically: name of group, name of student, email, graduate vs undergraduate, category [Alicia]
+    - was able to print reports  [Alicia]
+    - Allow sorting reports by more fields --- currently alphabetical, but grad vs. undergrad, types of groups, etc. would be good [Alicia]
+    - provide a data download so people can search and use the information in ways you didn't imagine  [Quentin]
+    - Download information (account listing, funding type) in excel spreadsheet [Kerri]
+    - Excel report with groups, presidents, treasurers, group email addresses [jbsmith]
+* Public information
+    - make more information public (e.g. meeting times, location, constitution URL, maybe even prez/treasurer/officers' contact info) [Quentin]
+    - Publicly report locker for groups [Accounts/boojum]
+* Storing more group information
+    - had space for groups to upload transition documents and their constitutions, and maybe any history of their groups [Alicia]
+    - verify that information like the constitution is ACTUALLY accessible at the given URL [Quentin]
+* President/Treasurer/Signatories/5-50%
+    - only allowed currently registered students to be entered as president and treasurer [Alicia]
+    - space to upload a list of their members for each year/semester (this way we know they have 5) which could then be cross checked by the system to make sure at least half are MIT students [Alicia]
+    - no arbitrary limits on the number of signatories [Quentin]
+    - allow Moira lists to be used as signatories [Quentin]
+- looked "prettier" - easier to read and find information [Alicia]
+- There may be other people who would be willing/wanting to be a part of this such as the MIT Alumni association so that if there is some sort of roster of groups that could then be added to the alumni database for coding when they graduate, then people don’t have to update their profile with alumni. [Kerri]
