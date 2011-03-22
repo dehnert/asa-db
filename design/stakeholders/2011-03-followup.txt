@@ -1,0 +1,23 @@
+Hi again,
+   I contacted all of you back in December about what functionality you wanted in the ASA database. After getting distracted by other commitments, I'm finally resuming work on this.
+
+I've attached a list of the requests that I got from my previous email (in December), as well as the notes from when Rachel and I met slightly before that.
+
+A couple major things stick out at me:
+* Having the new database automatically email on changes would be popular
+* Reporting needs improvement --- in particular, "export as Excel" would be popular, though there were other concerns
+* Better tools for enforcing requirements like president/treasurer status and 5-50%
+* Getting rid of (or making more flexible) some of the limits like one president, six signatories, etc.
+
+If you have additional requests, please let me know.
+
+Last week, we had a meeting amongst representatives of the ASA, SAO, CAC, and DSL about what the right way to move forward on the database rewrite project. One thing the meeting suggested to me, at least, was that we need more information before making a decision on that.
+
+Therefore, I'd like to know to what degree your office wanted ongoing development work on the database over the past several years, and to what degree do you expect to want ongoing development in the future. (Note that this is not what you want in terms of changes *now* --- I want to know about how much you expect your requirements to change later.) I'd also like to know to what degree you expect the need for changes to be driven by ASA policy changes versus changes inside your offices versus changes pushed by a third party.
+
+If you can provide responses by the end of the week, I'd appreciate it.
+
+Once I have responses, I'll assemble them and try to schedule another meeting. Please let me know if you'd like to be involved in that meeting --- absent other responses, I'll most likely contact the same people who were present at the last one. My hope is to bring a draft proposal to that meeting for us to discuss and possibly finalize.
+
+Thanks,
+Alex
