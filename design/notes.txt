@@ -81,5 +81,5 @@ Stakeholders:
 * SAFO
 * CAC
 * Schedules
-* Account
+* Accounts
 * Funding boards (UA, GSC)
