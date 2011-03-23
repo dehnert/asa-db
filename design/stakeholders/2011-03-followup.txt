@@ -3,13 +3,11 @@ To: laflynn@mit.edu, kamills@mit.edu, pwalsh@mit.edu, pdc@mit.edu, aeerwin@mit.e
 CC: accounts@mit.edu, finboard@mit.edu, gsc-treasurer@mit.edu
 CC: asa-db@mit.edu, asa-exec@mit.edu
 Reply-To: asa-db@mit.edu
-Attachment: /mit/asa/Scripts/django/asa-db/design/notes.txt
-Attachment: /mit/asa/Scripts/django/asa-db/design/stakeholders/pre/responses.txt
 
 
 Hi again,
 
-A couple weeks ago, ASA, SAO, CAC, and DSL met to discuss possible plans for organizing development of the ASA Database. At the meeting it became clear that we lacked information abotu what the stakeholders needed out of a new Database development process. This is more preliminary than the specific features that each of our groups said they currently used and wanted from the Database (the topic of my December e-mail), since the sense of the meeting participants was that we needed to know more about how each stakeholder wants to interact with continued development of the ASA Database.
+A couple weeks ago, ASA, SAO, CAC, and DSL met to discuss possible plans for organizing development of the ASA Database. At the meeting it became clear that we lacked information about what the stakeholders needed out of a new Database development process. This is more preliminary than the specific features that each of our groups said they currently used and wanted from the Database (the topic of my December e-mail), since the sense of the meeting participants was that we needed to know more about how each stakeholder wants to interact with continued development of the ASA Database.
 
 Therefore, I'd like to know:
 
