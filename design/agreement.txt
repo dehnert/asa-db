@@ -1,0 +1,56 @@
+Collaboration Agreement for the ASA Database
+
+DRAFT: Alex Dehnert, ASA UMAL
+
+1. Stakeholders
+
+The ASA Executive Board has principal ownership over the ASA Database.
+
+The following stakeholders for the ASA Database exist:
+* ASA Executive Board
+* Student Activities Office
+* Campus Activities Complex
+* Schedules
+* IS&T: Accounts
+* Government funding boards: UA Finboard, GSC Funding Board
+* LEF/ARCADE (represented by ASA Exec)
+* Student activities (represented by ASA Exec)
+
+We designate the following as core stakeholders, due to having a particularly frequent and extensive needs to work with the database:
+* ASA Exec
+* Student Activities Office
+* Campus Activities Complex
+
+All stakeholders will be invited to semesterly meetings to discuss the state of the database. Each stakeholder shall provide at least one representative or mailing list to be placed on the asa-db-stakeholders@mit.edu mailing list.
+
+The core stakeholders are expected to each provide at least one representative who is willing to actively watch the relevant mailing lists (asa-db-stakeholders@mit.edu and asa-db-core-stakeholders@mit.edu), respond to requests for information, and attend database-related meetings as necessary.
+
+2. Code and Server Access
+
+The ASA database code will be made publicly available. Anyone at MIT (or elsewhere in the world) will be able to read the code and the history of changes to it (though not configuration such as passwords, or group data such as signatories). (Moira, the system MIT uses for handling user accounts, mailing lists, hostnames, etc., similarly has publicly-available source.) The mailing list asa-db-commits@mit.edu will receive commit information and will be public.
+
+Any stakeholder will be able to propose an individual for commit access or server access by contacting core stakeholders. A core stakeholder (generally whichever stakeholder is proposing the individual) must sponsor the request. If no objection is made within one week, they may be given access. If an objection occurs, the core stakeholders should attempt to reach a concensus.
+
+3. Infrastructure
+
+The ASA Database will run on the scripts.mit.edu / sql.mit.edu hosting platform out of a dedicated locker in IS&T's AFS cell. Write access to the locker will generally limited to those with "server access". Write access to the source repository will be provided to those with "commit access".
+
+Nightly backups will be automatically taken and stored into the locker, from which they will be copied to an off-site location automatically by IS&T's regular backup procedures.
+
+4. Development Process
+
+a) Major changes should be discussed first with the stakeholders. Concensus should be achieved that the change is desirable. For particularly large, complex, and potentially objectionable changes, one should solicit opinions for at least a week, via email and possibly an in-person meeting.
+
+b) Develop and test the change.
+
+c) Commit the change and deploy it to a testing server. All committers should have access to a test deployment of the database that is independent of the production deployment and available for viewing by the stakeholders. Changes should be announced to at least the core stakeholders. Commit email with the exact code changes being applied should go to asa-db-commits@mit.edu, for review by developers or technically-inclined stakeholders.
+
+d) Wait at least two business days for post-commit review. For major changes, this should be extended to a week.
+
+e) Move the changes to production. This should be announced to at least the core stakeholders.
+
+When a concensus is reached among the core stakeholders or for simple, time-critical bugfixes, exceptions to this process can be made. In all cases, core stakeholders should be informed of changes.
+
+5. Amendments
+
+This document may be amended through concensus decision of the stakeholders. Minor changes can be made through concensus decision of the core stakeholders only, if desired. Amendments must be discussed for at least a week over email before they can be made.
