@@ -29,7 +29,7 @@ The core stakeholders are expected to each provide at least one representative w
 
 The ASA database code will be made publicly available. Anyone at MIT (or elsewhere in the world) will be able to read the code and the history of changes to it (though not configuration such as passwords, or group data such as signatories). (Moira, the system MIT uses for handling user accounts, mailing lists, hostnames, etc., similarly has publicly-available source.) The mailing list asa-db-commits@mit.edu will receive commit information and will be public.
 
-Any stakeholder will be able to propose an individual for commit access or server access by contacting core stakeholders. A core stakeholder (generally whichever stakeholder is proposing the individual) must sponsor the request. If no objection is made within one week, they may be given access. If an objection occurs, the core stakeholders should attempt to reach a concensus.
+Any stakeholder will be able to propose an individual for commit access or server access by contacting core stakeholders. A core stakeholder (generally whichever stakeholder is proposing the individual) must sponsor the request. If no objection is made within one week, they may be given access. If an objection occurs, the core stakeholders should attempt to reach a consensus.
 
 3. Infrastructure
 
@@ -39,7 +39,7 @@ Nightly backups will be automatically taken and stored into the locker, from whi
 
 4. Development Process
 
-a) Major changes should be discussed first with the stakeholders. Concensus should be achieved that the change is desirable. For particularly large, complex, and potentially objectionable changes, one should solicit opinions for at least a week, via email and possibly an in-person meeting.
+a) Major changes should be discussed first with the stakeholders. Consensus should be achieved that the change is desirable. For particularly large, complex, and potentially objectionable changes, one should solicit opinions for at least a week, via email and possibly an in-person meeting.
 
 b) Develop and test the change.
 
@@ -49,8 +49,8 @@ d) Wait at least two business days for post-commit review. For major changes, th
 
 e) Move the changes to production. This should be announced to at least the core stakeholders.
 
-When a concensus is reached among the core stakeholders or for simple, time-critical bugfixes, exceptions to this process can be made. In all cases, core stakeholders should be informed of changes.
+When a consensus is reached among the core stakeholders or for simple, time-critical bugfixes, exceptions to this process can be made. In all cases, core stakeholders should be informed of changes.
 
 5. Amendments
 
-This document may be amended through concensus decision of the stakeholders. Minor changes can be made through concensus decision of the core stakeholders only, if desired. Amendments must be discussed for at least a week over email before they can be made.
+This document may be amended through consensus decision of the stakeholders. Minor changes can be made through consensus decision of the core stakeholders only, if desired. Amendments must be discussed for at least a week over email before they can be made.
