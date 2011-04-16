@@ -1,6 +1,12 @@
 Based on meeting on 2010-12-02.
 Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
 
+Revised at stakeholder meeting 2011-04-15.
+Attendees:
+    * ASA: Alex Dehnert, Rachel Meyer, Geoffrey Thomas
+    * SAO: Leah Flynn, Kerri Mills
+    * CAC: Phil Walsh, Jennifer Smith
+
 * Categories as a many-to-many relationship is nice
     * Need to think some more about what categories are reasonable
     * Probably want to occassionally go yell at people about having too many
@@ -21,6 +27,13 @@ Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
 * Send mail on updates?
     * Signatory updates to the groups?
     * Treasurer updates to Kerri?
+    * CAC wants:
+        * new/derecognized group emails
+        * (maybe) space assignment changes
+        * NOT signatory changes
+    * SAO wants:
+        * Financial signatory, president, treasurer change emails
+        * New/derecognized group emails
 * Associating notes with groups
     * Groups leaving notes for themselves   (notes by group)
     * ASA Exec leaving notes for groups     (notes to group)
@@ -35,6 +48,7 @@ Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
     * Do this per-space
     * Assign each space a space category (e.g., storage, office, etc.)
         * Shared office / office --- script to run occasionally to auto-update?
+    * Should include ASA and non-ASA space
     * Cap number of people with access from a group by space category
     * Office ACL?
 * Make sure the status options are generally changeable
@@ -43,6 +57,10 @@ Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
         * Dorm/FSILG
         * Standard
         * Sponsored
+        * PSC?
+        * "unrecognized" / "sponsored"
+            * cover things like a capella Exec (which has space), dorms (which have signatories), subgroups (which have accounts and signatories), etc.
+            * Might want a "sponsor" or "affiliation" field
 * Indicate what mode you're in
     * Nice, but not needed
 * What info is available
@@ -53,7 +71,7 @@ Attendees: Alex Dehnert (adehnert) (notes-taker) and Rachel Meyer (remeyer)
         * Last updated date
         * Officer email
         * Locker name
-        * President / treasurer / financial signatories / people who can update record
+        * President / treasurer / financial signatories / people who can update record [[stakeholders were fine with this being MIT-public]]
         * Description
         * Category
         * Constitution
@@ -74,7 +92,9 @@ Things to ask stakeholders about:
     * Do they want update mail?
 * Why does CAC use a printed list?
     * Same as above.
+=> [[ Student worker access. If student workers get direct, read-only access, then they can get rid of the lists. ]]
 * Ask Accounts if they care about the DB
+=> [[ Yes, but not very much. ]]
 
 Stakeholders:
 * SAO

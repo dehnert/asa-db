@@ -2,7 +2,11 @@ Collaboration Agreement for the ASA Database
 
 DRAFT: Alex Dehnert, ASA UMAL
 
-1. Stakeholders
+1. Purpose
+
+The ASA Database serves as a central source for information about ASA-recognized student groups, and is thus used by groups and offices around MIT for getting information about name, website, constitution, authorizations (administrative, financial, and reservation), membership, etc.. In some cases, the database may also store information about non-recognized groups, when it provides significant value to the various users of the database.
+
+2. Stakeholders
 
 The ASA Executive Board has principal ownership over the ASA Database.
 
@@ -16,7 +20,9 @@ The following stakeholders for the ASA Database exist:
 * LEF/ARCADE (represented by ASA Exec)
 * Student activities (represented by ASA Exec)
 
-We designate the following as core stakeholders, due to having a particularly frequent and extensive needs to work with the database:
+The DSL central administration also provides some support around the database.
+
+We designate the following as core stakeholders, due to having particularly frequent and extensive needs to work with the database:
 * ASA Exec
 * Student Activities Office
 * Campus Activities Complex
@@ -25,19 +31,19 @@ All stakeholders will be invited to semesterly meetings to discuss the state of 
 
 The core stakeholders are expected to each provide at least one representative who is willing to actively watch the relevant mailing lists (asa-db-stakeholders@mit.edu and asa-db-core-stakeholders@mit.edu), respond to requests for information, and attend database-related meetings as necessary.
 
-2. Code and Server Access
+3. Code and Server Access
 
 The ASA database code will be made publicly available. Anyone at MIT (or elsewhere in the world) will be able to read the code and the history of changes to it (though not configuration such as passwords, or group data such as signatories). (Moira, the system MIT uses for handling user accounts, mailing lists, hostnames, etc., similarly has publicly-available source.) The mailing list asa-db-commits@mit.edu will receive commit information and will be public.
 
 Any stakeholder will be able to propose an individual for commit access or server access by contacting core stakeholders. A core stakeholder (generally whichever stakeholder is proposing the individual) must sponsor the request. If no objection is made within one week, they may be given access. If an objection occurs, the core stakeholders should attempt to reach a consensus.
 
-3. Infrastructure
+4. Infrastructure
 
 The ASA Database will run on the scripts.mit.edu / sql.mit.edu hosting platform out of a dedicated locker in IS&T's AFS cell. Write access to the locker will generally limited to those with "server access". Write access to the source repository will be provided to those with "commit access".
 
 Nightly backups will be automatically taken and stored into the locker, from which they will be copied to an off-site location automatically by IS&T's regular backup procedures.
 
-4. Development Process
+5. Development Process
 
 a) Major changes should be discussed first with the stakeholders. Consensus should be achieved that the change is desirable. For particularly large, complex, and potentially objectionable changes, one should solicit opinions for at least a week, via email and possibly an in-person meeting.
 
@@ -51,6 +57,6 @@ e) Move the changes to production. This should be announced to at least the core
 
 When a consensus is reached among the core stakeholders or for simple, time-critical bugfixes, exceptions to this process can be made. In all cases, core stakeholders should be informed of changes.
 
-5. Amendments
+6. Amendments
 
 This document may be amended through consensus decision of the stakeholders. Minor changes can be made through consensus decision of the core stakeholders only, if desired. Amendments must be discussed for at least a week over email before they can be made.
