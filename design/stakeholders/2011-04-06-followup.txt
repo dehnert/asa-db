@@ -1,0 +1,12 @@
+Thanks everyone for your responses to my previous email. It sounds like most groups either don't expect to need changes on an ongoing basis, or expect changes to be mostly driven internally.
+
+We should meet again to discuss how we can go forward with replacing the current database. If you'd like to attend, please fill out http://www.scheduleonce.com/MP.aspx?param=VT0xMDA5NTcuTT00MzU2Ny5UPTEqual.
+
+I've prepared a document (attached) that outlines a possible method for collaboration. It's designed to provide a framework for both ASA Exec and others (including IS&T or other contractors) to do work on the database, which hopefully can allay some of your concerns. The document is modeled loosely off of the Debathena collaboration agreement, which is the basis for the IS&T/SIPB collaboration on current Athena.
+
+The document includes a division between "core" and other stakeholders. This is based on how likely I expect your organizations to think that attending meetings, participating on the mailing list, etc. to be worthwhile (in fact, the "core" stakeholders are the same groups from our last meeting, I think). If you want me to add your organization to the list of core stakeholders (or remove it), please let me know.
+
+I'm happy to receive comments by email (especially if your group doesn't wish to attend the meeting), but I expect a lot of the meeting to be discussing it in person. Hopefully this can provide a good starting point for the discussion.
+
+Thanks,
+Alex
