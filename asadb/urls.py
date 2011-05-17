@@ -57,6 +57,7 @@ urlpatterns = patterns('',
 )
 
 if settings.DEBUG:
+    print "In debug mode; enabling static media serving"
     from django.views.static import serve
     _media_url = settings.MEDIA_URL
     if _media_url.startswith('/'):
