@@ -42,5 +42,9 @@ Ideally, we'd use some third-party system to do this, instead of implementing it
     * Decent-looking documentation
     * Design
         * Store all versions of all models in a single table, pickled
+        * Metadata stored unpickled
+            * Time
+            * Editor
+            * Comment
     * Performance
-        * Slightly concerned that the "here are the changes that have been made" view might be too slow
+        * Slightly concerned that the "here are the changes that have been made" view might be too slow; as long as we limit to editor and time this should be fine
