@@ -1,0 +1,25 @@
+One feature that we want the new database to include is storing at least an audit trail of changes, so that we can tell who changed a group's entry (or added a signatory) and when. Ideally, we'd want to store complete old versions.
+
+Ideally, we'd use some third-party system to do this, instead of implementing it ourselves. Some projects that try to provide this functionality:
+* django-revisions (sometimes known as django-versions)
+    * http://stdbrouw.github.com/django-revisions/
+    * Activity and sustainability
+        * First commit August 2010
+        * Last commit March 2011
+    * Somewhat limited documentation
+    * Design
+        * Store every version in one table
+        * Provide accessors for getting the most recent version
+    * Appears not to support linking to a "bundle" (an object, not a version) --- see https://github.com/stdbrouw/django-revisions/issues/5
+    * Performance may be an issue --- https://github.com/stdbrouw/django-revisions/issues/9
+        * "Single table" model seems dubious
+    * It's not immediately clear to me how to make the admin also save the old version
+* AuditTrail
+    * http://code.djangoproject.com/wiki/AuditTrail
+    * Activity and sustainability
+        * First "commit" August 2007
+        * Last "commit" August 2010
+        * Never had anything resembling a website or a source code repo, AFAICT
+    * Very limited documentation --- just the one page on Django's wiki
+    * Design
+        * Store versions in a second table
