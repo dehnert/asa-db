@@ -8,7 +8,7 @@ Ideally, we'd use some third-party system to do this, instead of implementing it
         * Last commit March 2011
     * Somewhat limited documentation
     * Design
-        * Store every version in one table
+        * Store every version in the table with the model
         * Provide accessors for getting the most recent version
     * Appears not to support linking to a "bundle" (an object, not a version) --- see https://github.com/stdbrouw/django-revisions/issues/5
     * Performance may be an issue --- https://github.com/stdbrouw/django-revisions/issues/9
@@ -23,3 +23,15 @@ Ideally, we'd use some third-party system to do this, instead of implementing it
     * Very limited documentation --- just the one page on Django's wiki
     * Design
         * Store versions in a second table
+* django-fullhistory
+    * Listed under "Models, database, history, trails" on http://code.djangoproject.com/wiki/DjangoResources
+* django-reversion
+    * https://github.com/etianen/django-reversion
+    * Activity and sustainability
+        * First commit September 2008
+        * Last commit April 2011
+    * Decent-looking documentation
+    * Design
+        * Store all versions of all models in a single table, pickled
+    * Performance
+        * Slightly concerned that the "here are the changes that have been made" view might be too slow
