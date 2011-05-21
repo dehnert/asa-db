@@ -6,11 +6,11 @@
 {% if fieldset.legend %}
 <legend>{{ fieldset.legend }}</legend>
 {% endif %}
-<ul>
+<table class='pretty-table'>
 {% with fieldset as fields %}
-{% include "form_utils/fields_as_lis.html" %}
+{% include "form_utils/fields_as_trs.html" %}
 {% endwith %}
-</ul>
+</table>
 </fieldset>
 {% endfor %}
 {% endblock %}
