@@ -99,6 +99,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'form_utils',
     'reversion',
     'south',
     'groups',
