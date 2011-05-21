@@ -1,7 +1,8 @@
 import groups.models
 from django.contrib import admin
+from reversion.admin import VersionAdmin
 
-class GroupAdmin(admin.ModelAdmin):
+class GroupAdmin(VersionAdmin):
     list_display = (
         'id',
         'name',

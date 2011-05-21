@@ -71,6 +71,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -98,6 +99,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'reversion',
     'south',
     'groups',
     'forms',
