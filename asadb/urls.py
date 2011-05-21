@@ -9,8 +9,9 @@ admin.autodiscover()
 import settings
 
 import forms.views
-
 import groups.models
+import groups.views
+
 
 urlpatterns = patterns('',
     # Example:
@@ -33,6 +34,9 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/view/(\d+)/$', forms.views.fysm_view, name='fysm-view', ),
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
+
+    # Group editing
+    url(r'^group/(\d+)/edit/main', groups.views.manage_main, name='group-manage-main', ),
 
     # Group list
     url(
