@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load form_utils_tags %}
+
+{% block title %}{{group.name}}: Change main information {% endblock %}
+{% block content %}
+
+<h1>{{group.name}}: Change main information</h1>
+
+{% if msg %}
+<p>{{msg}}</p>
+{% endif %}
+
+<form enctype="multipart/form-data" method="post" action="">
+{{ form|render }}
+<input type='submit' value='Update' />
+</form>
+
+{% endblock %}
