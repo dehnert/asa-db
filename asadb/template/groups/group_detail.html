@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{group.name}}{% endblock %}
+{% block content %}
+
+<h1>{{group.name}}{% if group.abbreviation %}({{group.abbreviation}}){%endif%}</h1>
+
+<table class='pretty-table'>
+<tr><th colspan='2'>Basic Information</th></tr>
+<tr><th>Name</th><td>{{group.name}}</td></tr>
+<tr>
+    <th>Abbreviation</th>
+    <td>{%if group.abbreviation%}{{group.abbreviation}}{%else%}<i>none</i>{%endif%}</td>
+</tr>
+<tr><th>Type</th><td>{{group.activity_category}}</td></tr>
+<tr><th>Description</th><td>{{group.description}}</td></tr>
+
+<tr><th colspan='2'>Contact Information</th></tr>
+<tr><th>Website</th><td><a href="{{group.website_url}}">{{group.website_url}}</a></td></tr>
+<tr><th>Meeting times</th><td>{{group.meeting_times}}</td></tr>
+<tr><th>Officer email</th><td>{{group.officer_email}}</td></tr>
+{% if viewpriv %}<tr class='private-info'>
+    <th>Group email</th>
+    <td>{{group.group_email}}</td>
+</tr>{% endif %}
+
+<tr><th colspan='2'>Additional Information</th></tr>
+<tr>
+    <th>Constitution</th>
+    <td>{% if group.constitution_url %}{{group.constitution_url}}{%else%}<i>not provided</i>{%endif%}</td>
+</tr>
+<tr>
+    <th>Advisor</th>
+    <td>{{group.advisor_name}}</td>
+</tr>
+<tr><th>Athena locker</th><td>{{group.athena_locker}}</td></tr>
+<tr><th>Recognition date</th><td>{{group.recognition_date}}</td></tr>
+<tr><th>Last updated</th><td>{{group.update_date}} by {{group.updater}}</td></tr>
+
+<tr><th colspan='2'>Financial Information</th></tr>
+<tr><th>Main Account</th><td>{{group.main_account_id}}</td></tr>
+<tr><th>Funding Account</th><td>{{group.funding_account_id}}</td></tr>
+
+{% if viewpriv %}
+<tr class='private-info'><th colspan='2'>Information that is not available to the general MIT community.</th></tr>
+{% endif %}
+
+</table>
+
+<table class='pretty-table'>
+<caption>Group Size</caption>
+<tr>
+    <th>Undergraduates</th>
+    <th>Graduate Students</th>
+    <th>MIT Community</th>
+    <th>Other</th>
+</tr>
+<tr>
+    <td>{{group.num_undergrads}}</td>
+    <td>{{group.num_grads}}</td>
+    <td>{{group.num_community}}</td>
+    <td>{{group.num_other}}</td>
+</tr>
+</table>
+
+{% endblock %}
+

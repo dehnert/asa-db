@@ -6,14 +6,20 @@ tr.sect-head td, tr.sect-head th
 table.pretty-table
 {
     border-collapse: collapse;
+    margin: 0.5em;
 }
-table.pretty-table th, table.pretty-table td
+table.pretty-table th, table.pretty-table td, table.pretty-table caption
 {
     border: 1px solid black;
     padding: 2px;
 }
-table.pretty-table th
+table.pretty-table caption
 {
+    border-bottom: none;
+}
+table.pretty-table th, table.pretty-table caption
+{
+    font-weight: bold;
     background: #BE2933;
 }
 ul.errorlist
@@ -198,6 +204,15 @@ span.username
     max-width: 600px;
     max-height: 600px;
     display: block;
+}
+
+
+/*****************
+ * GROUP DISPLAY *
+ *****************/
+tr.private-info th:before
+{
+    content: "* ";
 }
 
 

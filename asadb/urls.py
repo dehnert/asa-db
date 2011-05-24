@@ -49,6 +49,7 @@ urlpatterns = patterns('',
         },
         name='group-list',
     ),
+    url(r'^group/(?P<pk>\d+)/', groups.views.GroupDetailView.as_view(), ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

@@ -4,7 +4,7 @@ import groups.models
 
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.core.exceptions import PermissionDenied
-from django.views.generic import list_detail
+from django.views.generic import DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
@@ -89,3 +89,15 @@ def manage_main(request, group_id, ):
         'msg':   msg,
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
+
+class GroupDetailView(DetailView):
+    context_object_name = "group"
+    model = groups.models.Group
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(GroupDetailView, self).get_context_data(**kwargs)
+        group = context['group']
+
+        # Indicate whether this person should be able to see "private" info
+        context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
+        return context
