@@ -32,7 +32,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             }),
             ('contact', {
                 'legend': 'Contact Information',
-                'fields': ['website_url', 'meeting_times', 'group_email', 'officer_email', 'athena_locker', ],
+                'fields': ['website_url', 'meeting_times', 'group_email', 'officer_email', ],
             }),
             ('more-info', {
                 'legend': 'Additional Information',
