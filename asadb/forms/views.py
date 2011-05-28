@@ -119,8 +119,8 @@ def fysm_link(request, year, link_type, submission, ):
     return HttpResponseRedirect(url)
 
 def select_group_fysm(request, ):
-    qobj = Q(activity_category__name='Dorm') | Q(activity_category__name='FSILG')
-    queryset = groups.models.Group.objects.filter(~qobj)
+    qobj = Q(activity_category__isnull = True) | ~(Q(activity_category__name='Dorm') | Q(activity_category__name='FSILG'))
+    queryset = groups.models.Group.objects.filter(qobj)
     return select_group(
         request,
         url_name_after='fysm-manage',
