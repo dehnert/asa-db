@@ -117,6 +117,9 @@ class GroupHistoryView(ListView):
             history_entries = reversion.models.Version.objects.all()
             group_content_type = ContentType.objects.get_for_model(groups.models.Group)
             history_entries = history_entries.filter(content_type=group_content_type)
+        length = len(history_entries)
+        if length > 150:
+            history_entries = history_entries[length-100:]
         return history_entries
 
     def get_context_data(self, **kwargs):
