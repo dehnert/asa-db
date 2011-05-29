@@ -3,8 +3,9 @@
 import groups.models
 
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
-from django.views.generic import DetailView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
@@ -18,6 +19,7 @@ from django.forms import ModelChoiceField
 from django.db.models import Q
 
 import form_utils.forms
+import reversion.models
 
 class GroupChangeMainForm(form_utils.forms.BetterModelForm):
     class Meta:
@@ -100,4 +102,28 @@ class GroupDetailView(DetailView):
 
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
+        return context
+
+class GroupHistoryView(ListView):
+    context_object_name = "version_list"
+    template_name = "groups/group_version.html"
+
+    def get_queryset(self):
+        history_entries = None
+        if 'group' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['group'])
+            history_entries = reversion.models.Version.objects.get_for_object(group)
+        else:
+            history_entries = reversion.models.Version.objects.all()
+            group_content_type = ContentType.objects.get_for_model(groups.models.Group)
+            history_entries = history_entries.filter(content_type=group_content_type)
+        return history_entries
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupHistoryView, self).get_context_data(**kwargs)
+        if 'group' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['group'])
+            context['title'] = "History for %s" % (group.name, )
+        else:
+            context['title'] = "Recent Changes"
         return context
