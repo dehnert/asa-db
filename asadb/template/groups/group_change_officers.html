@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load form_utils_tags %}
+
+{% block title %}{{group.name}}: Change people{% endblock %}
+{% block content %}
+
+<h1>{{group.name}}: Change people</h1>
+
+{% if msgs %}
+<ul>
+{% for msg in msgs %}
+<li>{{msg}}</li>
+{%endfor %}
+</ul>
+{%endif%}
+
+{% if changes %}
+<table class='pretty-table'>
+<tr>
+    <th>Action</th>
+    <th>Person</th>
+    <th>Role</th>
+</tr>
+{% for verb, color, person, role in changes %}
+    <tr><td style='background-color: {{color}}; color: black'>{{verb}}</td><td>{{person}}</td><td>{{role.display_name}}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{%if edited %}
+<p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
+{% endif %}
+
+<form enctype="multipart/form-data" method="post" action="">
+<table class='pretty-table group-change-officers-change'>
+<thead>
+<tr>
+    <th></th>
+    {% for role in roles %}
+    <th>{{role.display_name}}</th>
+    {% endfor %}
+</tr>
+</thead>
+<tbody>
+{%for specify_name, person, role_list in officers %}
+<tr>
+    <th>
+        {% if specify_name %}
+        <input type='text' name='{{person}}' value=''>
+        {% else %}
+        {{person}}
+        {% endif %}
+    </th>
+    {%for role,val in role_list%}
+    <td><input type='checkbox' name='holders.{{role.slug}}' value='{{person}}' {%if val%}checked='checked'{%endif%}></td>
+    {%endfor%}
+</tr>
+{%endfor%}
+</tbody>
+</table>
+
+<input type='submit' value='Update' />
+</form>
+
+<ul>
+    <li><a href='{% url group-manage-main group.pk %}'>View main update page</a></li>
+    <li><a href='{% url group-manage-officers group.pk %}'>Reload this page</a></li>
+</ul>
+
+{% endblock %}

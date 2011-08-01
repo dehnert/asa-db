@@ -70,11 +70,17 @@ class OfficerRole(models.Model):
 
 
 class OfficeHolder(models.Model):
+    EXPIRE_OFFSET = datetime.timedelta(seconds=1)
+
     person = models.CharField(max_length=30)
     role = models.ForeignKey('OfficerRole')
     group = models.ForeignKey('Group')
     start_time = models.DateTimeField(default=datetime.datetime.now)
     end_time = models.DateTimeField(default=datetime.datetime.max)
+
+    def expire(self, ):
+        self.end_time = datetime.datetime.now()-self.EXPIRE_OFFSET
+        self.save()
 
     def __str__(self, ):
         return "<OfficeHolder: person=%s, role=%s, group=%s, start_time=%s, end_time=%s>" % (

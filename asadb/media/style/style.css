@@ -226,3 +226,8 @@ ul
     padding-left: 1em;
     margin-left: 0;
 }
+
+table.group-change-officers-change td
+{
+    text-align: center;
+}

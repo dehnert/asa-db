@@ -130,3 +130,103 @@ class GroupHistoryView(ListView):
         else:
             context['title'] = "Recent Changes"
         return context
+
+
+def load_officers(group, ):
+    officers = group.officers()
+    people = list(set([ officer.person for officer in officers ]))
+    roles  = groups.models.OfficerRole.objects.all()
+
+    officers_map = {}
+    for officer in officers:
+        officers_map[(officer.person, officer.role)] = officer
+
+    return people, roles, officers_map
+
+def manage_officers(request, group_id, ):
+    group = get_object_or_404(groups.models.Group, pk=group_id)
+
+    if not request.user.has_perm('groups.change_group', group):
+        raise PermissionDenied
+
+    max_new = 4
+
+    people, roles, officers_map = load_officers(group)
+
+    msgs = []
+    changes = []
+    edited = False
+    kept = 0
+    kept_not = 0
+    if request.method == 'POST': # If the form has been submitted
+        edited = True
+
+        new_people = {}
+        for i in range(max_new):
+            key = "extra.%d" % (i, )
+            if key in request.POST:
+                # TODO: validate as real usernames
+                new_people[i] = request.POST[key]
+        for role in roles:
+            key = "holders.%s" % (role.slug, )
+            new_holders = set()
+            if key in request.POST:
+                new_holders = set(request.POST.getlist(key, ))
+            if len(new_holders) > role.max_count:
+                msgs.append("You selected %d people for %s; only %d are allowed. No changes to %s have been carried out in this update." %
+                    (len(new_holders), role.display_name, role.max_count, role.display_name, )
+                )
+            else:
+                for person in people:
+                    if person in new_holders:
+                        # TODO: validate student status of appropriate officers
+                        if (person, role) in officers_map:
+                            #changes.append(("Kept", "yellow", person, role))
+                            kept += 1
+                        else:
+                            holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
+                            holder.save()
+                            changes.append(("Added", "green", person, role))
+                    else:
+                        if (person, role) in officers_map:
+                            officers_map[(person, role)].expire()
+                            changes.append(("Removed", "red", person, role))
+                        else:
+                            kept_not += 1
+                            pass
+                for i in range(max_new):
+                    if "extra.%d" % (i, ) in new_holders:
+                        if i in new_people:
+                            person = new_people[i]
+                            holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
+                            holder.save()
+                            changes.append(("Added", "green", person, role))
+
+        # reload the data
+        people, roles, officers_map = load_officers(group)
+
+    officers_data = []
+    for person in people:
+        role_list = []
+        for role in roles:
+            if (person, role) in officers_map:
+                role_list.append((role, True))
+            else:
+                role_list.append((role, False))
+        officers_data.append((False, person, role_list))
+    null_role_list = [(role, False) for role in roles]
+    for i in range(max_new):
+        officers_data.append((True, "extra.%d" % (i, ), null_role_list))
+
+    context = {
+        'group': group,
+        'roles': roles,
+        'people': people,
+        'officers': officers_data,
+        'edited': edited,
+        'changes':   changes,
+        'kept': kept,
+        'kept_not': kept_not,
+        'msgs': msgs,
+    }
+    return render_to_response('groups/group_change_officers.html', context, context_instance=RequestContext(request), )

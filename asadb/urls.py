@@ -37,6 +37,7 @@ urlpatterns = patterns('',
 
     # Group editing
     url(r'^group/(\d+)/edit/main$', groups.views.manage_main, name='group-manage-main', ),
+    url(r'^group/(\d+)/edit/officers$', groups.views.manage_officers, name='group-manage-officers', ),
 
     # Group list
     url(
