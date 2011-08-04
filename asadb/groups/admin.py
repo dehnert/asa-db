@@ -58,7 +58,24 @@ class ActivityCategoryAdmin(admin.ModelAdmin):
     )
     list_display_links = ('id', 'name', )
 
+class Admin_AthenaMoiraPerson(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'username',
+        'mit_id',
+        'first_name',
+        'last_name',
+        'account_class',
+        'mutable',
+        'add_date',
+        'del_date',
+        'mod_date',
+    )
+    list_display_links = ( 'id', 'username', )
+    search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
+
 admin.site.register(groups.models.Group, GroupAdmin)
 admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
 admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
+admin.site.register(groups.models.AthenaMoiraPerson, Admin_AthenaMoiraPerson)

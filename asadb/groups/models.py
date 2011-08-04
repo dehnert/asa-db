@@ -98,3 +98,30 @@ class ActivityCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "activity categories"
+
+
+class AthenaMoiraPerson(models.Model):
+    username = models.CharField(max_length=8)
+    mit_id = models.CharField(max_length=15)
+    first_name      = models.CharField(max_length=45)
+    last_name       = models.CharField(max_length=45)
+    account_class   = models.CharField(max_length=10)
+    mutable         = models.BooleanField(default=True)
+    add_date        = models.DateField(help_text="Date when this person was added to the dump.", )
+    del_date        = models.DateField(help_text="Date when this person was removed from the dump.", blank=True, null=True, )
+    mod_date        = models.DateField(help_text="Date when this person's record was last changed.", blank=True, null=True, )
+    def __str__(self, ):
+        if self.mutable:
+            mutable_str = ""
+        else:
+            mutable_str = " (immutable)"
+        return "<AthenaMoiraPerson: username=%s name='%s, %s' account_class=%s%s>" % (
+            self.username, self.last_name, self.first_name,
+            self.account_class, mutable_str,
+        )
+
+    def __repr__(self, ):
+        return str(self)
+
+    class Meta:
+        verbose_name_plural = "Athena Moira people"
