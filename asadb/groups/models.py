@@ -100,7 +100,7 @@ class ActivityCategory(models.Model):
         verbose_name_plural = "activity categories"
 
 
-class AthenaMoiraPerson(models.Model):
+class AthenaMoiraAccount(models.Model):
     username = models.CharField(max_length=8)
     mit_id = models.CharField(max_length=15)
     first_name      = models.CharField(max_length=45)
@@ -115,7 +115,7 @@ class AthenaMoiraPerson(models.Model):
             mutable_str = ""
         else:
             mutable_str = " (immutable)"
-        return "<AthenaMoiraPerson: username=%s name='%s, %s' account_class=%s%s>" % (
+        return "<AthenaMoiraAccount: username=%s name='%s, %s' account_class=%s%s>" % (
             self.username, self.last_name, self.first_name,
             self.account_class, mutable_str,
         )

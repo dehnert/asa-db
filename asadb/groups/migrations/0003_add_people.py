@@ -8,8 +8,8 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'AthenaMoiraPerson'
-        db.create_table('groups_athenamoiraperson', (
+        # Adding model 'AthenaMoiraAccount'
+        db.create_table('groups_athenamoiraaccount', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('username', self.gf('django.db.models.fields.CharField')(max_length=8)),
             ('mit_id', self.gf('django.db.models.fields.CharField')(max_length=15)),
@@ -21,13 +21,13 @@ class Migration(SchemaMigration):
             ('del_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
             ('mod_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
         ))
-        db.send_create_signal('groups', ['AthenaMoiraPerson'])
+        db.send_create_signal('groups', ['AthenaMoiraAccount'])
 
 
     def backwards(self, orm):
         
-        # Deleting model 'AthenaMoiraPerson'
-        db.delete_table('groups_athenamoiraperson')
+        # Deleting model 'AthenaMoiraAccount'
+        db.delete_table('groups_athenamoiraaccount')
 
 
     models = {
@@ -36,8 +36,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        'groups.athenamoiraperson': {
-            'Meta': {'object_name': 'AthenaMoiraPerson'},
+        'groups.athenamoiraaccount': {
+            'Meta': {'object_name': 'AthenaMoiraAccount'},
             'account_class': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'add_date': ('django.db.models.fields.DateField', [], {}),
             'del_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),

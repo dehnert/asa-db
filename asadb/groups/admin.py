@@ -58,7 +58,7 @@ class ActivityCategoryAdmin(admin.ModelAdmin):
     )
     list_display_links = ('id', 'name', )
 
-class Admin_AthenaMoiraPerson(admin.ModelAdmin):
+class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     list_display = (
         'id',
         'username',
@@ -78,4 +78,4 @@ admin.site.register(groups.models.Group, GroupAdmin)
 admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
 admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
-admin.site.register(groups.models.AthenaMoiraPerson, Admin_AthenaMoiraPerson)
+admin.site.register(groups.models.AthenaMoiraAccount, Admin_AthenaMoiraAccount)

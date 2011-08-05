@@ -39,7 +39,7 @@ def load_dcm(dcm_stream):
 
 @transaction.commit_manually
 def load_people(dcm_people):
-    django_people = groups.models.AthenaMoiraPerson.objects.all()
+    django_people = groups.models.AthenaMoiraAccount.objects.all()
     stat_loops = 0
     stat_django_people = len(django_people)
     stat_dcm_people = len(dcm_people)
@@ -95,7 +95,7 @@ def load_people(dcm_people):
         if stat_loops % 100 == 0:
             transaction.commit()
             pass
-        django_person = groups.models.AthenaMoiraPerson()
+        django_person = groups.models.AthenaMoiraAccount()
         for key in fields:
             django_person.__dict__[key] = dcm_person[key]
         django_person.add_date = datetime.date.today()
