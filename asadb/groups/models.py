@@ -124,4 +124,4 @@ class AthenaMoiraAccount(models.Model):
         return str(self)
 
     class Meta:
-        verbose_name_plural = "Athena Moira people"
+        verbose_name = "Athena (Moira) account"
