@@ -60,6 +60,7 @@ class OfficerRole(models.Model):
     slug = models.SlugField()
     description = models.TextField()
     max_count = models.IntegerField(default=UNLIMITED, help_text='Maximum number of holders of this role. Use %d for no limit.' % UNLIMITED)
+    require_student = models.BooleanField(default=False)
 
     def __str__(self, ):
         return self.display_name
@@ -100,6 +101,10 @@ class ActivityCategory(models.Model):
         verbose_name_plural = "activity categories"
 
 
+class AthenaMoiraAccount_ActiveManager(models.Manager):
+    def get_query_set(self, ):
+        return super(AthenaMoiraAccount_ActiveManager, self).get_query_set().filter(del_date=None)
+
 class AthenaMoiraAccount(models.Model):
     username = models.CharField(max_length=8)
     mit_id = models.CharField(max_length=15)
@@ -110,6 +115,14 @@ class AthenaMoiraAccount(models.Model):
     add_date        = models.DateField(help_text="Date when this person was added to the dump.", )
     del_date        = models.DateField(help_text="Date when this person was removed from the dump.", blank=True, null=True, )
     mod_date        = models.DateField(help_text="Date when this person's record was last changed.", blank=True, null=True, )
+
+    objects = models.Manager()
+    active_accounts = AthenaMoiraAccount_ActiveManager()
+
+    def is_student(self, ):
+        # XXX: Is this... right?
+        return self.account_class == 'G' or self.account_class.isdigit()
+
     def __str__(self, ):
         if self.mutable:
             mutable_str = ""

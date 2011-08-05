@@ -24,6 +24,7 @@ class OfficerRoleAdmin(VersionAdmin):
         'display_name',
         'slug',
         'max_count',
+        'require_student',
     )
     list_display_links = ('id', 'display_name', 'slug', )
     prepopulated_fields = {"slug": ("display_name",)}
