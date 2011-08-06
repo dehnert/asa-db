@@ -15,6 +15,8 @@ class GroupAdmin(admin.ModelAdmin):
         'updater',
     )
     list_display_links = ('id', 'name', )
+    list_filter = [ 'activity_category', ]
+    date_hierarchy = 'update_date'
     search_fields = [ 'id', 'name', 'abbreviation', 'officer_email', 'athena_locker', ]
 
 class ActivityCategoryAdmin(admin.ModelAdmin):
