@@ -9,6 +9,7 @@
 <p>You are submitting a FYSM entry for {{group}}. You can see <a href='{% url fysm %}'>other group's entries</a> for ideas on what your entry should look like.</p>
 
 <form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
 <table class='pretty-table'>
 {{ form.as_table }}
 <tr><th colspan='2'><input type='submit' value='Submit FYSM entry' /></th></tr>
