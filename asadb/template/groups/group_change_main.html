@@ -11,6 +11,7 @@
 {% endif %}
 
 <form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
 {{ form|render }}
 <input type='submit' value='Update' />
 </form>
