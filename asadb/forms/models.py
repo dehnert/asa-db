@@ -30,6 +30,9 @@ class FYSM(models.Model):
             )
         super(FYSM, self).save(*args, **kwargs) # Call the "real" save() method.
 
+    def __str__(self, ):
+        return "%s (%d)" % (self.display_name, self.year, )
+
     class Meta:
         verbose_name = "FYSM submission"
 

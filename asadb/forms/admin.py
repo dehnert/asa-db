@@ -10,6 +10,8 @@ class FYSMAdmin(admin.ModelAdmin):
         'contact_email',
     )
     list_display_links = ('group', 'display_name', 'year', )
+    list_filter = ('year', 'categories', )
+    search_fields = ('group__name', 'group__abbreviation', 'display_name', 'year', )
 
 class FYSMCategoryAdmin(admin.ModelAdmin):
     list_display = (

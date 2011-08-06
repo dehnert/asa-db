@@ -16,6 +16,8 @@ class GroupAdmin(VersionAdmin):
         'updater',
     )
     list_display_links = ('id', 'name', )
+    list_filter = [ 'activity_category', ]
+    date_hierarchy = 'update_date'
     search_fields = [ 'id', 'name', 'abbreviation', 'officer_email', 'athena_locker', ]
 
 class OfficerRoleAdmin(VersionAdmin):
