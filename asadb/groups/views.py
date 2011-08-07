@@ -46,7 +46,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
 def manage_main(request, group_id, ):
     group = get_object_or_404(groups.models.Group, pk=group_id)
 
-    if not request.user.has_perm('groups.change_group', group):
+    if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
 
     msg = None
@@ -146,7 +146,7 @@ def load_officers(group, ):
 def manage_officers(request, group_id, ):
     group = get_object_or_404(groups.models.Group, pk=group_id)
 
-    if not request.user.has_perm('groups.change_group', group):
+    if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
 
     max_new = 4

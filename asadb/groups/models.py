@@ -52,6 +52,13 @@ class Group(models.Model):
 
     class Meta:
         ordering = ('name', )
+        permissions = (
+            ('view_group_private_info', 'View private group information'),
+            # ability to update normal group info or people
+            # this is weaker than change_group, which is the built-in
+            # permission that controls the admin interface
+            ('admin_group', 'Administer basic group information'),
+        )
 
 
 class OfficerRole(models.Model):
