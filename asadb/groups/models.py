@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 import datetime
 
@@ -61,9 +62,16 @@ class OfficerRole(models.Model):
     description = models.TextField()
     max_count = models.IntegerField(default=UNLIMITED, help_text='Maximum number of holders of this role. Use %d for no limit.' % UNLIMITED)
     require_student = models.BooleanField(default=False)
+    grant_user = models.ForeignKey(User, null=True, )
 
     def __str__(self, ):
         return self.display_name
+
+    @classmethod
+    def getGrantUsers(cls, roles):
+        ret = set([role.grant_user for role in roles])
+        if None in ret: ret.remove(None)
+        return ret
 
     @classmethod
     def retrieve(cls, slug, ):
@@ -89,6 +97,42 @@ class OfficeHolder(models.Model):
 
     def __repr__(self, ):
         return str(self)
+
+
+class PerGroupAuthz:
+    supports_anonymous_user = True
+    supports_inactive_user = True
+    supports_object_permissions = True
+
+    def authenticate(self, username=None, password=None, ):
+        return None # we don't do authn
+    def get_user(user_id, ):
+        return None # we don't do authn
+
+    def has_perm(self, user_obj, perm, obj=None, ):
+        print "Checking user %s for perm %s on obj %s" % (user_obj, perm, obj)
+        if not user_obj.is_active:
+            return False
+        if not user_obj.is_authenticated():
+            return False
+        if obj is None:
+            return False
+        # Great, we're active, authenticated, and not in a recursive call
+        # Check that we've got a reasonable object
+        if getattr(user_obj, 'is_system', False):
+            return False
+        if isinstance(obj, Group):
+            # Now we can do the real work
+            holders = obj.officers(person=user_obj.username).select_related('role__grant_user')
+            sys_users = OfficerRole.getGrantUsers([holder.role for holder in holders])
+            for sys_user in sys_users:
+                sys_user.is_system = True
+                if sys_user.has_perm(perm):
+                    print "While checking user %s for perm %s on obj %s: implicit user %s has perms" % (user_obj, perm, obj, sys_user, )
+                    return True
+        print "While checking user %s for perm %s on obj %s: no perms found (implicit: %s)" % (user_obj, perm, obj, sys_users)
+        return False
+
 
 
 class ActivityCategory(models.Model):

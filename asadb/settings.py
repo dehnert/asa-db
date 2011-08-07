@@ -76,6 +76,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'groups.models.PerGroupAuthz',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
