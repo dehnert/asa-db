@@ -21,7 +21,7 @@ from django.db.models import Q
 import form_utils.forms
 import reversion.models
 
-from util.forms import StaticWidget
+from util.db_form_utils import StaticWidget
 
 class GroupChangeMainForm(form_utils.forms.BetterModelForm):
     def __init__(self, *args, **kwargs):
