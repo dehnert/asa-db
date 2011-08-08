@@ -9,6 +9,9 @@ class Group(models.Model):
     abbreviation = models.CharField(max_length=10, blank=True)
     description = models.TextField()
     activity_category = models.ForeignKey('ActivityCategory', null=True, blank=True, )
+    group_class = models.ForeignKey('GroupClass')
+    group_status = models.ForeignKey('GroupStatus')
+    group_funding = models.ForeignKey('GroupFunding', null=True, blank=True, )
     website_url = models.URLField()
     constitution_url = models.CharField(max_length=200, blank=True)
     meeting_times = models.TextField(blank=True)
@@ -150,6 +153,48 @@ class ActivityCategory(models.Model):
 
     class Meta:
         verbose_name_plural = "activity categories"
+
+
+class GroupClass(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(unique=True, )
+    description = models.TextField()
+    gets_publicity = models.BooleanField(help_text="Gets publicity resources such as FYSM or Activities Midway")
+
+    def __str__(self, ):
+        publicity = "no publicity"
+        if self.gets_publicity:
+            publicity = "gets publicity"
+        return "%s (%s)" % (self.name, publicity, )
+
+    class Meta:
+        verbose_name_plural = "group classes"
+
+
+class GroupStatus(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(unique=True, )
+    description = models.TextField()
+    is_active = models.BooleanField(default=True, help_text="This status represents an active group")
+
+    def __str__(self, ):
+        active = ""
+        if not self.is_active:
+            active = " (inactive)"
+        return "%s%s" % (self.name, active, )
+
+    class Meta:
+        verbose_name_plural= "group statuses"
+
+
+class GroupFunding(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(unique=True, )
+    contact_email = models.EmailField()
+    funding_list = models.CharField(max_length=32, blank=True, help_text="List that groups receiving funding emails should be on. The database will attempt to make sure that ONLY those groups are on it.")
+
+    def __str__(self, ):
+        return "%s (%s)" % (self.name, self.contact_email, )
 
 
 class AthenaMoiraAccount_ActiveManager(models.Manager):
