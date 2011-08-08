@@ -79,7 +79,7 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
 
 admin.site.register(groups.models.Group, GroupAdmin)
-admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
 admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
+admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
 admin.site.register(groups.models.AthenaMoiraAccount, Admin_AthenaMoiraAccount)
