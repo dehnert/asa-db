@@ -21,7 +21,26 @@ from django.db.models import Q
 import form_utils.forms
 import reversion.models
 
+from util.forms import StaticWidget
+
 class GroupChangeMainForm(form_utils.forms.BetterModelForm):
+    def __init__(self, *args, **kwargs):
+        change_restricted = False
+        if 'change_restricted' in kwargs:
+            change_restricted = kwargs['change_restricted']
+            del kwargs['change_restricted']
+        super(GroupChangeMainForm, self).__init__(*args, **kwargs)
+        if change_restricted:
+            for field_name in self.exec_only_fields:
+                value = getattr(self.instance, field_name)
+                formfield = self.fields[field_name]
+                formfield.widget = StaticWidget(value=value)
+
+    exec_only_fields = [
+        'name', 'abbreviation',
+        'athena_locker',
+    ]
+
     class Meta:
         fieldsets = [
             ('basic', {
@@ -48,12 +67,20 @@ def manage_main(request, group_id, ):
 
     if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
+    change_restricted = True
+    if request.user.has_perm('groups.change_group', group):
+        change_restricted = False
 
     msg = None
 
     initial = {}
     if request.method == 'POST': # If the form has been submitted...
-        form = GroupChangeMainForm(request.POST, request.FILES, instance=group, ) # A form bound to the POST data
+        # A form bound to the POST data
+        form = GroupChangeMainForm(
+            request.POST, request.FILES,
+            change_restricted=change_restricted,
+            instance=group,
+        )
 
         if form.is_valid(): # All validation rules pass
             request_obj = form.save()
@@ -83,7 +110,7 @@ def manage_main(request, group_id, ):
             msg = "Thanks for editing!"
 
     else:
-        form = GroupChangeMainForm(instance=group, initial=initial, ) # An unbound form
+        form = GroupChangeMainForm(change_restricted=change_restricted, instance=group, initial=initial, ) # An unbound form
 
     context = {
         'group': group,
