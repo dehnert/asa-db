@@ -298,6 +298,12 @@ def manage_officers(request, group_id, ):
 
 @permission_required('groups.view_signatories')
 def view_signatories(request, ):
+    # TODO:
+    # * limit which columns (roles) get displayed
+    # * limit which rows get displayed (maybe) by category or something
+    # This might want to wait for the generic reporting infrastructure, since
+    # I'd imagine some of it can be reused.
+
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
     all_groups = groups.models.Group.objects.all()
     roles = groups.models.OfficerRole.objects.all()
