@@ -1,8 +1,11 @@
 # Create your views here.
 
+import collections
+import datetime
+
 import groups.models
 
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, DetailView
@@ -292,3 +295,25 @@ def manage_officers(request, group_id, ):
         'msgs': msgs,
     }
     return render_to_response('groups/group_change_officers.html', context, context_instance=RequestContext(request), )
+
+@permission_required('groups.view_signatories')
+def view_signatories(request, ):
+    officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
+    all_groups = groups.models.Group.objects.all()
+    roles = groups.models.OfficerRole.objects.all()
+    officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
+    print officers
+    for officer in officers:
+        officers_map[officer.group][officer.role].add(officer.person)
+    officers_data = []
+    for group in all_groups:
+        role_list = []
+        for role in roles:
+            role_list.append(officers_map[group][role])
+        officers_data.append((group, role_list))
+
+    context = {
+        'roles': roles,
+        'officers': officers_data,
+    }
+    return render_to_response('groups/groups_signatories.html', context, context_instance=RequestContext(request), )
