@@ -133,6 +133,7 @@ def manage_main(request, group_id, ):
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
+
 class GroupDetailView(DetailView):
     context_object_name = "group"
     model = groups.models.Group
@@ -144,6 +145,7 @@ class GroupDetailView(DetailView):
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
         return context
+
 
 class GroupHistoryView(ListView):
     context_object_name = "version_list"
