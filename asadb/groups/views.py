@@ -34,9 +34,9 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
         if change_restricted:
             restricted_fields.extend(self.exec_only_fields)
         for field_name in restricted_fields:
-            value = getattr(self.instance, field_name)
             formfield = self.fields[field_name]
-            formfield.widget = StaticWidget(value=value)
+            value = getattr(self.instance, field_name)
+            StaticWidget.replace_widget(formfield, value)
 
     exec_only_fields = [
         'name', 'abbreviation',
