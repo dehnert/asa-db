@@ -34,10 +34,15 @@
     <td>{{group.advisor_name}}</td>
 </tr>
 <tr><th>Athena locker</th><td>{{group.athena_locker}}</td></tr>
-<tr><th>Recognition date</th><td>{{group.recognition_date}}</td></tr>
 <tr><th>Last updated</th><td>{{group.update_date}} by {{group.updater}}</td></tr>
 
+<tr><th colspan='2'>Recognition</th></tr>
+<tr><th>Group status</th><td>{{group.group_status.name}}</td></tr>
+<tr><th>Group class</th><td>{{group.group_class.name}}</td></tr>
+<tr><th>Recognition date</th><td>{{group.recognition_date}}</td></tr>
+
 <tr><th colspan='2'>Financial Information</th></tr>
+<tr><th>Funding status</th><td>{{group.group_funding}}</td></tr>
 <tr><th>Main Account</th><td>{{group.main_account_id}}</td></tr>
 <tr><th>Funding Account</th><td>{{group.funding_account_id}}</td></tr>
 
