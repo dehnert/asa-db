@@ -36,7 +36,7 @@
 <tr>
     <th>{{group}}</th>
     {%for holders in role_list%}
-    <td><ul>{% for person in holders %}<li>{{person}}</li>{%endfor%}</ul></td>
+    <td>{% if holders %}<ul>{% for person in holders %}<li>{{person}}</li>{%endfor%}</ul>{% endif %}</td>
     {%endfor%}
 </tr>
 {%endfor%}
