@@ -30,22 +30,28 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             change_restricted = kwargs['change_restricted']
             del kwargs['change_restricted']
         super(GroupChangeMainForm, self).__init__(*args, **kwargs)
+        restricted_fields = list(self.nobody_fields)
         if change_restricted:
-            for field_name in self.exec_only_fields:
-                value = getattr(self.instance, field_name)
-                formfield = self.fields[field_name]
-                formfield.widget = StaticWidget(value=value)
+            restricted_fields.extend(self.exec_only_fields)
+        for field_name in restricted_fields:
+            value = getattr(self.instance, field_name)
+            formfield = self.fields[field_name]
+            formfield.widget = StaticWidget(value=value)
 
     exec_only_fields = [
         'name', 'abbreviation',
-        'athena_locker',
+        'group_status', 'group_class',
+        'group_funding', 'main_account_id', 'funding_account_id',
+    ]
+    nobody_fields = [
+        'recognition_date', 'updater', 'update_date',
     ]
 
     class Meta:
         fieldsets = [
             ('basic', {
                 'legend': 'Basic Information',
-                'fields': ['name', 'abbreviation', 'description', 'activity_category', ],
+                'fields': ['name', 'abbreviation', 'activity_category', 'description', ],
             }),
             ('size', {
                 'legend':'Membership Numbers',
@@ -53,11 +59,19 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             }),
             ('contact', {
                 'legend': 'Contact Information',
-                'fields': ['website_url', 'meeting_times', 'group_email', 'officer_email', ],
+                'fields': ['website_url', 'meeting_times', 'officer_email', 'group_email', ],
+            }),
+            ('recognition', {
+                'legend': 'Recognition',
+                'fields': ['group_status', 'group_class', 'recognition_date', ],
+            }),
+            ('financial', {
+                'legend': 'Financial Information',
+                'fields': ['group_funding', 'main_account_id', 'funding_account_id', ],
             }),
             ('more-info', {
                 'legend': 'Additional Information',
-                'fields': ['constitution_url', 'advisor_name', 'main_account_id', 'funding_account_id', 'athena_locker', 'recognition_date', ],
+                'fields': ['constitution_url', 'advisor_name', 'athena_locker', 'updater', 'update_date', ],
             }),
         ]
         model = groups.models.Group
