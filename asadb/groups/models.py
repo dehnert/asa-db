@@ -88,6 +88,13 @@ class OfficerRole(models.Model):
         return cls.objects.get(slug=slug)
 
 
+class OfficeHolder_CurrentManager(models.Manager):
+    def get_query_set(self, ):
+        return super(OfficeHolder_CurrentManager, self).get_query_set().filter(
+            start_time__lte=datetime.datetime.now,
+            end_time__gte=datetime.datetime.now,
+        )
+
 class OfficeHolder(models.Model):
     EXPIRE_OFFSET = datetime.timedelta(seconds=1)
 
@@ -96,6 +103,9 @@ class OfficeHolder(models.Model):
     group = models.ForeignKey('Group')
     start_time = models.DateTimeField(default=datetime.datetime.now)
     end_time = models.DateTimeField(default=datetime.datetime.max)
+
+    objects = models.Manager()
+    current_holders = OfficeHolder_CurrentManager()
 
     def expire(self, ):
         self.end_time = datetime.datetime.now()-self.EXPIRE_OFFSET

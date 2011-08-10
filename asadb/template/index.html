@@ -11,6 +11,21 @@
         <li><a href='{%url fysm%}'>View the entries</a></li>
         <li><a href='{%url fysm-select%}'>Submit an entry</a></li>
     </ul></li>
+    {%if perms.groups.view_signatories %}<li><a href='{% url groups-signatories %}'>View Signatories</a></li>{%endif%}
 </ul>
+
+<h2>My Groups</h2>
+
+{% if groupmsg %}
+<p>{{groupmsg}}</p>
+{% endif %}
+
+{% if groups %}
+<ul>
+{% for group in groups %}
+    <li><a href='{% url group-detail group.pk %}'>{{group}}</a></li>
+{%endfor%}
+</ul>
+{% endif %}
 
 {% endblock %}

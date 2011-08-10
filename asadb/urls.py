@@ -16,12 +16,7 @@ import groups.views
 urlpatterns = patterns('',
     # Example:
     # (r'^asadb/', include('asadb.foo.urls')),
-    url(
-        r'^$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'index.html', 'extra_context': { 'pagename':'homepage' }, },
-        name='homepage',
-    ),
+    url(r'^$', 'groups.views.view_homepage', name='homepage', ),
 
     # FYSM
     url(

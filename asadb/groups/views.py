@@ -26,6 +26,26 @@ import reversion.models
 
 from util.db_form_utils import StaticWidget
 
+
+def view_homepage(request, ):
+    users_groups = []
+    groupmsg = ""
+    if request.user.is_authenticated():
+        username = request.user.username
+        current_officers = groups.models.OfficeHolder.current_holders.filter(person=username)
+        users_groups = groups.models.Group.objects.filter(officeholder__in=current_officers).distinct()
+        if len(users_groups) == 0:
+            groupmsg = "You do not currently appear to be listed with any groups."
+    else:
+        groupmsg = "Log in to see the groups that you are listed with."
+    context = {
+        'groups': users_groups,
+        'groupmsg': groupmsg,
+        'pagename': 'homepage',
+    }
+    return render_to_response('index.html', context, context_instance=RequestContext(request), )
+
+
 class GroupChangeMainForm(form_utils.forms.BetterModelForm):
     def __init__(self, *args, **kwargs):
         change_restricted = False
@@ -147,6 +167,7 @@ class GroupDetailView(DetailView):
 
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
+        context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
         return context
 
 
