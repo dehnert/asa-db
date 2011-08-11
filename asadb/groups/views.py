@@ -145,6 +145,8 @@ def manage_main(request, group_id, ):
             #)
             #email.send()
             msg = "Thanks for editing!"
+        else:
+            msg = "Validation failed. See below for details."
 
     else:
         form = GroupChangeMainForm(change_restricted=change_restricted, instance=group, initial=initial, ) # An unbound form
