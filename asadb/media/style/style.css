@@ -22,6 +22,10 @@ table.pretty-table th, table.pretty-table caption
     font-weight: bold;
     background: #BE2933;
 }
+table.pretty-table th a, table.pretty-table caption a
+{
+    color: #008;
+}
 ul.errorlist
 {
     color: red;
