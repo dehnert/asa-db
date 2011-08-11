@@ -5,6 +5,27 @@
 
 <h1>{{group.name}}: Change people</h1>
 
+<p>Please adjust your signatories below. You can add up to {{max_new}} new people at a time at the bottom. If you need to add more than that, just break it up into a couple of submissions.</p>
+
+<p>The following roles are available:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Role</th>
+    <th>Description</th>
+    <th>Maximum allowed</th>
+    <th>Requires student?</th>
+</tr>
+{% for role in roles %}
+<tr>
+    <th>{{role.display_name}}</th>
+    <td>{{role.description}}</td>
+    <td>{{role.max_count_str}}</td>
+    <td>{% if role.require_student %}Yes{%else%}No{%endif%}</td>
+</tr>
+{% endfor %}
+</table>
+
 {% if msgs %}
 <ul>
 {% for msg in msgs %}
@@ -29,6 +50,8 @@
 {%if edited %}
 <p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
 {% endif %}
+
+<p>Add or update people:</p>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}

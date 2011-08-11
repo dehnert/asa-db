@@ -74,6 +74,12 @@ class OfficerRole(models.Model):
     require_student = models.BooleanField(default=False)
     grant_user = models.ForeignKey(User, null=True, blank=True, )
 
+    def max_count_str(self, ):
+        if self.max_count == self.UNLIMITED:
+            return "unlimited"
+        else:
+            return str(self.max_count)
+
     def __str__(self, ):
         return self.display_name
 
