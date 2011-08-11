@@ -20,6 +20,7 @@ def dictize_line(header, line,):
 
 def canonicalize_email(email):
     if '@' in email: return email
+    elif email == '': return ''
     else: return email + "@mit.edu"
 
 def db_parse_date(string):
