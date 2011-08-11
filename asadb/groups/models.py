@@ -172,10 +172,7 @@ class GroupClass(models.Model):
     gets_publicity = models.BooleanField(help_text="Gets publicity resources such as FYSM or Activities Midway")
 
     def __str__(self, ):
-        publicity = "no publicity"
-        if self.gets_publicity:
-            publicity = "gets publicity"
-        return "%s (%s)" % (self.name, publicity, )
+        return self.name
 
     class Meta:
         verbose_name_plural = "group classes"
