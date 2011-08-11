@@ -61,6 +61,7 @@ class Group(models.Model):
             # this is weaker than change_group, which is the built-in
             # permission that controls the admin interface
             ('admin_group', 'Administer basic group information'),
+            ('view_signatories', 'View signatory information for all groups'),
         )
 
 

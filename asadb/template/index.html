@@ -28,4 +28,23 @@
 </ul>
 {% endif %}
 
+{% if "has_perms" %}
+<h2>Permissions</h2>
+
+<p>You have the following permissions:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+</tr>
+{% for perm_name, perm_desc in has_perms %}
+<tr>
+    <td>{{perm_name}}</td>
+    <td>{{perm_desc}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
 {% endblock %}

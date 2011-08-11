@@ -30,17 +30,27 @@ from util.db_form_utils import StaticWidget
 def view_homepage(request, ):
     users_groups = []
     groupmsg = ""
+    has_perms = []
     if request.user.is_authenticated():
         username = request.user.username
         current_officers = groups.models.OfficeHolder.current_holders.filter(person=username)
         users_groups = groups.models.Group.objects.filter(officeholder__in=current_officers).distinct()
         if len(users_groups) == 0:
             groupmsg = "You do not currently appear to be listed with any groups."
+
+        perms = groups.models.Group._meta.permissions
+        perms += (
+            ('change_group', 'Change arbitrary group information', ),
+        )
+        for perm_name, perm_desc in perms:
+            if request.user.has_perm('groups.%s' % (perm_name, )):
+                has_perms.append((perm_name, perm_desc, ))
     else:
         groupmsg = "Log in to see the groups that you are listed with."
     context = {
         'groups': users_groups,
         'groupmsg': groupmsg,
+        'has_perms': has_perms,
         'pagename': 'homepage',
     }
     return render_to_response('index.html', context, context_instance=RequestContext(request), )
