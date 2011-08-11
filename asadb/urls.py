@@ -56,6 +56,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/login/password/', 'django.contrib.auth.views.login', name='login-password', ),
     url(r'^accounts/login/',  'mit.scripts_login',  name='login', ),
     url(r'^accounts/logout/', logout, name='logout', ),
 )
