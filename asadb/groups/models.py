@@ -103,7 +103,8 @@ class OfficeHolder_CurrentManager(models.Manager):
         )
 
 class OfficeHolder(models.Model):
-    EXPIRE_OFFSET = datetime.timedelta(seconds=1)
+    EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
+    END_NEVER       = datetime.datetime.max
 
     person = models.CharField(max_length=30)
     role = models.ForeignKey('OfficerRole')
