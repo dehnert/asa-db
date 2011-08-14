@@ -183,6 +183,8 @@ class GroupDetailView(DetailView):
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
         context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
+        context['notes'] = group.viewable_notes(self.request.user)
+
         return context
 
 

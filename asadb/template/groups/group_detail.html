@@ -70,5 +70,26 @@
 </tr>
 </table>
 
+<h2>Notes</h2>
+
+{% if notes %}
+<table class='pretty-table'>
+<thead>
+{% include "groups/note/detail.head.html" %}
+</thead>
+<tbody>
+{% for note in notes %}
+{% include "groups/note/detail.row.html" %}
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No notes are visible to you at this time.</p>
+{% endif %}
+
+{% if perms.groups.add_groupnote %}
+<p><a href='{% url admin:groups_groupnote_add %}'>Add note</a></p>
+{% endif %}
+
 {% endblock %}
 

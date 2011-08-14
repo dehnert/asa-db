@@ -25,6 +25,29 @@ class GroupAdmin(VersionAdmin):
     date_hierarchy = 'update_date'
     search_fields = [ 'id', 'name', 'abbreviation', 'officer_email', 'athena_locker', ]
 
+class Admin_GroupNote(VersionAdmin):
+    list_display = (
+        'pk',
+        'author',
+        'timestamp',
+        'acl_read_group',
+        'acl_read_offices',
+        'group',
+    )
+    list_display_links = ('pk', 'timestamp', )
+    list_filter = [
+        'acl_read_group',
+        'acl_read_offices',
+    ]
+    date_hierarchy = 'timestamp'
+    search_fields = [
+        'author',
+        'group__name',
+        'group__abbreviation',
+        'group__officer_email',
+        'group__athena_locker',
+    ]
+
 class OfficerRoleAdmin(VersionAdmin):
     list_display = (
         'id',
@@ -128,6 +151,7 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
 
 admin.site.register(groups.models.Group, GroupAdmin)
+admin.site.register(groups.models.GroupNote, Admin_GroupNote)
 admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
 admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)

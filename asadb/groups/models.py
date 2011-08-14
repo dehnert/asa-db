@@ -49,6 +49,9 @@ class Group(models.Model):
         self.update_date = datetime.datetime.now()
         super(Group, self).save()
 
+    def viewable_notes(self, user):
+        return GroupNote.viewable_notes(self, user)
+
     def officers(self, role=None, person=None, as_of="now",):
         """Get the set of people holding some office.
 
@@ -82,6 +85,37 @@ class Group(models.Model):
             # permission that controls the admin interface
             ('admin_group', 'Administer basic group information'),
             ('view_signatories', 'View signatory information for all groups'),
+        )
+
+
+class GroupNote(models.Model):
+    author = models.CharField(max_length=30, ) # match Django username field
+    timestamp = models.DateTimeField(default=datetime.datetime.now, editable=False, )
+    body = models.TextField()
+    acl_read_group = models.BooleanField(default=True, help_text='Can the group read this note')
+    acl_read_offices = models.BooleanField(default=True, help_text='Can "offices" that interact with groups (SAO, CAC, and funding boards) read this note')
+    group = models.ForeignKey(Group)
+
+    def __str__(self, ):
+        return "Note by %s on %s" % (self.author, self.timestamp, )
+
+    @classmethod
+    def viewable_notes(cls, group, user):
+        notes = cls.objects.filter(group=group)
+        if not user.has_perm('groups.view_note_all'):
+            q = models.Q(pk=0)
+            if user.has_perm('groups.view_note_group', group):
+                q |= models.Q(acl_read_group=True)
+            if user.has_perm('groups.view_note_office'):
+                q |= models.Q(acl_read_offices=True)
+            notes = notes.filter(q)
+        return notes
+
+    class Meta:
+        permissions = (
+            ('view_note_group',     'View notes intended for the group to see', ),
+            ('view_note_office',    'View notes intended for "offices" to see', ),
+            ('view_note_all',       'View all notes', ),
         )
 
 
