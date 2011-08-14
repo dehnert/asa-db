@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 
 import datetime
 
+import settings
+
 # Create your models here.
 class Group(models.Model):
     name = models.CharField(max_length=100)
@@ -26,8 +28,26 @@ class Group(models.Model):
     funding_account_id = models.IntegerField(null=True, blank=True, )
     athena_locker = models.CharField(max_length=20, blank=True)
     recognition_date = models.DateField()
-    update_date = models.DateTimeField()
-    updater = models.CharField(max_length=30) # match Django username field
+    update_date = models.DateTimeField(editable=False, )
+    updater = models.CharField(max_length=30, editable=False, ) # match Django username field
+    _updater_set = False
+
+    def update_string(self, ):
+        updater = self.updater or "unknown"
+        return "%s by %s" % (self.update_date.strftime(settings.DATETIME_FORMAT_PYTHON), updater, )
+
+    def set_updater(self, who):
+        if hasattr(who, 'username'):
+            self.updater = who.username
+        else:
+            self.updater = who
+        self._updater_set = True
+
+    def save(self, ):
+        if not self._updater_set:
+            self.updater = None
+        self.update_date = datetime.datetime.now()
+        super(Group, self).save()
 
     def officers(self, role=None, person=None, as_of="now",):
         """Get the set of people holding some office.

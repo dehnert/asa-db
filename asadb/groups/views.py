@@ -77,7 +77,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
         'group_funding', 'main_account_id', 'funding_account_id',
     ]
     nobody_fields = [
-        'recognition_date', 'updater', 'update_date',
+        'recognition_date',
     ]
 
     class Meta:
@@ -104,7 +104,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             }),
             ('more-info', {
                 'legend': 'Additional Information',
-                'fields': ['constitution_url', 'advisor_name', 'athena_locker', 'updater', 'update_date', ],
+                'fields': ['constitution_url', 'advisor_name', 'athena_locker', ],
             }),
         ]
         model = groups.models.Group
@@ -130,7 +130,10 @@ def manage_main(request, group_id, ):
         )
 
         if form.is_valid(): # All validation rules pass
-            request_obj = form.save()
+            request_obj = form.save(commit=False)
+            request_obj.set_updater(request.user)
+            request_obj.save()
+            form.save_m2m()
 
             # Send email
             #tmpl = get_template('fysm/update_email.txt')
