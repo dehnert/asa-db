@@ -16,8 +16,12 @@
 
 <h2>My Groups</h2>
 
-{% if groupmsg %}
-<p>{{groupmsg}}</p>
+{% if user.is_anonymous %}
+<p><a href='{% url login %}'>Login</a> to see your groups.</p>
+{% else %}
+{%if not groups %}
+<p>You do not currently appear to be listed with any groups.</p>
+{% endif %}
 {% endif %}
 
 {% if groups %}

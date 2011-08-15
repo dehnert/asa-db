@@ -35,8 +35,6 @@ def view_homepage(request, ):
         username = request.user.username
         current_officers = groups.models.OfficeHolder.current_holders.filter(person=username)
         users_groups = groups.models.Group.objects.filter(officeholder__in=current_officers).distinct()
-        if len(users_groups) == 0:
-            groupmsg = "You do not currently appear to be listed with any groups."
 
         perms = []
         perms.extend(groups.models.Group._meta.permissions)
@@ -47,8 +45,7 @@ def view_homepage(request, ):
         for perm_name, perm_desc in perms:
             if request.user.has_perm('groups.%s' % (perm_name, )):
                 has_perms.append((perm_name, perm_desc, ))
-    else:
-        groupmsg = "Log in to see the groups that you are listed with."
+
     context = {
         'groups': users_groups,
         'groupmsg': groupmsg,
