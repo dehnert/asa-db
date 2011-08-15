@@ -59,6 +59,8 @@ if __name__ == '__main__':
                 status_name = 'Active'
             elif status_name == 'Active':
                 class_name = 'MIT-funded'
+            elif status_name == 'Suspended' or status_name == 'Derecognized':
+                class_name = 'MIT-funded'
         g.group_class = groups.models.GroupClass.objects.get(name=class_name)
         g.group_status = groups.models.GroupStatus.objects.get(name=status_name)
         if funding_name == 'none':
