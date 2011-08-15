@@ -307,7 +307,10 @@ def manage_officers(request, group_id, ):
                                 holder.save()
                                 changes.append(("Added", "green", person, role))
 
-        # reload the data
+        # mark as changed and reload the data
+        if changes:
+            group.set_updater(request.user)
+            group.save()
         people, roles, officers_map = load_officers(group)
 
     officers_data = []
