@@ -38,7 +38,9 @@ def view_homepage(request, ):
         if len(users_groups) == 0:
             groupmsg = "You do not currently appear to be listed with any groups."
 
-        perms = groups.models.Group._meta.permissions
+        perms = []
+        perms.extend(groups.models.Group._meta.permissions)
+        perms.extend(groups.models.GroupNote._meta.permissions)
         perms += (
             ('change_group', 'Change arbitrary group information', ),
         )
