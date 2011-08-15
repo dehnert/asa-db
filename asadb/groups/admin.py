@@ -24,6 +24,8 @@ class GroupAdmin(VersionAdmin):
     ]
     date_hierarchy = 'update_date'
     search_fields = [ 'id', 'name', 'abbreviation', 'officer_email', 'athena_locker', ]
+admin.site.register(groups.models.Group, GroupAdmin)
+
 
 class Admin_GroupNote(VersionAdmin):
     list_display = (
@@ -47,6 +49,8 @@ class Admin_GroupNote(VersionAdmin):
         'group__officer_email',
         'group__athena_locker',
     ]
+admin.site.register(groups.models.GroupNote, Admin_GroupNote)
+
 
 class OfficerRoleAdmin(VersionAdmin):
     list_display = (
@@ -59,6 +63,8 @@ class OfficerRoleAdmin(VersionAdmin):
     )
     list_display_links = ('id', 'display_name', 'slug', )
     prepopulated_fields = {"slug": ("display_name",)}
+admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
+
 
 class OfficeHolderAdmin(VersionAdmin):
     list_display = (
@@ -82,6 +88,8 @@ class OfficeHolderAdmin(VersionAdmin):
         'group__name', 'group__abbreviation',
         'start_time', 'end_time',
     )
+admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
+
 
 class ActivityCategoryAdmin(admin.ModelAdmin):
     list_display = (
@@ -89,6 +97,8 @@ class ActivityCategoryAdmin(admin.ModelAdmin):
         'name',
     )
     list_display_links = ('id', 'name', )
+admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
+
 
 class Admin_GroupClass(admin.ModelAdmin):
     list_display = (
@@ -100,6 +110,8 @@ class Admin_GroupClass(admin.ModelAdmin):
     list_display_links = ('id', 'name', 'slug', )
     list_filter = [ 'gets_publicity', ]
     prepopulated_fields = {'slug': ('name', )}
+admin.site.register(groups.models.GroupClass, Admin_GroupClass)
+
 
 class Admin_GroupStatus(admin.ModelAdmin):
     list_display = (
@@ -111,6 +123,8 @@ class Admin_GroupStatus(admin.ModelAdmin):
     list_display_links = ('id', 'name', 'slug', )
     list_filter = [ 'is_active', ]
     prepopulated_fields = {'slug': ('name', )}
+admin.site.register(groups.models.GroupStatus, Admin_GroupStatus)
+
 
 class Admin_GroupFunding(admin.ModelAdmin):
     list_display = (
@@ -122,17 +136,8 @@ class Admin_GroupFunding(admin.ModelAdmin):
     )
     list_display_links = ('id', 'name', 'slug', )
     prepopulated_fields = {'slug': ('name', )}
+admin.site.register(groups.models.GroupFunding, Admin_GroupFunding)
 
-class Admin_GroupClass(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'name',
-        'slug',
-        'gets_publicity',
-    )
-    list_display_links = ('id', 'name', 'slug', )
-    list_filter = [ 'gets_publicity', ]
-    prepopulated_fields = {'slug': ('name', )}
 
 class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     list_display = (
@@ -149,13 +154,4 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     )
     list_display_links = ( 'id', 'username', )
     search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
-
-admin.site.register(groups.models.Group, GroupAdmin)
-admin.site.register(groups.models.GroupNote, Admin_GroupNote)
-admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
-admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
-admin.site.register(groups.models.ActivityCategory, ActivityCategoryAdmin)
-admin.site.register(groups.models.GroupClass, Admin_GroupClass)
-admin.site.register(groups.models.GroupStatus, Admin_GroupStatus)
-admin.site.register(groups.models.GroupFunding, Admin_GroupFunding)
 admin.site.register(groups.models.AthenaMoiraAccount, Admin_AthenaMoiraAccount)
