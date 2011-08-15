@@ -29,7 +29,7 @@ class Group(models.Model):
     athena_locker = models.CharField(max_length=20, blank=True)
     recognition_date = models.DateField()
     update_date = models.DateTimeField(editable=False, )
-    updater = models.CharField(max_length=30, editable=False, ) # match Django username field
+    updater = models.CharField(max_length=30, editable=False, null=True, ) # match Django username field
     _updater_set = False
 
     def update_string(self, ):
