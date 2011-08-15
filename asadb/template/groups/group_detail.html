@@ -26,6 +26,16 @@
     <td>{{group.group_email}}</td>
 </tr>{% endif %}
 
+<tr><th colspan='2'>People</th></tr>
+{% for name, role, people in roles %}
+<tr>
+    <th>{{name}}</th>
+    <td><ul>
+    {% for person in people %}<li>{{person.person}}</li>{%endfor%}
+    </ul></td>
+</tr>
+{% endfor %}
+
 <tr><th colspan='2'>Recognition</th></tr>
 <tr><th>Group status</th><td>{{group.group_status.name}}</td></tr>
 <tr><th>Group class</th><td>{{group.group_class.name}}</td></tr>

@@ -187,6 +187,13 @@ class GroupDetailView(DetailView):
         context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
         context['notes'] = group.viewable_notes(self.request.user)
 
+        # People involved in the group
+        just_roles = groups.models.OfficerRole.objects.all()
+        roles = []
+        for role in just_roles:
+            roles.append((role.display_name, role, group.officers(role=role), ))
+        context['roles'] = roles
+
         return context
 
 
