@@ -59,6 +59,7 @@ class OfficerRoleAdmin(VersionAdmin):
         'slug',
         'max_count',
         'require_student',
+        'publicly_visible',
         'grant_user',
     )
     list_display_links = ('id', 'display_name', 'slug', )

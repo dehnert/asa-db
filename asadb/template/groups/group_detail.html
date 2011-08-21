@@ -29,7 +29,7 @@
 <tr><th colspan='2'>People</th></tr>
 {% for name, role, people in roles %}
 <tr>
-    <th>{{name}}</th>
+    <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
     <td><ul>
     {% for person in people %}<li>{{person.person}}</li>{%endfor%}
     </ul></td>

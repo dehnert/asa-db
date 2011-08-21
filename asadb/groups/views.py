@@ -186,6 +186,11 @@ class GroupDetailView(DetailView):
 
         # People involved in the group
         just_roles = groups.models.OfficerRole.objects.all()
+        if context['viewpriv'] or self.request.user.has_perm('groups.view_signatories'):
+            # Can see the non-public stuff
+            pass
+        else:
+            just_roles = just_roles.filter(publicly_visible=True)
         roles = []
         for role in just_roles:
             roles.append((role.display_name, role, group.officers(role=role), ))

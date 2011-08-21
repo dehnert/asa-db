@@ -128,6 +128,7 @@ class OfficerRole(models.Model):
     max_count = models.IntegerField(default=UNLIMITED, help_text='Maximum number of holders of this role. Use %d for no limit.' % UNLIMITED)
     require_student = models.BooleanField(default=False)
     grant_user = models.ForeignKey(User, null=True, blank=True, )
+    publicly_visible = models.BooleanField(default=True, help_text='Can everyone see the holders of this office.')
 
     def max_count_str(self, ):
         if self.max_count == self.UNLIMITED:

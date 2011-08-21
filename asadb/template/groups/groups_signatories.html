@@ -27,7 +27,7 @@
 <tr>
     <th></th>
     {% for role in roles %}
-    <th>{{role.display_name}}</th>
+    <th>{{role.display_name}}{% if not role.publicly_visible%} (not publicly viewable){%endif%}</th>
     {% endfor %}
 </tr>
 </thead>
