@@ -23,6 +23,7 @@ from django.db.models import Q
 
 import form_utils.forms
 import reversion.models
+import django_filters
 
 from util.db_form_utils import StaticWidget
 
@@ -169,6 +170,43 @@ def manage_main(request, group_id, ):
         'msg':   msg,
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
+
+
+class GroupFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_type='icontains', label="Name contains")
+    abbreviation = django_filters.CharFilter(lookup_type='iexact', label="Abbreviation is")
+
+    class Meta:
+        model = groups.models.Group
+        fields = [
+            'name',
+            'abbreviation',
+            'activity_category',
+            'group_class',
+            'group_status',
+            'group_funding',
+        ]
+
+
+class GroupListView(ListView):
+    model = groups.models.Group
+    template_object_name = 'group'
+
+    def get(self, *args, **kwargs):
+        qs = super(GroupListView, self).get_queryset()
+        self.filterset = GroupFilter(self.request.GET, qs)
+        return super(GroupListView, self).get(*args, **kwargs)
+
+    def get_queryset(self, ):
+        qs = self.filterset.qs
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupListView, self).get_context_data(**kwargs)
+        # Add in the publisher
+        context['pagename'] = 'groups'
+        context['filter'] = self.filterset
+        return context
 
 
 class GroupDetailView(DetailView):

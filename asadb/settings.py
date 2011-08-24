@@ -5,7 +5,6 @@ import sys
 SITE_ROOT = os.path.normpath(os.path.dirname(__file__))
 SITE_WEB_PATH = ''
 
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -104,6 +103,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'form_utils',
+    'django_filters',
     'reversion',
     'south',
     'groups',
