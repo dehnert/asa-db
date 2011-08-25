@@ -415,6 +415,7 @@ def view_signatories(request, ):
         'roles': roles,
         'officers': officers_data,
         'filter': groups_filterset,
+        'pagename': 'groups',
     }
     return render_to_response('groups/groups_signatories.html', context, context_instance=RequestContext(request), )
 
