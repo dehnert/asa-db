@@ -19,6 +19,7 @@ from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField
+from django.db import connection
 from django.db.models import Q
 
 import form_utils.forms
@@ -395,10 +396,10 @@ def view_signatories(request, ):
     # I'd imagine some of it can be reused.
 
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
+    officers = officers.select_related(depth=1)
     all_groups = groups.models.Group.objects.all()
     roles = groups.models.OfficerRole.objects.all()
     officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
-    print officers
     for officer in officers:
         officers_map[officer.group][officer.role].add(officer.person)
     officers_data = []
