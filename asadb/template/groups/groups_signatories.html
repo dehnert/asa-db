@@ -5,6 +5,17 @@
 
 <h1>Signatory list</h1>
 
+<h2>Search</h2>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" value="Search" />
+</form>
+
+<h2>The Groups</h2>
+
 {% if changes %}
 <table class='pretty-table'>
 <tr>

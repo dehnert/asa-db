@@ -391,19 +391,21 @@ def manage_officers(request, group_id, ):
 def view_signatories(request, ):
     # TODO:
     # * limit which columns (roles) get displayed
-    # * limit which rows get displayed (maybe) by category or something
     # This might want to wait for the generic reporting infrastructure, since
     # I'd imagine some of it can be reused.
 
+    the_groups = groups.models.Group.objects.all()
+    groups_filterset = GroupFilter(request.GET, the_groups)
+    the_groups = groups_filterset.qs
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
+    officers = officers.filter(group__in=the_groups)
     officers = officers.select_related(depth=1)
-    all_groups = groups.models.Group.objects.all()
     roles = groups.models.OfficerRole.objects.all()
     officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
     for officer in officers:
         officers_map[officer.group][officer.role].add(officer.person)
     officers_data = []
-    for group in all_groups:
+    for group in the_groups:
         role_list = []
         for role in roles:
             role_list.append(officers_map[group][role])
@@ -412,5 +414,6 @@ def view_signatories(request, ):
     context = {
         'roles': roles,
         'officers': officers_data,
+        'filter': groups_filterset,
     }
     return render_to_response('groups/groups_signatories.html', context, context_instance=RequestContext(request), )
