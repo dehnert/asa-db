@@ -36,6 +36,7 @@ urlpatterns = patterns('',
 
     # Group list
     url(r'^groups/$', groups.views.GroupListView.as_view(), name='group-list', ),
+    url(r'^groups/search/$', groups.views.search_groups, name='group-search', ),
     url(r'^group/(?P<pk>\d+)/$', groups.views.GroupDetailView.as_view(), name='group-detail', ),
     url(r'^groups/recent_changes/$', groups.views.GroupHistoryView.as_view(), name='groups-manage-history', ),
     url(r'^group/(?P<group>\d+)/history/$', groups.views.GroupHistoryView.as_view(), name='group-manage-history', ),

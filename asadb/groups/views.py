@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import user_passes_test, login_required, per
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, DetailView
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.template import Context, Template
 from django.template.loader import get_template
@@ -417,3 +417,23 @@ def view_signatories(request, ):
         'filter': groups_filterset,
     }
     return render_to_response('groups/groups_signatories.html', context, context_instance=RequestContext(request), )
+
+def search_groups(request, ):
+    the_groups = groups.models.Group.objects.all()
+    groups_filterset = GroupFilter(request.GET, the_groups)
+
+    dest = None
+    if 'signatories' in request.GET:
+        dest = reverse('groups-signatories')
+        print dest
+    elif 'group-info' in request.GET:
+        dest = reverse('group-list')
+
+    if dest:
+        return redirect(dest + "?" + request.META['QUERY_STRING'])
+    else:
+        context = {
+            'filter': groups_filterset,
+            'pagename': 'groups',
+        }
+        return render_to_response('groups/group_search.html', context, context_instance=RequestContext(request), )
