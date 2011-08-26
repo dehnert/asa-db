@@ -29,6 +29,11 @@ import django_filters
 from util.db_form_utils import StaticWidget
 
 
+
+############
+# Homepage #
+############
+
 def view_homepage(request, ):
     users_groups = []
     groupmsg = ""
@@ -55,6 +60,39 @@ def view_homepage(request, ):
         'pagename': 'homepage',
     }
     return render_to_response('index.html', context, context_instance=RequestContext(request), )
+
+
+
+################
+# Single group #
+################
+
+class GroupDetailView(DetailView):
+    context_object_name = "group"
+    model = groups.models.Group
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(GroupDetailView, self).get_context_data(**kwargs)
+        group = context['group']
+
+        # Indicate whether this person should be able to see "private" info
+        context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
+        context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
+        context['notes'] = group.viewable_notes(self.request.user)
+
+        # People involved in the group
+        just_roles = groups.models.OfficerRole.objects.all()
+        if context['viewpriv'] or self.request.user.has_perm('groups.view_signatories'):
+            # Can see the non-public stuff
+            pass
+        else:
+            just_roles = just_roles.filter(publicly_visible=True)
+        roles = []
+        for role in just_roles:
+            roles.append((role.display_name, role, group.officers(role=role), ))
+        context['roles'] = roles
+
+        return context
 
 
 class GroupChangeMainForm(form_utils.forms.BetterModelForm):
@@ -173,6 +211,11 @@ def manage_main(request, pk, ):
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
 
+
+##################
+# Multiple group #
+##################
+
 class GroupFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_type='icontains', label="Name contains")
     abbreviation = django_filters.CharFilter(lookup_type='iexact', label="Abbreviation is")
@@ -207,62 +250,6 @@ class GroupListView(ListView):
         # Add in the publisher
         context['pagename'] = 'groups'
         context['filter'] = self.filterset
-        return context
-
-
-class GroupDetailView(DetailView):
-    context_object_name = "group"
-    model = groups.models.Group
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(GroupDetailView, self).get_context_data(**kwargs)
-        group = context['group']
-
-        # Indicate whether this person should be able to see "private" info
-        context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
-        context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
-        context['notes'] = group.viewable_notes(self.request.user)
-
-        # People involved in the group
-        just_roles = groups.models.OfficerRole.objects.all()
-        if context['viewpriv'] or self.request.user.has_perm('groups.view_signatories'):
-            # Can see the non-public stuff
-            pass
-        else:
-            just_roles = just_roles.filter(publicly_visible=True)
-        roles = []
-        for role in just_roles:
-            roles.append((role.display_name, role, group.officers(role=role), ))
-        context['roles'] = roles
-
-        return context
-
-
-class GroupHistoryView(ListView):
-    context_object_name = "version_list"
-    template_name = "groups/group_version.html"
-
-    def get_queryset(self):
-        history_entries = None
-        if 'pk' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            history_entries = reversion.models.Version.objects.get_for_object(group)
-        else:
-            history_entries = reversion.models.Version.objects.all()
-            group_content_type = ContentType.objects.get_for_model(groups.models.Group)
-            history_entries = history_entries.filter(content_type=group_content_type)
-        length = len(history_entries)
-        if length > 150:
-            history_entries = history_entries[length-100:]
-        return history_entries
-
-    def get_context_data(self, **kwargs):
-        context = super(GroupHistoryView, self).get_context_data(**kwargs)
-        if 'pk' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            context['title'] = "History for %s" % (group.name, )
-        else:
-            context['title'] = "Recent Changes"
         return context
 
 
@@ -438,3 +425,31 @@ def search_groups(request, ):
             'pagename': 'groups',
         }
         return render_to_response('groups/group_search.html', context, context_instance=RequestContext(request), )
+
+
+class GroupHistoryView(ListView):
+    context_object_name = "version_list"
+    template_name = "groups/group_version.html"
+
+    def get_queryset(self):
+        history_entries = None
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
+            history_entries = reversion.models.Version.objects.get_for_object(group)
+        else:
+            history_entries = reversion.models.Version.objects.all()
+            group_content_type = ContentType.objects.get_for_model(groups.models.Group)
+            history_entries = history_entries.filter(content_type=group_content_type)
+        length = len(history_entries)
+        if length > 150:
+            history_entries = history_entries[length-100:]
+        return history_entries
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupHistoryView, self).get_context_data(**kwargs)
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
+            context['title'] = "History for %s" % (group.name, )
+        else:
+            context['title'] = "Recent Changes"
+        return context
