@@ -110,8 +110,8 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
         ]
         model = groups.models.Group
 
-def manage_main(request, group_id, ):
-    group = get_object_or_404(groups.models.Group, pk=group_id)
+def manage_main(request, pk, ):
+    group = get_object_or_404(groups.models.Group, pk=pk)
 
     if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
@@ -244,8 +244,8 @@ class GroupHistoryView(ListView):
 
     def get_queryset(self):
         history_entries = None
-        if 'group' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['group'])
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
             history_entries = reversion.models.Version.objects.get_for_object(group)
         else:
             history_entries = reversion.models.Version.objects.all()
@@ -258,8 +258,8 @@ class GroupHistoryView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(GroupHistoryView, self).get_context_data(**kwargs)
-        if 'group' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['group'])
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
             context['title'] = "History for %s" % (group.name, )
         else:
             context['title'] = "Recent Changes"
@@ -277,8 +277,8 @@ def load_officers(group, ):
 
     return people, roles, officers_map
 
-def manage_officers(request, group_id, ):
-    group = get_object_or_404(groups.models.Group, pk=group_id)
+def manage_officers(request, pk, ):
+    group = get_object_or_404(groups.models.Group, pk=pk)
 
     if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
@@ -425,10 +425,10 @@ def search_groups(request, ):
 
     dest = None
     if 'signatories' in request.GET:
-        dest = reverse('groups-signatories')
+        dest = reverse('groups:signatories')
         print dest
     elif 'group-info' in request.GET:
-        dest = reverse('group-list')
+        dest = reverse('groups:list')
 
     if dest:
         return redirect(dest + "?" + request.META['QUERY_STRING'])

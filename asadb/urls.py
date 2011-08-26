@@ -8,10 +8,8 @@ admin.autodiscover()
 
 import settings
 
+import groups.urls
 import forms.views
-import groups.models
-import groups.views
-
 
 urlpatterns = patterns('',
     # Example:
@@ -30,17 +28,8 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
-    # Group editing
-    url(r'^group/(\d+)/edit/main$', groups.views.manage_main, name='group-manage-main', ),
-    url(r'^group/(\d+)/edit/officers$', groups.views.manage_officers, name='group-manage-officers', ),
-
     # Group list
-    url(r'^groups/$', groups.views.GroupListView.as_view(), name='group-list', ),
-    url(r'^groups/search/$', groups.views.search_groups, name='group-search', ),
-    url(r'^group/(?P<pk>\d+)/$', groups.views.GroupDetailView.as_view(), name='group-detail', ),
-    url(r'^groups/recent_changes/$', groups.views.GroupHistoryView.as_view(), name='groups-manage-history', ),
-    url(r'^group/(?P<group>\d+)/history/$', groups.views.GroupHistoryView.as_view(), name='group-manage-history', ),
-    url(r'^groups/signatories/$', groups.views.view_signatories, name='groups-signatories', ),
+    (r'^groups/', include(groups.urls.urls(), ), ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

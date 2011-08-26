@@ -86,8 +86,8 @@
 </form>
 
 <ul>
-    <li><a href='{% url group-manage-main group.pk %}'>View main update page</a></li>
-    <li><a href='{% url group-manage-officers group.pk %}'>Reload this page</a></li>
+    <li><a href='{% url groups:group-manage-main group.pk %}'>View main update page</a></li>
+    <li><a href='{% url groups:group-manage-officers group.pk %}'>Reload this page</a></li>
 </ul>
 
 {% endblock %}

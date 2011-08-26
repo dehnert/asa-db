@@ -19,8 +19,8 @@
 <h2>Other Options</h2>
 
 <ul>
-    <li><a href='{% url group-manage-history group.pk %}'>View update history</a></li>
-    <li><a href='{% url group-manage-officers group.pk %}'>Update officers, signatories, etc.</a></li>
+    <li><a href='{% url groups:group-manage-history group.pk %}'>View update history</a></li>
+    <li><a href='{% url groups:group-manage-officers group.pk %}'>Update officers, signatories, etc.</a></li>
 </ul>
 
 {% endblock %}
