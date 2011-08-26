@@ -6,6 +6,13 @@ import datetime
 import settings
 
 # Create your models here.
+
+class ActiveGroupManager(models.Manager):
+    def get_query_set(self, ):
+        return super(ActiveGroupManager, self).get_query_set().filter(
+            group_status__slug='active',
+        )
+
 class Group(models.Model):
     name = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=10, blank=True)
@@ -31,6 +38,9 @@ class Group(models.Model):
     update_date = models.DateTimeField(editable=False, )
     updater = models.CharField(max_length=30, editable=False, null=True, ) # match Django username field
     _updater_set = False
+
+    objects = models.Manager()
+    active_groups = ActiveGroupManager()
 
     def update_string(self, ):
         updater = self.updater or "unknown"
