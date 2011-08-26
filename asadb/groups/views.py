@@ -173,29 +173,6 @@ def manage_main(request, pk, ):
             request_obj.set_updater(request.user)
             request_obj.save()
             form.save_m2m()
-
-            # Send email
-            #tmpl = get_template('fysm/update_email.txt')
-            #ctx = Context({
-            #    'group': group_obj,
-            #    'fysm': fysm_obj,
-            #    'view_uri': view_uri,
-            #    'submitter': request.user,
-            #    'request': request,
-            #    'sender': "ASA FYSM team",
-            #})
-            #body = tmpl.render(ctx)
-            #email = EmailMessage(
-            #    subject='FYSM entry for "%s" updated by "%s"' % (
-            #        group_obj.name,
-            #        request.user,
-            #    ),
-            #    body=body,
-            #    from_email='asa-fysm@mit.edu',
-            #    to=[group_obj.officer_email, request.user.email, ],
-            #    bcc=['asa-fysm-submissions@mit.edu', ]
-            #)
-            #email.send()
             msg = "Thanks for editing!"
         else:
             msg = "Validation failed. See below for details."
