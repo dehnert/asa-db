@@ -187,7 +187,44 @@ def manage_main(request, pk, ):
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
+def create_group(request, status=None,):
+    if not status: status = 'active'
+    groupstatus = get_object_or_404(groups.models.GroupStatus, slug=status)
+    
+    if not request.user.has_perm('groups.add_group', ):
+        raise PermissionDenied
+    change_restricted = False
 
+    msg = None
+
+    group = groups.models.Group()
+    group.group_status = groupstatus
+    group.recognition_date  = datetime.datetime.now()
+    if request.method == 'POST': # If the form has been submitted...
+        # A form bound to the POST data
+        form = GroupChangeMainForm(
+            request.POST, request.FILES,
+            change_restricted=change_restricted,
+            instance=group,
+        )
+
+        if form.is_valid(): # All validation rules pass
+            request_obj = form.save(commit=False)
+            request_obj.set_updater(request.user)
+            request_obj.save()
+            form.save_m2m()
+            return redirect(reverse('groups:group-detail', args=[request_obj.pk]))
+        else:
+            msg = "Validation failed. See below for details."
+
+    else:
+        form = GroupChangeMainForm(change_restricted=change_restricted, instance=group, ) # An unbound form
+
+    context = {
+        'form':  form,
+        'msg':   msg,
+    }
+    return render_to_response('groups/group_create.html', context, context_instance=RequestContext(request), )
 
 ##################
 # Multiple group #
