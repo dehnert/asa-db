@@ -219,3 +219,135 @@ def fysm_thanks(request, fysm, ):
         'pagename':'fysm',
     }
     return render_to_response('fysm/thanks.html', context, context_instance=RequestContext(request), )
+
+#####################
+# Membership update #
+#####################
+
+class Form_GroupMembershipUpdate(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
+        self.fields['no_hazing'].required = True
+
+    class Meta:
+        model = forms.models.GroupMembershipUpdate
+        fields = [
+            'group',
+            'updater_title',
+            'group_email',
+            'officer_email',
+            'no_hazing',
+            'membership_definition',
+            'num_undergrads',
+            'num_grads',
+            'num_community',
+            'num_other',
+            'membership_list',
+        ]
+
+@login_required
+def group_membership_update(request, ):
+    year = datetime.date.today().year
+
+    initial = {
+    }
+    update_obj = forms.models.GroupMembershipUpdate()
+    update_obj.update_time  = datetime.datetime.now()
+    update_obj.updater_name = request.user.username
+
+    confirm_path = reverse('membership-confirm', )
+    confirm_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
+         request.get_host(), confirm_path)
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = Form_GroupMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            request_obj = form.save()
+            group_obj = request_obj.group
+
+
+            # Send email
+            tmpl = get_template('membership/anti-hazing.txt')
+            ctx = Context({
+                'update': request_obj,
+                'group': group_obj,
+                'submitter': request.user,
+            })
+            body = tmpl.render(ctx)
+            email = EmailMessage(
+                subject='ASA Anti-Hazing Acknowledgement for %s' % (
+                    group_obj.name,
+                ),
+                body=body,
+                from_email=request.user.email,
+                to=[request_obj.group_email, ],
+                cc=[request_obj.officer_email, ],
+                #bcc=['asa-db-outgoing@mit.edu', ],
+            )
+            email.send()
+
+            # Send email
+            tmpl = get_template('membership/submit-confirm-email.txt')
+            ctx = Context({
+                'update': request_obj,
+                'group': group_obj,
+                'submitter': request.user,
+                'confirm_uri': confirm_uri,
+            })
+            body = tmpl.render(ctx)
+            email = EmailMessage(
+                subject='ASA Membership Information for %s' % (
+                    group_obj.name,
+                ),
+                body=body,
+                from_email=request.user.email,
+                to=[request_obj.officer_email, ],
+                #bcc=['asa-db-outgoing@mit.edu', ],
+            )
+            email.send()
+
+            return HttpResponseRedirect(reverse('membership-thanks', )) # Redirect after POST
+
+    else:
+        form = Form_GroupMembershipUpdate(initial=initial, ) # An unbound form
+
+    context = {
+        'form':form,
+        'confirm_uri': confirm_uri,
+        'pagename':'groups',
+    }
+    return render_to_response('membership/update.html', context, context_instance=RequestContext(request), )
+
+class Form_PersonMembershipUpdate(ModelForm):
+    class Meta:
+        model = forms.models.PersonMembershipUpdate
+        fields = [
+            'groups',
+        ]
+
+@login_required
+def person_membership_update(request, ):
+    year = datetime.date.today().year
+
+    initial = {
+    }
+    update_obj = forms.models.PersonMembershipUpdate()
+    update_obj.update_time  = datetime.datetime.now()
+    update_obj.username = request.user.username
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            request_obj = form.save()
+            return HttpResponseRedirect(reverse('membership-thanks', )) # Redirect after POST
+
+    else:
+        form = Form_PersonMembershipUpdate(initial=initial, ) # An unbound form
+
+    context = {
+        'form':form,
+        'pagename':'groups',
+    }
+    return render_to_response('membership/confirm.html', context, context_instance=RequestContext(request), )

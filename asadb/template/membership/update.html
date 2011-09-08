@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}ASA Group Registration &amp; Anti-Hazing Form{% endblock %}
+{% block content %}
+
+
+<h1>ASA Group Registration &amp; Anti-Hazing Form</h1>
+
+<p>The purpose of this electronic registration is for the ASA to determine which groups are still active and which are not. There are three components to this process:<p>
+
+<ul>
+    <li>Acknowledgment of compliance with Massachusetts anti-hazing law</li>
+    <li>Providing membership information</li>
+    <li>Membership confirmation</li>
+</ul>
+
+<p>Details on each component are available at the bottom.</p>
+
+<h2>Deadlines and Enforcement</h2>
+
+<p>This form is due by Friday September 30th at 11:59PM. This is very important for confirming that your group is active, so groups that don't submit this form by that date will be fined $50. Groups that still haven't submitted this by Friday October 14th will be fined an additional $50 and will be suspended. Finally, groups that haven't submitted this by October 28th will be derecognized.</p>
+
+<h2>Submit information</h2>
+
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+<table class='pretty-table'>
+{{ form.as_table }}
+<tr><th colspan='2'><input type='submit' value='Submit membership update' /></th></tr>
+</table>
+</form>
+
+<h2>Text of Anti-Hazing Law</h2>
+
+<p>All student groups must have a representative sign this ASA Anti-Hazing Form to confirm that the group will not sponsor or involve its members in acts of hazing, in compliance with Massachusetts Law. The text of the law is below. You must also provide the email for your group membership and this text will be distributed to your group (as required) automatically.</p>
+
+<h3>Section 17. Hazing; organizing or participating; hazing defined:</h3>
+<p>Whoever is a principal organizer or participant in the crime of hazing, as defined herein, shall be punished by a fine of not more than three thousand dollars 
+or by imprisonment in a house of correction for not more than one year, or both such fine and imprisonment.  The term "hazing" as used in this section and in 
+sections eighteen and nineteen, shall mean any conduct or method of initiation into any student organization, whether on public or private property, which 
+willfully or recklessly endangers the physical or mental health of any student or other person. Such conduct shall include whipping, beating, branding, forced 
+calisthenics, exposure to the weather, forced consumption of any food, liquor, beverage, drug or other substance, or any other brutal treatment or forced 
+physical activity which is likely to adversely affect the physical health or safety of any such student or other person, or which subjects such student or 
+other person to extreme mental stress, including extended deprivation of sleep or rest or extended isolation.  Notwithstanding any other provisions of this 
+section to the contrary, consent shall not be available as a defense to any prosecution under this action. </p>
+
+<h3>Section 18. Failure to report hazing:</h3>
+<p>
+Whoever knows that another person is the victim of hazing as defined in section seventeen and is at the scene of such crime shall, to the extent that such 
+person can do so without danger or peril to himself or others, report such crime to an appropriate law enforcement official as soon as reasonably practicable. 
+Whoever fails to report such crime shall be punished by a fine of not more than one thousand dollars.</p>
+
+<h3>Section 19. Copy of Secs. 17 to 19; issuance to students and student groups, teams and organizations; report:</h3>
+<p>
+Each institution of secondary education and each public and private institution of post secondary education shall issue to every student group, student team or 
+student organization which is part of such institution or is recognized by the institution or permitted by the institution to use its name or facilities or is 
+known by the institution to exist as an unaffiliated student group, student team or student organization, a copy of this section and sections seventeen and 
+eighteen; provided, however, that an institution's compliance with this section's requirements that an institution issue copies of this section and sections 
+seventeen and eighteen to unaffiliated student groups, teams or organizations shall not constitute evidence of the institution's recognition or endorsement of 
+said unaffiliated student groups, teams or organizations.</p>
+<p>
+Each such group, team or organization shall distribute a copy of this section and sections seventeen and eighteen to each of its members, plebes, pledges or 
+applicants for membership. It shall be the duty of each such group, team or organization, acting through its designated officer, to deliver annually, to the 
+institution <i>[in MIT's case the Office of Student Life Programs (with exception of varsity teams and club sports, who will deliver attested
+acknowledgements to the Department of Athletics, Physical Education and Recreation)]</i> an attested acknowledgement stating that such group, team or 
+organization has received a copy of this section and said sections seventeen and eighteen, that each of its members, plebes, pledges, or applicants has received 
+a copy of sections seventeen and eighteen, and that such group, team or organization understands and agrees to comply with the provisions of this
+section and sections seventeen and eighteen.</p>
+<p>
+Each institution of secondary education and each public or private institution of post secondary education shall, at least annually, before or at the start of 
+enrollment, deliver to each person who enrolls as a full time student in such institution a copy of this section and sections seventeen and eighteen.</p>
+<p>
+Each institution of secondary education and each public or private institution of post secondary education shall file, at least annually, a report with the 
+board of higher education and in the case of secondary institutions, the board of education, certifying that such institution has complied with its 
+responsibility to inform student groups, teams or organizations and to notify each full time student enrolled by it of the provisions of this section and 
+sections seventeen and eighteen and also certifying that said institution has adopted a disciplinary policy with regard to the organizers and participants of 
+hazing, and that such policy has been set forth with appropriate emphasis in the student handbook or similar means of communicating the institution's policies 
+to its students. The board of higher education and, in the case of secondary institutions, the board of education shall promulgate regulations governing the 
+content and frequency of such reports, and shall forthwith report to the attorney general any such institution which fails to make such report.
+</p>
+
+<h2>Providing Membership Information</h2>
+
+<p>We are requiring that groups provide membership information - both membership numbers and a membership list. This information is important for our understanding of your group and ensuring that groups are meeting our membership standards. We will also share the membership numbers with the funding boards (GSC, UA, and LEF/ARCADE) for groups that apply to those sources. <strong>It is very important you are honest when answering these questions</strong>, even if you are concerned your membership does not meet our standards. We will provide time and support for groups to improve their student participation as needed &mdash; both in terms of number and proportion of students. Groups that are shown to be dishonest in this process, particularly with regards to meeting our standards, <strong>may have funding and space eligibility revoked or be suspended or derecognized</strong>.</p>
+
+<dl>
+<dt>Minimum definition of member</dt><dd><p>For the purposes of this form, the minimum definition of membership you should use is people you would expect to confirm membership in your group (not that they all have to) and people that you consider to be regular or active members of your group. You must state the specific definition of membership you are using below. This does not need to be a membership definition that is in your constitution.</p></dd>
+
+<dt>Privacy</dt><dd><p>The list of members you provide will not be shared. If we need to contact them we will contact your officer/exec list first - this would only be if we have concerns about the information provided or to spot-check the information provided. If feasible, we will ask your officer/exec list to contact your members directly.</p></dd>
+
+<dt>Recruitment</dt><dd><p>If you are still in the midst of or leading up to your major recruitment period, we encourage you to submit current numbers and a list soon to ensure you have something submitted before the deadline. Then you can submit an updated form later, either before or after the deadline. You don't need to do this if your membership changes slightly, but we recommend you do so if your numbers change significantly.</p></dd>
+
+</dl>
+
+<h2>Membership Confirmation</h2>
+
+<p>In addition to the membership info provided by you above, please have at least five student members confirm membership using the link below. You do not need to have everyone do this, we are simply looking five students' confirmation.</p>
+
+<p>Link to provide to members: <a href='{{confirm_uri}}'>{{confirm_uri}}</a>.</p>
+
+<p>If you have any questions or concerns, please email <strong>asa-exec@mit.edu</strong>.</p>
+
+{% endblock %}

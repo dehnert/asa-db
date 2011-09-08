@@ -134,3 +134,30 @@ class PagePreview(models.Model):
             preview = previews_dict[url]
             preview.update_time = cls.never_updated
             preview.save()
+
+
+class GroupMembershipUpdate(models.Model):
+    update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
+    updater_name = models.CharField(max_length=30)
+    updater_title = models.CharField(max_length=30, help_text="You need not hold any particular title in the group, but we like to know who is completing the form.")
+    
+    group = models.ForeignKey(groups.models.Group, help_text="If your group does not appear in the list above, then please email asa-exec@mit.edu.")
+    group_email = models.EmailField(help_text="The text of the law will be automatically distributed to your members via this list, in order to comply with the law.")
+    officer_email = models.EmailField()
+
+    membership_definition = models.TextField()
+    num_undergrads = models.IntegerField()
+    num_grads = models.IntegerField()
+    num_community = models.IntegerField()
+    num_other = models.IntegerField()
+
+    membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
+
+    compliance_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I will distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
+    no_hazing = models.BooleanField(help_text=compliance_statement)
+
+
+class PersonMembershipUpdate(models.Model):
+    update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
+    username = models.CharField(max_length=30)
+    groups = models.ManyToManyField(groups.models.Group, help_text="By selecting a group here, you indicate that you are an active member of the group in question.<br>If your group does not appear in the list above, then please email asa-exec@mit.edu.<br>")

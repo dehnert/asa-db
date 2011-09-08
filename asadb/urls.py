@@ -34,6 +34,15 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
+    url(r'^membership/update/$', forms.views.group_membership_update, name='membership-update', ),
+    url(r'^membership/confirm/$', forms.views.person_membership_update, name='membership-confirm', ),
+    url(
+        r'^membership/thanks/$',
+        'django.views.generic.simple.direct_to_template',
+        {'template': 'membership/thanks.html', 'extra_context': { 'pagename':'groups' }, },
+        name='membership-thanks',
+    ),
+
     # Group list
     url(
         r'^groups/$',

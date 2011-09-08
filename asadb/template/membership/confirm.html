@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Membership update{% endblock %}
+{% block content %}
+
+<h2>Membership update</h2>
+
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+<table class='pretty-table'>
+{{ form.as_table }}
+<tr><th colspan='2'><input type='submit' value='Confirm membership' /></th></tr>
+</table>
+</form>
+
+{% endblock %}

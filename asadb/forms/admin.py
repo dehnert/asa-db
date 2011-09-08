@@ -21,3 +21,27 @@ class FYSMCategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(forms.models.FYSM, FYSMAdmin)
 admin.site.register(forms.models.FYSMCategory, FYSMCategoryAdmin)
+
+class Admin_GroupMembershipUpdate(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'group',
+        'update_time',
+        'updater_name',
+        'updater_title',
+        'num_undergrads',
+        'num_grads',
+        'num_community',
+        'num_other',
+    )
+    list_display_links = ('pk', 'group', )
+admin.site.register(forms.models.GroupMembershipUpdate, Admin_GroupMembershipUpdate)
+
+class Admin_PersonMembershipUpdate(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'username',
+        'update_time',
+    )
+    list_display_links = ('pk', 'username', )
+admin.site.register(forms.models.PersonMembershipUpdate, Admin_PersonMembershipUpdate)
