@@ -31,7 +31,8 @@ class Admin_GroupMembershipUpdate(admin.ModelAdmin):
         'updater_title',
         'num_undergrads',
         'num_grads',
-        'num_community',
+        'num_alum',
+        'num_other_affiliate',
         'num_other',
     )
     list_display_links = ('pk', 'group', )

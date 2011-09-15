@@ -240,7 +240,8 @@ class Form_GroupMembershipUpdate(ModelForm):
             'membership_definition',
             'num_undergrads',
             'num_grads',
-            'num_community',
+            'num_alum',
+            'num_other_affiliate',
             'num_other',
             'membership_list',
         ]
