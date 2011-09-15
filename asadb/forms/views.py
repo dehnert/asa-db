@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
-from django.forms import ModelChoiceField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from django.db.models import Q
 
 import datetime
@@ -225,6 +225,8 @@ def fysm_thanks(request, fysm, ):
 #####################
 
 class Form_GroupMembershipUpdate(ModelForm):
+    group = ModelChoiceField(queryset=groups.models.Group.active_groups.all())
+
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
         self.fields['no_hazing'].required = True
@@ -321,6 +323,7 @@ def group_membership_update(request, ):
     return render_to_response('membership/update.html', context, context_instance=RequestContext(request), )
 
 class Form_PersonMembershipUpdate(ModelForm):
+    groups = ModelMultipleChoiceField(queryset=groups.models.Group.active_groups.all())
     class Meta:
         model = forms.models.PersonMembershipUpdate
         fields = [
