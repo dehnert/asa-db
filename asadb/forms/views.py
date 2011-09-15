@@ -284,7 +284,7 @@ def group_membership_update(request, ):
                 from_email=request.user.email,
                 to=[request_obj.group_email, ],
                 cc=[request_obj.officer_email, ],
-                #bcc=['asa-db-outgoing@mit.edu', ],
+                bcc=['asa-db-outgoing@mit.edu', ],
             )
             email.send()
 
@@ -304,7 +304,7 @@ def group_membership_update(request, ):
                 body=body,
                 from_email=request.user.email,
                 to=[request_obj.officer_email, ],
-                #bcc=['asa-db-outgoing@mit.edu', ],
+                bcc=['asa-db-outgoing@mit.edu', ],
             )
             email.send()
 
