@@ -33,6 +33,10 @@ Ideally, we'd use some third-party system to do this, instead of implementing it
         * Last commit January 2010
     * Design
         * Store all versions of all models in a single table, JSON'd
+        * Metadata stored unpickled
+            * Time
+            * Editor
+            * Some other stuff
 * django-reversion
     * https://github.com/etianen/django-reversion
     * License: Berkeley 3-clause

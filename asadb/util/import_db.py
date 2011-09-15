@@ -20,6 +20,7 @@ def dictize_line(header, line,):
 
 def canonicalize_email(email):
     if '@' in email: return email
+    elif email == '': return ''
     else: return email + "@mit.edu"
 
 def db_parse_date(string):
@@ -49,6 +50,23 @@ if __name__ == '__main__':
         except groups.models.ActivityCategory.DoesNotExist:
             print ">> Unknown category '%s' on group '%s'" % (cat_name, g.name, )
             pass
+        class_name = d['GROUP_CLASS']
+        status_name = d['GROUP_STATUS']
+        funding_name = d['GROUP_FUNDING_TYPE']
+        if class_name == 'Standard':
+            if status_name == 'Provisional':
+                class_name = 'Unfunded'
+                status_name = 'Active'
+            elif status_name == 'Active':
+                class_name = 'MIT-funded'
+            elif status_name == 'Suspended' or status_name == 'Derecognized':
+                class_name = 'MIT-funded'
+        g.group_class = groups.models.GroupClass.objects.get(name=class_name)
+        g.group_status = groups.models.GroupStatus.objects.get(name=status_name)
+        if funding_name == 'none':
+            g.group_funding = None
+        else:
+            g.group_funding = groups.models.GroupFunding.objects.get(name=funding_name)
         g.website_url       = d['WEBSITE_URL']
         g.constitution_url  = d['CONSTITUTION_WEB_URL']
         g.meeting_times     = d['MEETING_TIMES']

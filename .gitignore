@@ -5,5 +5,6 @@ local_settings.py
 local_settings_after.py
 asadb/media/fysm/logos/
 asadb/media/fysm/slides/
+asadb/media/page-previews/fysm/
 asadb/util/saved-data/
 asadb/util/warehouse-dump.csv

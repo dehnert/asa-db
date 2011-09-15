@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Search Groups{% endblock %}
+{% block content %}
+
+<h1>Search Groups</h1>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" name="group-info" value="Show Group Information" />
+    {% if perms.groups.view_signatories %}
+    <input type="submit" name="signatories" value="Show Signatories" />
+    {% endif %}
+</form>
+
+{% endblock %}

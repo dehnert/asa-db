@@ -5,7 +5,6 @@ import sys
 SITE_ROOT = os.path.normpath(os.path.dirname(__file__))
 SITE_WEB_PATH = ''
 
-
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
@@ -27,7 +26,7 @@ LOGFILE = "asa-db.log"
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'America/New_York'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -38,6 +37,8 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
+
+DATETIME_FORMAT_PYTHON = "%c"
 
 from local_settings import *
 
@@ -70,10 +71,13 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
+    'groups.models.PerGroupAuthz',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -98,6 +102,9 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'form_utils',
+    'django_filters',
+    'reversion',
     'south',
     'groups',
     'forms',

@@ -8,19 +8,13 @@ admin.autodiscover()
 
 import settings
 
+import groups.urls
 import forms.views
-
-import groups.models
 
 urlpatterns = patterns('',
     # Example:
     # (r'^asadb/', include('asadb.foo.urls')),
-    url(
-        r'^$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'index.html', 'extra_context': { 'pagename':'homepage' }, },
-        name='homepage',
-    ),
+    url(r'^$', 'groups.views.view_homepage', name='homepage', ),
 
     # FYSM
     url(
@@ -44,16 +38,7 @@ urlpatterns = patterns('',
     ),
 
     # Group list
-    url(
-        r'^groups/$',
-        list_detail.object_list,
-        {
-            'queryset': groups.models.Group.objects.all(),
-            'template_object_name': 'group',
-            'extra_context': {'pagename': 'groups', },
-        },
-        name='group-list',
-    ),
+    (r'^groups/', include(groups.urls.urls(), ), ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
@@ -61,6 +46,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/login/password/', 'django.contrib.auth.views.login', name='login-password', ),
     url(r'^accounts/login/',  'mit.scripts_login',  name='login', ),
     url(r'^accounts/logout/', logout, name='logout', ),
 )

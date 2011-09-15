@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+
+<h1>{{title}}</h1>
+
+<table class='pretty-table'>
+<tr>
+    <th>#</th>
+    <th>Group</th>
+    <th>Date</th>
+    <th>Updater</th>
+    <th>Comment</th>
+</tr>
+{% for version in version_list %}
+<tr>
+    <td>{{version.object_id}}</td>
+    <td><a href='{% url groups:group-detail version.object_id %}'>{{version.object_repr}}</a></td>
+    <td>{{version.revision.date_created}}</td>
+    <td>{% if version.revision.user %}{{version.revision.user}}{%else%}<i>System</i>{%endif%}</td>
+    <td>{{version.revision.comment}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

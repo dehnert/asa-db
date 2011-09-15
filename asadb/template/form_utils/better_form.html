@@ -1,0 +1,16 @@
+{% extends "form_utils/form.html" %}
+
+{% block fields %}
+{% for fieldset in form.fieldsets %}
+<fieldset class="{{ fieldset.classes }}">
+{% if fieldset.legend %}
+<legend>{{ fieldset.legend }}</legend>
+{% endif %}
+<table class='pretty-table'>
+{% with fieldset as fields %}
+{% include "form_utils/fields_as_trs.html" %}
+{% endwith %}
+</table>
+</fieldset>
+{% endfor %}
+{% endblock %}

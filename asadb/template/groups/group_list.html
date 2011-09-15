@@ -5,17 +5,34 @@
 
 <h1>MIT Student Groups</h1>
 
+<h2>Search</h2>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" value="Search" />
+</form>
+
+<h2>The Groups</h2>
+
 <table class='pretty-table'>
 <thead>
     <tr>
         <th>Name</th>
+        <th>Website</th>
+        <th>ASA DB</th>
+        <th>Description</th>
         <th>Meeting Time</th>
     </tr>
 </thead>
 <tbody>
 {% for group in group_list %}
     <tr>
-        <td>{% if group.website_url %}<a href='{{group.website_url}}'>{% endif %}{{group.name}}{%if group.website_url%}</a>{%endif%}</td>
+        <th>{{group.name}}</th>
+        <td>{% if group.website_url %}<a href='{{group.website_url}}'>Website</a>{%endif%}</td>
+        <td><a href='{% url groups:group-detail group.pk %}'>DB Entry</a></td>
+        <td>{{group.description}}</td>
         <td>{{group.meeting_times}}</td>
     </tr>
 {% endfor %}

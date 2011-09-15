@@ -11,8 +11,9 @@
   <body>
     <ul class='tab-navigation'>
         <li{% ifequal pagename "homepage" %} class='selected'{% endifequal %}><a href="{% url homepage   %}">Home</a></li>
-        <li{% ifequal pagename "groups"   %} class='selected'{% endifequal %}><a href="{% url group-list %}">Groups</a></li>
+        <li{% ifequal pagename "groups"   %} class='selected'{% endifequal %}><a href="{% url groups:list %}">Groups</a></li>
         <li{% ifequal pagename "fysm"     %} class='selected'{% endifequal %}><a href="{% url fysm       %}">FYSM</a></li>
+        {% if user.is_staff %}<li><a href='{% url admin:index %}'>Admin</a></li>{% endif %}
     </ul>
     <div id='content'>
         {% if user.is_authenticated %}

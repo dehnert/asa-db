@@ -6,11 +6,50 @@
 <h1>Association of Student Activities (ASA)</h1>
 
 <ul>
-    <li><a href='{%url group-list%}'>List of groups</a></li>
+    <li><a href='{%url groups:search%}'>Search groups</a></li>
+    <li><a href='{%url groups:list%}'>List of groups</a></li>
     <li>First Year Summer Mailing<ul>
         <li><a href='{%url fysm%}'>View the entries</a></li>
         <li><a href='{%url fysm-select%}'>Submit an entry</a></li>
     </ul></li>
+    {%if perms.groups.view_signatories %}<li><a href='{% url groups:signatories %}'>View Signatories</a></li>{%endif%}
 </ul>
+
+<h2>My Groups</h2>
+
+{% if user.is_anonymous %}
+<p><a href='{% url login %}'>Login</a> to see your groups.</p>
+{% else %}
+{%if not groups %}
+<p>You do not currently appear to be listed with any groups.</p>
+{% endif %}
+{% endif %}
+
+{% if groups %}
+<ul>
+{% for group in groups %}
+    <li><a href='{% url groups:group-detail group.pk %}'>{{group}}</a></li>
+{%endfor%}
+</ul>
+{% endif %}
+
+{% if has_perms %}
+<h2>Permissions</h2>
+
+<p>You have the following permissions:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+</tr>
+{% for perm_name, perm_desc in has_perms %}
+<tr>
+    <td>{{perm_name}}</td>
+    <td>{{perm_desc}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
 
 {% endblock %}
