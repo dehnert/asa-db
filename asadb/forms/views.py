@@ -238,7 +238,9 @@ class Form_GroupMembershipUpdate(ModelForm):
             'updater_title',
             'group_email',
             'officer_email',
+            'email_preface',
             'no_hazing',
+            'no_discrimination',
             'membership_definition',
             'num_undergrads',
             'num_grads',
@@ -279,7 +281,7 @@ def group_membership_update(request, ):
             })
             body = tmpl.render(ctx)
             email = EmailMessage(
-                subject='ASA Anti-Hazing Acknowledgement for %s' % (
+                subject='Anti-Hazing and Non-Discrimination Acknowledgement for %s' % (
                     group_obj.name,
                 ),
                 body=body,

@@ -154,8 +154,14 @@ class GroupMembershipUpdate(models.Model):
 
     membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
 
-    compliance_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I will distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
-    no_hazing = models.BooleanField(help_text=compliance_statement)
+    email_preface = models.TextField(help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
+
+    hazing_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
+    no_hazing = models.BooleanField(help_text=hazing_statement)
+
+    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the MIT Non-Discrimination Policy.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
+    no_discrimination = models.BooleanField(help_text=discrimination_statement)
+
 
 
 class PersonMembershipUpdate(models.Model):

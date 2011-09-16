@@ -1,11 +1,17 @@
-{{submitter.first_name}} {{submitter.last_name}} submitted an Anti-Hazing Acknowledgement for {{group.name}}.
+{% if update.email_preface %}{{update.email_preface}}
+--
 
-The text of the law is copied below for the reference of group members.  It should also be distributed to any members not receiving this email and any 
-current or future pledges or applicants.
+{%endif%}{{submitter.first_name}} {{submitter.last_name}} submitted an Anti-Hazing and Non-Discrimination Acknowledgement for {{group.name}}.
 
-If you have questions, please email asa-exec@mit.edu.
+All MIT student groups are required to follow the Massachusetts anti-hazing law and the MIT Non-Discrimination policy.  The full texts of these policies are copied below.  They should also be distributed to any members not receiving this email and any current or future pledges or applicants.
+
+If you have any questions, concerns, or want to report questionable behavior or violations of these policies, please email asa-president@mit.edu (confidential, non-archived) and/or Leah Flynn (laflynn@mit.edu, Director of the Student Activities Office).
+
 Sincerely,
 The ASA Executive Board
+
+
+Text of Anti-Hazing Law:
 
 Section 17. Hazing; organizing or participating; hazing defined: Whoever is a principal organizer or
 participant in the crime of hazing, as defined herein, shall be punished by a fine of not more than three thousand
@@ -61,3 +67,9 @@ emphasis in the student handbook or similar means of communicating the instituti
 board of higher education and, in the case of secondary institutions, the board of education shall promulgate
 regulations governing the content and frequency of such reports, and shall forthwith report to the attorney general
 any such institution which fails to make such report.
+
+
+
+Text of Non-Discrimination Policy:
+
+The Massachusetts Institute of Technology is committed to the principle of equal opportunity in education and employment. The Institute does not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin in the administration of its educational policies, admissions policies, employment policies, scholarship and loan programs, and other Institute administered programs and activities, but may favor US citizens or residents in admissions and financial aid.
