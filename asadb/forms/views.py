@@ -3,7 +3,7 @@ import groups.models
 import settings
 
 from django.contrib.auth.decorators import user_passes_test, login_required
-from django.views.generic import list_detail
+from django.views.generic import list_detail, ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
@@ -14,7 +14,7 @@ from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
-from django.db.models import Q
+from django.db.models import Q, Count
 
 import datetime
 
@@ -357,3 +357,22 @@ def person_membership_update(request, ):
         'pagename':'groups',
     }
     return render_to_response('membership/confirm.html', context, context_instance=RequestContext(request), )
+
+
+class View_GroupMembershipList(ListView):
+    context_object_name = "group_list"
+    template_name = "membership/submitted.html"
+
+    def get_queryset(self):
+        group_updates = forms.models.GroupMembershipUpdate.objects.all()
+        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate'))
+        return group_updates
+
+    #def get_context_data(self, **kwargs):
+    #    context = super(GroupHistoryView, self).get_context_data(**kwargs)
+    #    if 'pk' in self.kwargs:
+    #        group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
+    #        context['title'] = "History for %s" % (group.name, )
+    #    else:
+    #        context['title'] = "Recent Changes"
+    #    return context
