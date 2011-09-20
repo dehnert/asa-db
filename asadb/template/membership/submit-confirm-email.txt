@@ -16,8 +16,8 @@ The ASA Executive Board
 Membership definition: {{update.membership_definition}}
 Number of MIT undergraduate students: {{update.num_undergrads}}
 Number of MIT graduate students: {{update.num_grads}}
-Number of MIT alumni: {{update.num_community}}
-Number of other MIT affiliates: {{update.num_community}}
+Number of MIT alumni: {{update.num_alum}}
+Number of other MIT affiliates: {{update.num_other_affiliate}}
 Number of other members: {{update.num_other}}
 Membership list:
 {{update.membership_list}}
