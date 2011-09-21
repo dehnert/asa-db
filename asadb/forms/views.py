@@ -365,7 +365,7 @@ class View_GroupMembershipList(ListView):
 
     def get_queryset(self):
         group_updates = forms.models.GroupMembershipUpdate.objects.all()
-        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate'))
+        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate__username', distinct=True))
         return group_updates
 
     #def get_context_data(self, **kwargs):
