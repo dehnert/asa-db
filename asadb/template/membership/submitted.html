@@ -8,6 +8,7 @@
 <table class='pretty-table'>
 <thead>
     <tr>
+        <th>Update ID</th>
         <th>Group</th>
         <th>Update time</th>
         <th>Number of confirmations</th>
@@ -16,6 +17,7 @@
 <tbody>
 {% for group in group_list %}
 <tr>
+    <td>{{group.id}}</td>
     <th>{{group.group.name}}</th>
     <td>{{group.update_time}}</td>
     <td>{{group.num_confirms}}</td>
