@@ -162,9 +162,14 @@ class GroupMembershipUpdate(models.Model):
     discrimination_statement = "By checking this, I hereby affirm that I have read and understand the MIT Non-Discrimination Policy.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
     no_discrimination = models.BooleanField(help_text=discrimination_statement)
 
+    def __unicode__(self, ):
+        return "GroupMembershipUpdate for %s" % (self.group, )
 
 
 class PersonMembershipUpdate(models.Model):
     update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
     username = models.CharField(max_length=30)
     groups = models.ManyToManyField(groups.models.Group, help_text="By selecting a group here, you indicate that you are an active member of the group in question.<br>If your group does not appear in the list above, then please email asa-exec@mit.edu.<br>")
+
+    def __unicode__(self, ):
+        return "PersonMembershipUpdate for %s" % (self.username, )
