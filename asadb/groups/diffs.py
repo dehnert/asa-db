@@ -42,6 +42,8 @@ class StaticMailCallback(DiffCallback):
         self.address = address
         self.template = template
         self.interesting_signatories = signatories
+        self.care_about_groups = True
+        self.care_about_signatories = True
 
     def start_run(self, since, now, ):
         self.updates = []
@@ -91,7 +93,7 @@ class StaticMailCallback(DiffCallback):
     def end_run(self, ):
         message = "\n\n".join(self.updates)
         signatories_message = "\n".join(self.signatory_updates)
-        if self.updates or self.signatory_updates:
+        if (self.care_about_groups and self.updates) or (self.care_about_signatories and self.signatory_updates):
             pass
         else:
             return
@@ -131,6 +133,14 @@ def build_callbacks():
         template='groups/diffs/asa-update-mail.txt',
         signatories=['president', 'treasurer', 'financial', ]
     ))
+    sao_callback = StaticMailCallback(
+        fields=['name', 'abbreviation', 'officer_email', ],
+        address='funds@mit.edu',
+        template='groups/diffs/sao-update-mail.txt',
+        signatories=['president', 'treasurer', 'financial', ]
+    )
+    sao_callback.care_about_groups = False
+    callbacks.append(sao_callback)
     return callbacks
 
 def recent_groups(since):
