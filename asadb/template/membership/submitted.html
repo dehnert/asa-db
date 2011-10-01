@@ -11,7 +11,7 @@
         <th>Update ID</th>
         <th>Group</th>
         <th>Update time</th>
-        <th>Number of confirmations</th>
+        <th>Number of confirmations*</th>
     </tr>
 </thead>
 <tbody>
@@ -25,5 +25,7 @@
 {% endfor %}
 </tbody>
 </table>
+
+<p>* These are approximate. It counts multiple times people who submitted several times, it includes non-students (if any confirmed), and it includes people who selected all the groups. We may or may not ever correct for these. However, if you want to be sure of the correct number, please contact <a href='mailto:asa-db@mit.edu'>the ASA Database team</a> and we'll be happy to look it up for you.</p>
 
 {% endblock %}
