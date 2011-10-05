@@ -20,7 +20,7 @@
 <tr><th colspan='2'>Contact Information</th></tr>
 <tr><th>Website</th><td><a href="{{group.website_url}}">{{group.website_url}}</a></td></tr>
 <tr><th>Meeting times</th><td>{{group.meeting_times}}</td></tr>
-<tr><th>Officer email</th><td>{{group.officer_email}}</td></tr>
+<tr><th>Officer email</th><td>``redacted''@mit.edu</td></tr>
 {% if viewpriv %}<tr class='private-info'>
     <th>Group email</th>
     <td>{{group.group_email}}</td>
@@ -31,7 +31,7 @@
 <tr>
     <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
     <td><ul>
-    {% for person in people %}<li>{{person.person}}</li>{%endfor%}
+    {% for person in people %}<li>[redacted]</li>{%endfor%}
     </ul></td>
 </tr>
 {% endfor %}
@@ -43,8 +43,8 @@
 
 <tr><th colspan='2'>Financial Information</th></tr>
 <tr><th>Funding status</th><td>{{group.group_funding}}</td></tr>
-<tr><th>Main Account</th><td>{{group.main_account_id}}</td></tr>
-<tr><th>Funding Account</th><td>{{group.funding_account_id}}</td></tr>
+<tr><th>Main Account</th><td>272XXXX</td></tr>
+<tr><th>Funding Account</th><td>272XXXX</td></tr>
 
 <tr><th colspan='2'>Additional Information</th></tr>
 <tr>
