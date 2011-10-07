@@ -44,5 +44,6 @@ class Admin_PersonMembershipUpdate(admin.ModelAdmin):
         'username',
         'update_time',
     )
+    list_filter = ('groups', )
     list_display_links = ('pk', 'username', )
 admin.site.register(forms.models.PersonMembershipUpdate, Admin_PersonMembershipUpdate)
