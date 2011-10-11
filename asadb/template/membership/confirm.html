@@ -5,15 +5,22 @@
 
 <h2>Membership update</h2>
 
+{% if message %}
+<div class='messagebox infobox'>
+<p>{{message}}</p>
+</div>
+{% endif %}
+
 <p>
 The ASA is attempting to verify that all currently recognized groups are active
 and have at least five members.
 </p>
 
 <p>
-Please select below the groups that you consider yourself a member of. (If you
-prefer, you can submit this form whenever one of your groups' leaders asks you
-to. Submitting again will not erase previous submissions.)
+Please select below the groups that you consider yourself a member of. If you
+come back to this form again, you'll be able to see all the groups you
+previously submitted, and add new groups. However, you should be careful not to
+deselect any groups.
 </p>
 
 <form enctype="multipart/form-data" method="post" action="">
@@ -23,5 +30,14 @@ to. Submitting again will not erase previous submissions.)
 <tr><th colspan='2'><input type='submit' value='Confirm membership' /></th></tr>
 </table>
 </form>
+
+{% if groups %}
+<h3>Groups saved</h3>
+<ul>
+{% for group in groups %}
+    <li>{{group}}</li>
+{% endfor %}
+</ul>
+{% endif %}
 
 {% endblock %}

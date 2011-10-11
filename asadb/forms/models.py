@@ -136,6 +136,19 @@ class PagePreview(models.Model):
             preview.save()
 
 
+class GroupConfirmationCycle(models.Model):
+    name = models.CharField(max_length=30)
+    slug = models.SlugField()
+    create_date = models.DateTimeField(default=datetime.datetime.now)
+
+    def __unicode__(self, ):
+        return u"GroupConfirmationCycle %d: %s" % (self.id, self.name, )
+
+    @classmethod
+    def latest(cls, ):
+        return cls.objects.order_by('-create_date')[0]
+
+
 class GroupMembershipUpdate(models.Model):
     update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
     updater_name = models.CharField(max_length=30)
@@ -166,9 +179,25 @@ class GroupMembershipUpdate(models.Model):
         return "GroupMembershipUpdate for %s" % (self.group, )
 
 
+VALID_UNSET         = 0
+VALID_AUTOVALIDATED = 10
+VALID_OVERRIDDEN    = 20    # confirmed by an admin
+VALID_AUTOREJECTED      = -10
+VALID_HANDREJECTED      = -20
+VALID_CHOICES = (
+    (VALID_UNSET,           "unvalidated"),
+    (VALID_AUTOVALIDATED,   "autovalidated"),
+    (VALID_OVERRIDDEN,      "hand-validated"),
+    (VALID_AUTOREJECTED,    "autorejected"),
+    (VALID_HANDREJECTED,    "hand-rejected"),
+)
+
 class PersonMembershipUpdate(models.Model):
     update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
     username = models.CharField(max_length=30)
+    cycle = models.ForeignKey(GroupConfirmationCycle)
+    deleted = models.DateTimeField(default=None, null=True, blank=True, )
+    valid = models.IntegerField(choices=VALID_CHOICES, default=VALID_UNSET)
     groups = models.ManyToManyField(groups.models.Group, help_text="By selecting a group here, you indicate that you are an active member of the group in question.<br>If your group does not appear in the list above, then please email asa-exec@mit.edu.<br>")
 
     def __unicode__(self, ):

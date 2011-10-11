@@ -338,22 +338,48 @@ def person_membership_update(request, ):
 
     initial = {
     }
-    update_obj = forms.models.PersonMembershipUpdate()
-    update_obj.update_time  = datetime.datetime.now()
-    update_obj.username = request.user.username
+    cycle = forms.models.GroupConfirmationCycle.latest()
+    try:
+        update_obj = forms.models.PersonMembershipUpdate.objects.get(
+            username=request.user.username,
+            deleted__isnull=True,
+            cycle=cycle,
+        )
+        selected_groups = update_obj.groups.all()
+        print "Got update"
+    except forms.models.PersonMembershipUpdate.DoesNotExist:
+        update_obj = forms.models.PersonMembershipUpdate()
+        update_obj.update_time  = datetime.datetime.now()
+        update_obj.username = request.user.username
+        update_obj.cycle = cycle
+        selected_groups = []
 
+    accounts = groups.models.AthenaMoiraAccount
+    try:
+        person = accounts.active_accounts.get(username=request.user.username)
+        if person.is_student():
+            update_obj.valid = forms.models.VALID_AUTOVALIDATED
+        else:
+            update_obj.valid = forms.models.VALID_AUTOREJECTED
+    except accounts.DoesNotExist:
+        pass
+        update_obj.valid = forms.models.VALID_AUTOREJECTED
+
+    message = ""
     if request.method == 'POST': # If the form has been submitted...
         form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
 
         if form.is_valid(): # All validation rules pass
             request_obj = form.save()
-            return HttpResponseRedirect(reverse('membership-thanks', )) # Redirect after POST
+            message = "Update saved"
 
     else:
-        form = Form_PersonMembershipUpdate(initial=initial, ) # An unbound form
+        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, ) # An unbound form
 
     context = {
         'form':form,
+        'groups':selected_groups,
+        'message': message,
         'pagename':'groups',
     }
     return render_to_response('membership/confirm.html', context, context_instance=RequestContext(request), )

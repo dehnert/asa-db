@@ -22,6 +22,17 @@ class FYSMCategoryAdmin(admin.ModelAdmin):
 admin.site.register(forms.models.FYSM, FYSMAdmin)
 admin.site.register(forms.models.FYSMCategory, FYSMCategoryAdmin)
 
+class Admin_GroupConfirmationCycle(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'name',
+        'slug',
+        'create_date',
+    )
+    list_display_links = ('pk', 'name', 'slug', )
+    prepopulated_fields = {"slug": ("name",)}
+admin.site.register(forms.models.GroupConfirmationCycle, Admin_GroupConfirmationCycle)
+
 class Admin_GroupMembershipUpdate(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -42,8 +53,11 @@ class Admin_PersonMembershipUpdate(admin.ModelAdmin):
     list_display = (
         'pk',
         'username',
+        'cycle',
         'update_time',
+        'deleted',
+        'valid',
     )
-    list_filter = ('groups', )
-    list_display_links = ('pk', 'username', )
+    list_filter = ('valid', 'groups', )
+    list_display_links = ('pk', 'username', 'cycle', )
 admin.site.register(forms.models.PersonMembershipUpdate, Admin_PersonMembershipUpdate)
