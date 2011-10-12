@@ -14,6 +14,7 @@ from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.db import connection
 from django.db.models import Q, Count
 
 import datetime
@@ -391,7 +392,13 @@ class View_GroupMembershipList(ListView):
 
     def get_queryset(self):
         group_updates = forms.models.GroupMembershipUpdate.objects.all()
-        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate__username', distinct=True))
+        group_updates = group_updates.filter(
+            group__personmembershipupdate__deleted__isnull=True,
+            group__personmembershipupdate__valid__gt=0,
+        )
+        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate'))
+        #print len(list(group_updates))
+        #for query in connection.queries: print query
         return group_updates
 
     #def get_context_data(self, **kwargs):
