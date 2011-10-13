@@ -3,13 +3,13 @@ import groups.models
 import groups.views
 import settings
 
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.views.generic import list_detail, ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
 from django.template.loader import get_template
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
@@ -18,7 +18,9 @@ from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from django.db import connection
 from django.db.models import Q, Count
 
+import csv
 import datetime
+import StringIO
 
 #################
 # GENERIC VIEWS #
@@ -443,3 +445,45 @@ class View_GroupMembershipList(ListView):
     #    else:
     #        context['title'] = "Recent Changes"
     #    return context
+
+
+@permission_required('groups.view_group_private_info')
+def group_confirmation_issues(request, ):
+    active_groups = groups.models.Group.active_groups
+    group_updates = forms.models.GroupMembershipUpdate.objects.all()
+    people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
+        deleted__isnull=True,
+        valid__gt=0,
+    )
+
+    buf = StringIO.StringIO()
+    output = csv.writer(buf)
+    output.writerow(['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ])
+
+    q_present = Q(id__in=group_updates.values('group'))
+    missing_groups = active_groups.filter(~q_present)
+    #print len(list(group_updates))
+    for group in missing_groups:
+        num_confirms = len(people_confirmations.filter(groups=group))
+        output.writerow([
+            group.id,
+            group.name,
+            'unsubmitted',
+            num_confirms,
+            group.officer_email,
+        ])
+
+    for group_update in group_updates:
+        group = group_update.group
+        num_confirms = len(people_confirmations.filter(groups=group))
+        if num_confirms < 5:
+            output.writerow([
+                group.id,
+                group.name,
+                'confirmations',
+                num_confirms,
+                group.officer_email,
+            ])
+
+
+    return HttpResponse(buf.getvalue(), mimetype='text/plain', )

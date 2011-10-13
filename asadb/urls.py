@@ -37,6 +37,7 @@ urlpatterns = patterns('',
         name='membership-thanks',
     ),
     url(r'^membership/submitted/$', forms.views.View_GroupMembershipList.as_view(), name='membership-submitted', ),
+    url(r'^membership/admin/issues.csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
 
     # Group list
     (r'^groups/', include(groups.urls.urls(), ), ),
