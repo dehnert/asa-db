@@ -1,3 +1,4 @@
+{% autoescape off %}
 {% if update.email_preface %}{{update.email_preface}}
 --
 
@@ -73,3 +74,4 @@ any such institution which fails to make such report.
 Text of Non-Discrimination Policy:
 
 The Massachusetts Institute of Technology is committed to the principle of equal opportunity in education and employment. The Institute does not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin in the administration of its educational policies, admissions policies, employment policies, scholarship and loan programs, and other Institute administered programs and activities, but may favor US citizens or residents in admissions and financial aid.
+{% endautoescape %}

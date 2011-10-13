@@ -1,3 +1,4 @@
+{% autoescape off %}
 {{submitter.first_name}} {{submitter.last_name}} submitted the following membership information for {{group.name}}.
 
 Please note, if you are still in the midst of or leading up to your major recruitment period, we encourage you to submit current numbers and a list 
@@ -21,3 +22,4 @@ Number of other MIT affiliates: {{update.num_other_affiliate}}
 Number of other members: {{update.num_other}}
 Membership list:
 {{update.membership_list}}
+{% endautoescape %}
