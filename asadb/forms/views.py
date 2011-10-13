@@ -1,5 +1,6 @@
 import forms.models
 import groups.models
+import groups.views
 import settings
 
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -366,8 +367,35 @@ def person_membership_update(request, ):
         pass
         update_obj.valid = forms.models.VALID_AUTOREJECTED
 
+    qs = groups.models.Group.active_groups
+    filterset = groups.views.GroupFilter(request.GET, qs)
+    filtered_groups = filterset.qs.all()
+    show_filtered_groups = ('search' in request.GET)
+
     message = ""
-    if request.method == 'POST': # If the form has been submitted...
+    message_type = "info"
+
+    if request.method == 'POST' and 'add-remove' in request.POST:
+        group = groups.models.Group.objects.get(id=request.POST['group'])
+        if request.POST['action'] == 'remove':
+            if group in update_obj.groups.all():
+                update_obj.groups.remove(group)
+                message = "You have been successfully removed from %s." % (group, )
+            else:
+                message = "Sorry, but you're not in %s." % (group, )
+                message_type = "warn"
+        elif request.POST['action'] == 'add':
+            if group in update_obj.groups.all():
+                message = "Sorry, but you're already in %s." % (group, )
+                message_type = "warn"
+            else:
+                update_obj.groups.add(group)
+                message = "You have been successfully added to %s." % (group, )
+        else:
+            message = "Uh, somehow you tried to do something besides adding and removing..."
+            message_type = "alert"
+
+    if request.method == 'POST' and 'list' in request.POST: # If the form has been submitted...
         form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
 
         if form.is_valid(): # All validation rules pass
@@ -379,8 +407,12 @@ def person_membership_update(request, ):
 
     context = {
         'form':form,
-        'groups':selected_groups,
+        'filter':filterset,
+        'show_filtered_groups':show_filtered_groups,
+        'filtered_groups':filtered_groups,
+        'member_groups':selected_groups,
         'message': message,
+        'message_type': message_type,
         'pagename':'groups',
     }
     return render_to_response('membership/confirm.html', context, context_instance=RequestContext(request), )

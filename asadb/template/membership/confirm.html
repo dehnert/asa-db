@@ -6,7 +6,7 @@
 <h2>Membership update</h2>
 
 {% if message %}
-<div class='messagebox infobox'>
+<div class='messagebox {{message_type}}box'>
 <p>{{message}}</p>
 </div>
 {% endif %}
@@ -16,28 +16,79 @@ The ASA is attempting to verify that all currently recognized groups are active
 and have at least five members.
 </p>
 
-<p>
-Please select below the groups that you consider yourself a member of. If you
-come back to this form again, you'll be able to see all the groups you
-previously submitted, and add new groups. However, you should be careful not to
-deselect any groups.
-</p>
+<p>We ask you to help with that process by indicating what groups you consider yourself a member of.</p>
+
+<h3>Groups you currently say you're a member of:</h3>
+{% if member_groups %}
+<ul>
+{% for group in member_groups %}
+    <li>{{group}}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p>You are not currently indicating membership in any groups.</p>
+{% endif %}
+
+<h3>Option 1: Add or remove groups one at a time</h3>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" name='search' value="Search" />
+    <input type="submit" name='stop-search' value="Stop searching" />
+</form>
+
+{% if show_filtered_groups %}
+<table class='pretty-table'>
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Website</th>
+        <th>ASA DB</th>
+        <th>Description</th>
+        <th>Add/Remove</th>
+    </tr>
+</thead>
+<tbody>
+{% for group in filtered_groups %}
+    <tr>
+        <th>{{group.name}}</th>
+        <td>{% if group.website_url %}<a href='{{group.website_url}}'>Website</a>{%endif%}</td>
+        <td><a href='{% url groups:group-detail group.pk %}'>DB Entry</a></td>
+        <td>{{group.description}}</td>
+        <td>
+            <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="group" value="{{group.pk}}">
+            {% if group in member_groups %}
+            <input type="hidden" name="action" value="remove">
+            <input type="submit" name="add-remove" value="Remove">
+            {% else %}
+            <input type="hidden" name="action" value="add">
+            <input type="submit" name="add-remove" value="Add">
+            {% endif %}
+            </form>
+        </td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>Hit "search" to see matching groups.</p>
+{% endif %}
+
+
+<h3>Option 2: Select all your groups at once</h3>
+
+<p>Below is a list of all recognized groups. You can go through picking out the groups you are a member of. However, you should be careful not to deselect any groups (unless you aren't a member of them, of course).</p>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
 <table class='pretty-table'>
 {{ form.as_table }}
-<tr><th colspan='2'><input type='submit' value='Confirm membership' /></th></tr>
+<tr><th colspan='2'><input type='submit' name='list' value='Update list of groups' /></th></tr>
 </table>
 </form>
-
-{% if groups %}
-<h3>Groups saved</h3>
-<ul>
-{% for group in groups %}
-    <li>{{group}}</li>
-{% endfor %}
-</ul>
-{% endif %}
 
 {% endblock %}
