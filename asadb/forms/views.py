@@ -367,6 +367,8 @@ def person_membership_update(request, ):
         pass
         update_obj.valid = forms.models.VALID_AUTOREJECTED
 
+    update_obj.save()
+
     qs = groups.models.Group.active_groups
     filterset = groups.views.GroupFilter(request.GET, qs)
     filtered_groups = filterset.qs.all()
