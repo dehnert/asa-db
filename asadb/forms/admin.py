@@ -47,6 +47,7 @@ class Admin_GroupMembershipUpdate(admin.ModelAdmin):
         'num_other',
     )
     list_display_links = ('pk', 'group', )
+    search_fields = ('group__name', 'group__abbreviation', 'updater_name', )
 admin.site.register(forms.models.GroupMembershipUpdate, Admin_GroupMembershipUpdate)
 
 class Admin_PersonMembershipUpdate(admin.ModelAdmin):
