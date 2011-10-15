@@ -437,15 +437,6 @@ class View_GroupMembershipList(ListView):
         #for query in connection.queries: print query
         return group_updates
 
-    #def get_context_data(self, **kwargs):
-    #    context = super(GroupHistoryView, self).get_context_data(**kwargs)
-    #    if 'pk' in self.kwargs:
-    #        group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-    #        context['title'] = "History for %s" % (group.name, )
-    #    else:
-    #        context['title'] = "Recent Changes"
-    #    return context
-
 
 @permission_required('groups.view_group_private_info')
 def group_confirmation_issues(request, ):
