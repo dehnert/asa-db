@@ -16,9 +16,9 @@ from django.template.loader import get_template
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
-from django.forms import Form
-from django.forms import ModelForm
-from django.forms import ModelChoiceField
+from django.forms import CharField, ModelChoiceField, MultipleChoiceField
+from django.forms import Form, ModelForm
+from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q
 
@@ -27,6 +27,7 @@ import reversion.models
 import django_filters
 
 from util.db_form_utils import StaticWidget
+from util.emails import email_from_template
 
 
 
@@ -187,41 +188,144 @@ def manage_main(request, pk, ):
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
+def validate_athena(username, student=False, ):
+    try:
+        person = groups.models.AthenaMoiraAccount.active_accounts.get(username=username)
+        if student and not person.is_student():
+            raise ValidationError('This must be a current student.')
+    except groups.models.AthenaMoiraAccount.DoesNotExist:
+        raise ValidationError('This must be a valid Athena username.')
+
+class GroupCreateForm(form_utils.forms.BetterModelForm):
+    create_which = MultipleChoiceField(
+        choices=[
+            ('officer_email', 'officer list', ),
+            ('group_email', 'group list', ),
+            ('athena_locker', 'Athena locker', ),
+        ],
+    )
+
+    president = CharField(min_length=3, max_length=8, )
+    treasurer = CharField(min_length=3, max_length=8, )
+    def clean_president(self, ):
+        username = self.cleaned_data['president']
+        validate_athena(username, True, )
+        return username
+
+    def clean_treasurer(self, ):
+        username = self.cleaned_data['treasurer']
+        validate_athena(username, True, )
+        return username
+
+    class Meta:
+        fieldsets = [
+            ('basic', {
+                'legend': 'Basic Information',
+                'fields': ['name', 'abbreviation', 'activity_category', 'description', ],
+            }),
+            ('officers', {
+                'legend': 'Officers',
+                'fields': ['president', 'treasurer', ],
+            }),
+            ('technical', {
+                'legend': 'Technical Information',
+                'fields': ['officer_email', 'group_email', 'athena_locker', 'create_which', ],
+            }),
+            ('Category', {
+                'legend': 'Category',
+                'fields': ['group_status', 'group_class', ],
+            }),
+            ('financial', {
+                'legend': 'Financial Information',
+                'fields': ['group_funding', 'main_account_id', 'funding_account_id', ],
+            }),
+            ('more-info', {
+                'legend': 'Additional Information',
+                'fields': ['constitution_url', ],
+            }),
+        ]
+        model = groups.models.Group
+
+
 @permission_required('groups.add_group')
 def create_group(request, status=None,):
     if not status: status = 'active'
     groupstatus = get_object_or_404(groups.models.GroupStatus, slug=status)
     
-    change_restricted = False
-
     msg = None
 
+    initial = {
+        'create_which': ['officer_email', 'group_email', 'athena_locker', ],
+    }
     group = groups.models.Group()
     group.group_status = groupstatus
     group.recognition_date  = datetime.datetime.now()
     if request.method == 'POST': # If the form has been submitted...
         # A form bound to the POST data
-        form = GroupChangeMainForm(
+        form = GroupCreateForm(
             request.POST, request.FILES,
-            change_restricted=change_restricted,
+            initial=initial,
             instance=group,
         )
 
         if form.is_valid(): # All validation rules pass
-            request_obj = form.save(commit=False)
-            request_obj.set_updater(request.user)
-            request_obj.save()
-            form.save_m2m()
-            return redirect(reverse('groups:group-detail', args=[request_obj.pk]))
+            # Basic setup
+            group.set_updater(request.user)
+            form.save()
+
+            # Officers
+            groups.models.OfficeHolder(
+                person=form.cleaned_data['president'],
+                role=groups.models.OfficerRole.objects.get(slug='president'),
+                group=group,
+            ).save()
+            groups.models.OfficeHolder(
+                person=form.cleaned_data['treasurer'],
+                role=groups.models.OfficerRole.objects.get(slug='treasurer'),
+                group=group,
+            ).save()
+            officer_emails = [
+                '%s@mit.edu' % (form.cleaned_data['president'], ),
+                '%s@mit.edu' % (form.cleaned_data['treasurer'], ),
+            ]
+
+            # Sending mail
+            mail_context = Context({
+                'group': group,
+                'formdata': form.cleaned_data,
+            })
+
+            # Welcome mail
+            email_from_template(
+                tmpl='groups/diffs/new-group-announce.txt',
+                context=mail_context,
+                subject='ASA Group Recognition: %s' % (group.name, ),
+                to=officer_emails,
+                cc=['asa-new-group-announce@mit.edu'],
+                from_email='asa-exec@mit.edu',
+            ).send()
+            if len(form.cleaned_data['create_which']) > 0:
+                email_from_template(
+                    tmpl='groups/diffs/new-group-accounts.txt',
+                    context=mail_context,
+                    subject='New Student Activity: %s' % (group.name, ),
+                    to=['accounts@mit.edu'],
+                    cc=officer_emails+['asa-admin@mit.edu'],
+                    from_email='asa-admin@mit.edu',
+                ).send()
+
+
+            return redirect(reverse('groups:group-detail', args=[group.pk]))
         else:
             msg = "Validation failed. See below for details."
 
     else:
-        form = GroupChangeMainForm(change_restricted=change_restricted, instance=group, ) # An unbound form
+        form = GroupCreateForm(initial=initial, instance=group, ) # An unbound form
 
     context = {
         'form':  form,
         'msg':   msg,
+        'pagename':   'groups',
     }
     return render_to_response('groups/group_create.html', context, context_instance=RequestContext(request), )
 

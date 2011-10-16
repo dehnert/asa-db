@@ -158,10 +158,16 @@ def diff_objects(objs, since, callbacks):
         all_versions = reversion.models.Version.objects.filter(content_type=obj['content_type'], object_id=obj['object_id']).order_by('-revision__date_created')
         before_versions = all_versions.filter(revision__in=old_revs)[:1]
         # This object being passed in means that some version changed it.
-        after = all_versions.filter(revision__in=new_revs).select_related('revision__user')[0]
+        after_versions = all_versions.filter(revision__in=new_revs).select_related('revision__user')
+        after = after_versions[0]
 
-        if len(before_versions) > 0:
-            before = before_versions[0]
+        if len(before_versions) > 0 or len(after_versions) > 1:
+            if len(before_versions) > 0:
+                before = before_versions[0]
+            else:
+                # New group that's been edited since. Diff against the creation
+                # (since creation sent mail, but later changes haven't)
+                after = after_versions[-1]
             print "Change?: before=%s (%d), after=%s (%d), type=%s, new=%s" % (
                 before, before.pk,
                 after, after.pk,
@@ -172,9 +178,8 @@ def diff_objects(objs, since, callbacks):
             for callback in callbacks:
                 callback.handle_group(before, after, before_fields, after_fields)
         else:
-            # Should be a new group
-            # Not clear what we actually want to be doing here.
-            print "Creation: version=%s, type=%s" % (after, after.type, )
+            # New group that's only been edited once
+            pass
 
 def diff_signatories(since, now, callbacks):
     # First: still around; then added recently

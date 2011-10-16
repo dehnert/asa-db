@@ -1,0 +1,61 @@
+{% autoescape off %}
+On behalf of the Association of Student Activities (ASA) we welcome:
+
+   {{group.name}}
+
+to the MIT community!
+
+The last step to finalize the group recognition is for you to enter the
+group's complete information into the ASA Database:
+
+      http://web.mit.edu/asa/www/asa-db.shtml
+
+Note that at this point only the President of the group ({{president}})
+can modify the information and that MIT personal certificates are
+required to access the group's account in the ASA Database.
+
+*** Please keep this e-mail for further reference. ***
+
+Important information follows about the creation of e-mail accounts
+and lists for your group, as well as campus resources available to you
+as an ASA-recognized group. Please read carefully. Mail has been sent
+to accounts@mit.edu informing them that you have been approved by the
+ASA and they will create your locker and e-mail accounts as needed.
+
+The Athena locker for Spinning Arts Club, MIT will be :
+
+      {{group.locker}}
+
+The officer's e-mail list :
+
+      {{group.officer_email}}
+
+It will administrate the Athena locker and the general email list.
+It is important that you keep the officer's list current, as it
+will administer the locker and the general e-mail list, as well as
+allow both the ASA and the Student Activities staff to get in touch
+with you.
+
+The general e-mail list :
+
+      {{group.group_email}}
+
+Lastly, this e-mail has been cc'd to funds@mit.edu.  That address
+reaches the staff of the Student Activities Finances Office who will
+help you setup the group's main account and funding account, as well
+as provide you with help to obtain advanced payments or reimbursements
+for your group's need.
+
+We also direct your attention to the resources available to you through
+the Student Activities staff in W20-549. As part of the Student Life
+Program office, the Student Activities staff is available
+to provide event-planning assistance, advice on organizational issues,
+leadership development opportunities, and information about campus
+resources.  Please feel free to drop by and further acquaint yourself
+with the office and staff.
+
+Sincerely,
+
+The ASA Executive Board
+asa-exec@mit.edu
+{% endautoescape %}
