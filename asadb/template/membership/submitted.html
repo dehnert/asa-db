@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Membership Information Submissions Received{% endblock %}
+{% block content %}
+
+<h2>Membership Information Submissions Received</h2>
+
+<p>Your group will show up here once <em>both</em> you submit an entry for your group, and at least one person (e.g., you) confirm membership.</p>
+
+<table class='pretty-table'>
+<thead>
+    <tr>
+        <th>Update ID</th>
+        <th>Group</th>
+        <th>Update time</th>
+        <th>Number of confirmations*</th>
+    </tr>
+</thead>
+<tbody>
+{% for group in group_list %}
+<tr>
+    <td>{{group.id}}</td>
+    <th>{{group.group.name}}</th>
+    <td>{{group.update_time}}</td>
+    <td>{{group.num_confirms}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<p>* These are approximate. They include people (hopefully not many) who selected all the groups. If you want to be sure of the correct number, please contact <a href='mailto:asa-db@mit.edu'>the ASA Database team</a> and we'll be happy to look it up for you.</p>
+
+{% endblock %}

@@ -134,3 +134,71 @@ class PagePreview(models.Model):
             preview = previews_dict[url]
             preview.update_time = cls.never_updated
             preview.save()
+
+
+class GroupConfirmationCycle(models.Model):
+    name = models.CharField(max_length=30)
+    slug = models.SlugField()
+    create_date = models.DateTimeField(default=datetime.datetime.now)
+
+    def __unicode__(self, ):
+        return u"GroupConfirmationCycle %d: %s" % (self.id, self.name, )
+
+    @classmethod
+    def latest(cls, ):
+        return cls.objects.order_by('-create_date')[0]
+
+
+class GroupMembershipUpdate(models.Model):
+    update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
+    updater_name = models.CharField(max_length=30)
+    updater_title = models.CharField(max_length=30, help_text="You need not hold any particular title in the group, but we like to know who is completing the form.")
+    
+    group = models.ForeignKey(groups.models.Group, help_text="If your group does not appear in the list above, then please email asa-exec@mit.edu.")
+    group_email = models.EmailField(help_text="The text of the law will be automatically distributed to your members via this list, in order to comply with the law.")
+    officer_email = models.EmailField()
+
+    membership_definition = models.TextField()
+    num_undergrads = models.IntegerField()
+    num_grads = models.IntegerField()
+    num_alum = models.IntegerField()
+    num_other_affiliate = models.IntegerField()
+    num_other = models.IntegerField()
+
+    membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
+
+    email_preface = models.TextField(blank=True, help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
+
+    hazing_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
+    no_hazing = models.BooleanField(help_text=hazing_statement)
+
+    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the MIT Non-Discrimination Policy.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
+    no_discrimination = models.BooleanField(help_text=discrimination_statement)
+
+    def __unicode__(self, ):
+        return "GroupMembershipUpdate for %s" % (self.group, )
+
+
+VALID_UNSET         = 0
+VALID_AUTOVALIDATED = 10
+VALID_OVERRIDDEN    = 20    # confirmed by an admin
+VALID_AUTOREJECTED      = -10
+VALID_HANDREJECTED      = -20
+VALID_CHOICES = (
+    (VALID_UNSET,           "unvalidated"),
+    (VALID_AUTOVALIDATED,   "autovalidated"),
+    (VALID_OVERRIDDEN,      "hand-validated"),
+    (VALID_AUTOREJECTED,    "autorejected"),
+    (VALID_HANDREJECTED,    "hand-rejected"),
+)
+
+class PersonMembershipUpdate(models.Model):
+    update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
+    username = models.CharField(max_length=30)
+    cycle = models.ForeignKey(GroupConfirmationCycle)
+    deleted = models.DateTimeField(default=None, null=True, blank=True, )
+    valid = models.IntegerField(choices=VALID_CHOICES, default=VALID_UNSET)
+    groups = models.ManyToManyField(groups.models.Group, help_text="By selecting a group here, you indicate that you are an active member of the group in question.<br>If your group does not appear in the list above, then please email asa-exec@mit.edu.<br>")
+
+    def __unicode__(self, ):
+        return "PersonMembershipUpdate for %s" % (self.username, )

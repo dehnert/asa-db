@@ -1,22 +1,26 @@
 import forms.models
 import groups.models
+import groups.views
 import settings
 
-from django.contrib.auth.decorators import user_passes_test, login_required
-from django.views.generic import list_detail
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from django.views.generic import list_detail, ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
 from django.template.loader import get_template
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
-from django.forms import ModelChoiceField
-from django.db.models import Q
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.db import connection
+from django.db.models import Q, Count
 
+import csv
 import datetime
+import StringIO
 
 #################
 # GENERIC VIEWS #
@@ -219,3 +223,258 @@ def fysm_thanks(request, fysm, ):
         'pagename':'fysm',
     }
     return render_to_response('fysm/thanks.html', context, context_instance=RequestContext(request), )
+
+#####################
+# Membership update #
+#####################
+
+class Form_GroupMembershipUpdate(ModelForm):
+    group = ModelChoiceField(queryset=groups.models.Group.active_groups.all())
+
+    def __init__(self, *args, **kwargs):
+        super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
+        self.fields['no_hazing'].required = True
+
+    class Meta:
+        model = forms.models.GroupMembershipUpdate
+        fields = [
+            'group',
+            'updater_title',
+            'group_email',
+            'officer_email',
+            'email_preface',
+            'no_hazing',
+            'no_discrimination',
+            'membership_definition',
+            'num_undergrads',
+            'num_grads',
+            'num_alum',
+            'num_other_affiliate',
+            'num_other',
+            'membership_list',
+        ]
+
+@login_required
+def group_membership_update(request, ):
+    year = datetime.date.today().year
+
+    initial = {
+    }
+    update_obj = forms.models.GroupMembershipUpdate()
+    update_obj.update_time  = datetime.datetime.now()
+    update_obj.updater_name = request.user.username
+
+    confirm_path = reverse('membership-confirm', )
+    confirm_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
+         request.get_host(), confirm_path)
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = Form_GroupMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            request_obj = form.save()
+            group_obj = request_obj.group
+
+
+            # Send email
+            tmpl = get_template('membership/anti-hazing.txt')
+            ctx = Context({
+                'update': request_obj,
+                'group': group_obj,
+                'submitter': request.user,
+            })
+            body = tmpl.render(ctx)
+            email = EmailMessage(
+                subject='Anti-Hazing and Non-Discrimination Acknowledgement for %s' % (
+                    group_obj.name,
+                ),
+                body=body,
+                from_email=request.user.email,
+                to=[request_obj.group_email, ],
+                cc=[request_obj.officer_email, ],
+                bcc=['asa-db-outgoing@mit.edu', ],
+            )
+            email.send()
+
+            # Send email
+            tmpl = get_template('membership/submit-confirm-email.txt')
+            ctx = Context({
+                'update': request_obj,
+                'group': group_obj,
+                'submitter': request.user,
+                'confirm_uri': confirm_uri,
+            })
+            body = tmpl.render(ctx)
+            email = EmailMessage(
+                subject='ASA Membership Information for %s' % (
+                    group_obj.name,
+                ),
+                body=body,
+                from_email=request.user.email,
+                to=[request_obj.officer_email, ],
+                bcc=['asa-db-outgoing@mit.edu', ],
+            )
+            email.send()
+
+            return HttpResponseRedirect(reverse('membership-thanks', )) # Redirect after POST
+
+    else:
+        form = Form_GroupMembershipUpdate(initial=initial, ) # An unbound form
+
+    context = {
+        'form':form,
+        'confirm_uri': confirm_uri,
+        'pagename':'groups',
+    }
+    return render_to_response('membership/update.html', context, context_instance=RequestContext(request), )
+
+class Form_PersonMembershipUpdate(ModelForm):
+    groups = ModelMultipleChoiceField(queryset=groups.models.Group.active_groups.all())
+    class Meta:
+        model = forms.models.PersonMembershipUpdate
+        fields = [
+            'groups',
+        ]
+
+@login_required
+def person_membership_update(request, ):
+    year = datetime.date.today().year
+
+    initial = {
+    }
+    cycle = forms.models.GroupConfirmationCycle.latest()
+    try:
+        update_obj = forms.models.PersonMembershipUpdate.objects.get(
+            username=request.user.username,
+            deleted__isnull=True,
+            cycle=cycle,
+        )
+        selected_groups = update_obj.groups.all()
+        print "Got update"
+    except forms.models.PersonMembershipUpdate.DoesNotExist:
+        update_obj = forms.models.PersonMembershipUpdate()
+        update_obj.update_time  = datetime.datetime.now()
+        update_obj.username = request.user.username
+        update_obj.cycle = cycle
+        selected_groups = []
+
+    accounts = groups.models.AthenaMoiraAccount
+    try:
+        person = accounts.active_accounts.get(username=request.user.username)
+        if person.is_student():
+            update_obj.valid = forms.models.VALID_AUTOVALIDATED
+        else:
+            update_obj.valid = forms.models.VALID_AUTOREJECTED
+    except accounts.DoesNotExist:
+        pass
+        update_obj.valid = forms.models.VALID_AUTOREJECTED
+
+    update_obj.save()
+
+    qs = groups.models.Group.active_groups
+    filterset = groups.views.GroupFilter(request.GET, qs)
+    filtered_groups = filterset.qs.all()
+    show_filtered_groups = ('search' in request.GET)
+
+    message = ""
+    message_type = "info"
+
+    if request.method == 'POST' and 'add-remove' in request.POST:
+        group = groups.models.Group.objects.get(id=request.POST['group'])
+        if request.POST['action'] == 'remove':
+            if group in update_obj.groups.all():
+                update_obj.groups.remove(group)
+                message = "You have been successfully removed from %s." % (group, )
+            else:
+                message = "Sorry, but you're not in %s." % (group, )
+                message_type = "warn"
+        elif request.POST['action'] == 'add':
+            if group in update_obj.groups.all():
+                message = "Sorry, but you're already in %s." % (group, )
+                message_type = "warn"
+            else:
+                update_obj.groups.add(group)
+                message = "You have been successfully added to %s." % (group, )
+        else:
+            message = "Uh, somehow you tried to do something besides adding and removing..."
+            message_type = "alert"
+
+    if request.method == 'POST' and 'list' in request.POST: # If the form has been submitted...
+        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            request_obj = form.save()
+            message = "Update saved"
+
+    else:
+        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, ) # An unbound form
+
+    context = {
+        'form':form,
+        'filter':filterset,
+        'show_filtered_groups':show_filtered_groups,
+        'filtered_groups':filtered_groups,
+        'member_groups':selected_groups,
+        'message': message,
+        'message_type': message_type,
+        'pagename':'groups',
+    }
+    return render_to_response('membership/confirm.html', context, context_instance=RequestContext(request), )
+
+
+class View_GroupMembershipList(ListView):
+    context_object_name = "group_list"
+    template_name = "membership/submitted.html"
+
+    def get_queryset(self):
+        group_updates = forms.models.GroupMembershipUpdate.objects.all()
+        group_updates = group_updates.filter(
+            group__personmembershipupdate__deleted__isnull=True,
+            group__personmembershipupdate__valid__gt=0,
+        )
+        group_updates = group_updates.annotate(num_confirms=Count('group__personmembershipupdate'))
+        #print len(list(group_updates))
+        #for query in connection.queries: print query
+        return group_updates
+
+
+@permission_required('groups.view_group_private_info')
+def group_confirmation_issues(request, ):
+    active_groups = groups.models.Group.active_groups
+    group_updates = forms.models.GroupMembershipUpdate.objects.all()
+    people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
+        deleted__isnull=True,
+        valid__gt=0,
+    )
+
+    buf = StringIO.StringIO()
+    output = csv.writer(buf)
+    output.writerow(['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ])
+
+    q_present = Q(id__in=group_updates.values('group'))
+    missing_groups = active_groups.filter(~q_present)
+    #print len(list(group_updates))
+    for group in missing_groups:
+        num_confirms = len(people_confirmations.filter(groups=group))
+        output.writerow([
+            group.id,
+            group.name,
+            'unsubmitted',
+            num_confirms,
+            group.officer_email,
+        ])
+
+    for group_update in group_updates:
+        group = group_update.group
+        num_confirms = len(people_confirmations.filter(groups=group))
+        if num_confirms < 5:
+            output.writerow([
+                group.id,
+                group.name,
+                'confirmations',
+                num_confirms,
+                group.officer_email,
+            ])
+
+
+    return HttpResponse(buf.getvalue(), mimetype='text/plain', )

@@ -16,23 +16,6 @@
 
 <h2>The Groups</h2>
 
-{% if changes %}
-<table class='pretty-table'>
-<tr>
-    <th>Action</th>
-    <th>Person</th>
-    <th>Role</th>
-</tr>
-{% for verb, color, person, role in changes %}
-    <tr><td style='background-color: {{color}}; color: black'>{{verb}}</td><td>{{person}}</td><td>{{role.display_name}}</td></tr>
-{% endfor %}
-</table>
-{% endif %}
-
-{%if edited %}
-<p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
-{% endif %}
-
 <table class='pretty-table'>
 <thead>
 <tr>
