@@ -14,7 +14,7 @@ git commit data.sql -m "Previous ASA database: $(date +%F)" --allow-empty --auth
 
 echo
 echo Changes in this commit:
-git show
+git show --stat
 
 echo
 echo
@@ -29,7 +29,7 @@ git commit data.sql -m "New ASA database: $(date +%F)" --allow-empty --author="$
 
 echo
 echo Changes in this commit:
-git show
+git show --stat
 
 echo
 echo
