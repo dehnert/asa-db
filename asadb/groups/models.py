@@ -98,6 +98,27 @@ class Group(models.Model):
         )
 
 
+GROUP_STARTUP_STAGE_SUBMITTED = 10
+GROUP_STARTUP_STAGE_APPROVED = 20
+GROUP_STARTUP_STAGE_REJECTED = -10
+GROUP_STARTUP_STAGE = (
+    (GROUP_STARTUP_STAGE_SUBMITTED,     'submitted'),
+    (GROUP_STARTUP_STAGE_APPROVED,      'approved'),
+    (GROUP_STARTUP_STAGE_REJECTED,      'rejected'),
+)
+
+class GroupStartup(models.Model):
+    group = models.ForeignKey(Group)
+    stage = models.IntegerField(choices=GROUP_STARTUP_STAGE)
+    create_officer_list = models.BooleanField()
+    create_group_list = models.BooleanField()
+    create_athena_locker = models.BooleanField()
+    president_name = models.CharField(max_length=50)
+    president_kerberos = models.CharField(max_length=8)
+    treasurer_name = models.CharField(max_length=50)
+    treasurer_kerberos = models.CharField(max_length=8)
+
+
 class GroupNote(models.Model):
     author = models.CharField(max_length=30, ) # match Django username field
     timestamp = models.DateTimeField(default=datetime.datetime.now, editable=False, )

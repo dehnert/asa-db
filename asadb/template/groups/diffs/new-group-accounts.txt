@@ -7,28 +7,28 @@ A new student activity has been formed.
 
 Please create the following resources:
 
-{% if "athena_locker" in formdata.create_which and group.athena_locker %}
+{% if create_athena_locker %}
   Activity Locker under /afs/athena/activity/: {{group.athena_locker}}
-      User owner  : {{formdata.president}}
-      Group owner : {{group.officer_email}}
+      User owner  : {{group_startup.president_kerberos}}
+      Group owner : {{officer_list}}
 
-{% endif %}{% if "officer_email" in formdata.create_which %}
-  List : {{group.officer_email}}
+{% endif %}{% if create_officer_list %}
+  List : {{officer_list}}
       Group         : Yes
       Mailing List  : Yes
       Administrator : self
-      Members       : {{formdata.president}}
+      Members       : {{group_startup.president_kerberos}}
 
-{% endif %}{% if "group_email" in formdata.create_which and group.group_email %}
-  List : {{group.group_email}}
+{% endif %}{% if create_group_list %}
+  List : {{group_list}}
       Group         : Yes
       Mailing List  : Yes
-      Administrator : {{group.officer_email}}
-      Members       : {{formdata.president}}
+      Administrator : {{officer_list}}
+      Members       : {{group_startup.president_kerberos}}
 {% endif %}
 
 Please send confirmation of the completion to
-   {{formdata.president}}
+   {{officer_emails|join:", "}}
 and
    asa-admin@mit.edu
 

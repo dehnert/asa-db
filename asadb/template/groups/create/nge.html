@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load form_utils_tags %}
+
+{% block title %}Recognize non-group entity{% endblock %}
+{% block content %}
+
+<h1>Recognize non-group entity</h1>
+
+{% if msg %}
+<p>{{msg}}</p>
+{% endif %}
+
+<p>Use this form to recognize a non-group entity that needs access to limited resources (for example, accounts via SAO), such as a dorm or subgroup.</p>
+
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+{{ form|render }}
+<input type='submit' value='Recognize' />
+</form>
+
+{% endblock %}

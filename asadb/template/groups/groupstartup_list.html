@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Startup requests{% endblock %}
+{% block content %}
+
+<h1>Startup requests</h1>
+
+<table class='pretty-table'>
+<thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Review</th>
+        <th>Description</th>
+        <th>President</th>
+    </tr>
+</thead>
+<tbody>
+{% for startup in groupstartup_list %}
+    <tr>
+        <th>{{startup.pk}}</th>
+        <td>{{startup.group.name}}</td>
+        <td><a href='{% url groups:startup-recognize startup.pk %}'>Review</a></td>
+        <td>{{startup.group.description}}</td>
+        <td>{{startup.president_name}} ({{startup.president_kerberos}})</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
