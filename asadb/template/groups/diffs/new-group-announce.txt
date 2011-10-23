@@ -24,7 +24,7 @@ ASA and they will create your locker and e-mail accounts as needed.
 
 The Athena locker for Spinning Arts Club, MIT will be :
 
-      {{group.locker}}
+      {{group.athena_locker}}
 
 The officer's e-mail list :
 
