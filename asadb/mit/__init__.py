@@ -32,7 +32,7 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
     def configure_user(self, user, ):
         username = user.username
         user.password = "ScriptsSSLAuth"
-        con = ldap.open('ldap.mit.edu')
+        con = ldap.open('ldap-too.mit.edu')
         con.simple_bind_s("", "")
         dn = "dc=mit,dc=edu"
         fields = ['cn', 'sn', 'givenName', 'mail', ]
