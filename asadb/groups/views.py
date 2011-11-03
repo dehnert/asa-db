@@ -765,3 +765,48 @@ class GroupHistoryView(ListView):
         else:
             context['title'] = "Recent Changes"
         return context
+
+
+class AccountLookupForm(forms.Form):
+    account_number = forms.IntegerField()
+    username = forms.CharField(help_text="Athena username of person to check")
+
+def account_lookup(request, ):
+    msg = None
+    msg_type = ""
+    account_number = None
+    username = None
+    group = None
+    office_holders = []
+
+    initial = {}
+
+    if 'search' in request.GET: # If the form has been submitted...
+        # A form bound to the POST data
+        form = AccountLookupForm(request.GET)
+
+        if form.is_valid(): # All validation rules pass
+            account_number = form.cleaned_data['account_number']
+            username = form.cleaned_data['username']
+            account_q = Q(main_account_id=account_number) | Q(funding_account_id=account_number)
+            try:
+                group = groups.models.Group.objects.get(account_q)
+                office_holders = group.officers(person=username)
+                office_holders = office_holders.filter(role__publicly_visible=True)
+            except groups.models.Group.DoesNotExist:
+                msg = "Group not found"
+                msg_type = "error"
+
+    else:
+        form = AccountLookupForm()
+
+    context = {
+        'username':     username,
+        'account_number': account_number,
+        'group':        group,
+        'office_holders': office_holders,
+        'form':         form,
+        'msg':          msg,
+        'msg_type':     msg_type,
+    }
+    return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )

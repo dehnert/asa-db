@@ -19,6 +19,7 @@ groups_patterns = patterns('',
     url(r'^search/$', groups.views.search_groups, name='search', ),
     url(r'^recent_changes/$', groups.views.GroupHistoryView.as_view(), name='manage-history', ),
     url(r'^signatories/$', groups.views.view_signatories, name='signatories', ),
+    url(r'^account_lookup/$', groups.views.account_lookup, name='account-lookup', ),
 )
 
 def urls():
