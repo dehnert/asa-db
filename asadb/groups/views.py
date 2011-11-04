@@ -779,6 +779,8 @@ def account_lookup(request, ):
     group = None
     office_holders = []
 
+    visible_roles  = groups.models.OfficerRole.objects.filter(publicly_visible=True)
+
     initial = {}
 
     if 'search' in request.GET: # If the form has been submitted...
@@ -792,7 +794,7 @@ def account_lookup(request, ):
             try:
                 group = groups.models.Group.objects.get(account_q)
                 office_holders = group.officers(person=username)
-                office_holders = office_holders.filter(role__publicly_visible=True)
+                office_holders = office_holders.filter(role__in=visible_roles)
             except groups.models.Group.DoesNotExist:
                 msg = "Group not found"
                 msg_type = "error"
@@ -808,5 +810,6 @@ def account_lookup(request, ):
         'form':         form,
         'msg':          msg,
         'msg_type':     msg_type,
+        'visible_roles':    visible_roles,
     }
     return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )
