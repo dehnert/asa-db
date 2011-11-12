@@ -171,10 +171,10 @@ def diff_objects(objs, since, callbacks):
             print "Change?: before=%s (%d), after=%s (%d), type=%s, new=%s" % (
                 before, before.pk,
                 after, after.pk,
-                after.type, after.get_field_dict(),
+                after.type, after.field_dict,
             )
-            before_fields = before.get_field_dict()
-            after_fields = after.get_field_dict()
+            before_fields = before.field_dict
+            after_fields = after.field_dict
             for callback in callbacks:
                 callback.handle_group(before, after, before_fields, after_fields)
         else:
