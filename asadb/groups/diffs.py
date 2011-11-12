@@ -28,8 +28,10 @@ update_asa_exec = 'asa-exec@mit.edu'
 update_funding_board = 'asa-db@mit.edu'
 update_constitution_archive = 'asa-db@mit.edu'
 
-asa_all_groups_list = util.mailman.MailmanList('asa-official')
-asa_all_groups_list = util.mailman.MailmanList('asa-test-mailman')
+if settings.PRODUCTION_DEPLOYMENT:
+    asa_all_groups_list = util.mailman.MailmanList('asa-official')
+else:
+    asa_all_groups_list = util.mailman.MailmanList('asa-test-mailman')
 
 class DiffCallback(object):
     def start_run(self, since, now, ):
@@ -138,6 +140,7 @@ class UpdateOfficerListCallback(DiffCallback):
             if errors:
                 subject = "ERROR: " + subject
             context = {
+                'listname': asa_all_groups_list.name,
                 'add': self.add,
                 'delete': self.delete,
                 'errors': errors,

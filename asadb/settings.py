@@ -8,6 +8,11 @@ SITE_WEB_PATH = ''
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# Is this the main, production deployment?
+# If not, we won't try to propagate things to other systems.
+# (For example, no changing asa-official membership.)
+PRODUCTION_DEPLOYMENT = False
+
 ADMINS = (
     ('ASA Database Team', 'asa-db@mit.edu',),
 )
