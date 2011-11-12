@@ -25,6 +25,9 @@ class StaticWidget(Widget):
         self.inner = HiddenInput()
 
     def value_from_datadict(self, data, files, name, ):
+        for choice_value, choice_label in self.choices:
+            if choice_label == unicode(self.value):
+                return choice_value
         return self.value
 
     def render(self, name, value, attrs=None, choices=(), ):
