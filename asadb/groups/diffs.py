@@ -21,10 +21,15 @@ import reversion.models
 
 import groups.models
 import settings
+import util.emails
+import util.mailman
 
 update_asa_exec = 'asa-exec@mit.edu'
 update_funding_board = 'asa-db@mit.edu'
 update_constitution_archive = 'asa-db@mit.edu'
+
+asa_all_groups_list = util.mailman.MailmanList('asa-official')
+asa_all_groups_list = util.mailman.MailmanList('asa-test-mailman')
 
 class DiffCallback(object):
     def start_run(self, since, now, ):
@@ -120,6 +125,38 @@ class StaticMailCallback(DiffCallback):
         self.updates = []
         self.signatory_updates = []
 
+
+class UpdateOfficerListCallback(DiffCallback):
+    def start_run(self, since, now, ):
+        self.add = []
+        self.delete = []
+
+    def end_run(self, ):
+        if self.add or self.delete:
+            errors = asa_all_groups_list.change_members(self.add, self.delete)
+            subject = "asa-official updater"
+            if errors:
+                subject = "ERROR: " + subject
+            context = {
+                'add': self.add,
+                'delete': self.delete,
+                'errors': errors,
+            }
+            util.emails.email_from_template(
+                tmpl='groups/diffs/asa-official-update.txt',
+                context=context, subject=subject,
+                to=['testing@mit.edu'],
+            ).send()
+
+    def handle_group(self, before, after, before_fields, after_fields, ):
+        if before_fields['officer_email'] != after_fields['officer_email']:
+            self.add.append("%s <%s>" % (after_fields['name'], after_fields['officer_email'], ))
+            self.delete.append(before_fields['officer_email'])
+
+    def new_group(self, after, after_fields, ):
+        self.add.append(after_fields['officer_email'])
+
+
 diff_fields = {
     'name' :            [ update_asa_exec, ],
     'abbreviation' :    [ update_asa_exec, ],
@@ -143,6 +180,7 @@ def build_callbacks():
     )
     sao_callback.care_about_groups = False
     callbacks.append(sao_callback)
+    callbacks.append(UpdateOfficerListCallback())
     return callbacks
 
 def recent_groups(since):
