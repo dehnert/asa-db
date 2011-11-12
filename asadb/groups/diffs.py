@@ -33,6 +33,8 @@ class DiffCallback(object):
         pass
     def handle_group(self, before, after, before_fields, after_fields, ):
         pass
+    def handle_signatories(self, signatories, ):
+        pass
     def new_group(self, after, after_fields, ):
         pass
 
