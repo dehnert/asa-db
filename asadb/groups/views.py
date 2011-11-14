@@ -419,6 +419,7 @@ def startup_form(request, ):
             group_startup = groups.models.GroupStartup()
             group_startup.group = group
             group_startup.stage = groups.models.GROUP_STARTUP_STAGE_SUBMITTED
+            group_startup.submitter = request.user.username
 
             group_startup.create_officer_list = form.cleaned_data['create_officer_list']
             group_startup.create_group_list = form.cleaned_data['create_group_list']

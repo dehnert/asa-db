@@ -110,6 +110,7 @@ GROUP_STARTUP_STAGE = (
 class GroupStartup(models.Model):
     group = models.ForeignKey(Group)
     stage = models.IntegerField(choices=GROUP_STARTUP_STAGE)
+    submitter = models.CharField(max_length=30, editable=False, )
     create_officer_list = models.BooleanField()
     create_group_list = models.BooleanField()
     create_athena_locker = models.BooleanField()

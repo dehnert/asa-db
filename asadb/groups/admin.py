@@ -32,13 +32,14 @@ class Admin_GroupStartup(VersionAdmin):
         'id',
         'group',
         'stage',
+        'submitter',
         'president_kerberos',
         'create_officer_list',
         'create_group_list',
         'create_athena_locker',
     )
     list_display_links = ('id', 'group', )
-    search_fields = [ 'group__name', 'group__abbreviation', 'president_kerberos', ]
+    search_fields = [ 'group__name', 'group__abbreviation', 'submitter', 'president_kerberos', ]
 admin.site.register(groups.models.GroupStartup, Admin_GroupStartup)
 
 class Admin_GroupNote(VersionAdmin):
