@@ -260,12 +260,6 @@ class GroupCreateNgeForm(GroupCreateForm):
         self.fields['treasurer_name'].required = False
         self.fields['treasurer_kerberos'].required = False
 
-    class Meta(GroupCreateForm.Meta):
-        fieldsets = filter(
-            lambda fieldset: fieldset[0] not in ['financial', ],
-            GroupCreateForm.Meta.fieldsets
-        )
-
 
 class GroupCreateStartupForm(GroupCreateForm):
     def __init__(self, *args, **kwargs):
