@@ -341,12 +341,12 @@ def create_group_get_emails(group, group_startup, officer_emails, ):
         accounts_mail = None
     return welcome_mail, accounts_mail
 
-def create_group_officers(group, formdata, ):
+def create_group_officers(group, formdata, save=True, ):
     officer_emails = [ ]
     for officer in ('president', 'treasurer', ):
         username = formdata[officer+'_kerberos']
         if username:
-            groups.models.OfficeHolder(
+            if save: groups.models.OfficeHolder(
                 person=username,
                 role=groups.models.OfficerRole.objects.get(slug=officer),
                 group=group,
@@ -432,9 +432,20 @@ def startup_form(request, ):
             group_startup.save()
 
             context = {
-                'group':  group,
-                'pagename':   'groups',
+                'group':            group,
+                'group_startup':    group_startup,
+                'pagename':         'groups',
             }
+
+            email_from_template(
+                tmpl='groups/create/startup-submitted-email.txt',
+                context=context,
+                subject='ASA Startup Application: %s' % (group.name, ),
+                to=[request.user.email] + create_group_officers(group, form.cleaned_data, save=False, ),
+                cc=['asa-groups@mit.edu'],
+                from_email='asa-groups@mit.edu',
+            ).send()
+
             return render_to_response('groups/create/startup_thanks.html', context, context_instance=RequestContext(request), )
         else:
             msg = "Validation failed. See below for details."
