@@ -17,7 +17,7 @@
         <li><a href='http://web.mit.edu/asa/start/new-group-app.html'>New Group Application</a></li>
         {%if perms.groups.add_group %}<li><a href='{% url groups:startup %}'>Startup form</a></li>{%endif%}
         {%if perms.groups.add_group %}<li><a href='{% url groups:startup-list %}'>Review startup applications</a></li>{%endif%}
-        {%if perms.groups.add_group %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
+        {%if perms.groups.recognize_nge %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
     </ul></li>
 </ul>
 

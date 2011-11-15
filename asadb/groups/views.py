@@ -348,7 +348,7 @@ def create_group_officers(group, formdata, save=True, ):
             officer_emails.append('%s@mit.edu' % (formdata[officer+'_kerberos'], ))
     return officer_emails
 
-@permission_required('groups.add_group')
+@permission_required('groups.recognize_nge')
 def recognize_nge(request, ):
     msg = None
 
