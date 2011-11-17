@@ -1,0 +1,17 @@
+Message to all student groups seeking feedback on the new DB:
+
+From: Rachel Meyer <remeyer@MIT.EDU>
+To: asa-official@mit.edu
+Message-ID: <alpine.DEB.1.10.1110051646460.15129@dr-wily.mit.edu>
+Subject: [ASA-Official] Mandatory group registration, space policy discussion session
+
+[...]
+
+4.  Update on new ASA Database
+
+As mentioned at the GBM last Wednesday, we've been working over the past summer on a replacement for the current ASA Database.  A demonstration is now available at https://asa.mit.edu/db2.0/. Groups are encouraged to explore it and send comments, questions, or feedback to asa-db@mit.edu. Changes that may be particularly notable:
+- Greatly different signatory management UI
+- Much more information is public --- if you have concerns with the MIT community being able to see your officer list, president/treasurer/signatories, account number, constitution, size, or various other pieces of information, please contact us and let us know why
+- Tighter integration with various forms --- currently, FYSM, start-of-year membership/anti-hazing registration
+
+We hope to deploy this later this term.  Part of the transition will be manual, as a way to ensure all our data is up-to-date. You'll have about two weeks to provide up-to-date information between when the new database goes live and when SAO and others start using it for information such as signatories.

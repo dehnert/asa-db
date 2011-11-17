@@ -1,0 +1,44 @@
+{% autoescape off %}
+Dear Athena Accounts,
+
+A new student activity has been formed.
+
+  Name : {{group.name}}
+
+Please create the following resources:
+
+{% if create_athena_locker %}
+  Activity Locker under /afs/athena/activity/:
+  {{group.athena_locker}}
+      User owner  : {{group_startup.president_kerberos}}
+      Group owner : {{officer_list}}
+
+{% endif %}{% if create_officer_list %}
+  List : {{officer_list}}
+      Group         : Yes
+      Mailing List  : Yes
+      Administrator : self
+      Members       : {{group_startup.president_kerberos}}
+  blanche {{officer_list}} -i
+  blanche -C {{officer_list}} -G -M -desc "{{group.name}} officers" -O {{officer_list}} -a {{group_startup.president_kerberos}}
+
+{% endif %}{% if create_group_list %}
+  List : {{group_list}}
+      Group         : Yes
+      Mailing List  : Yes
+      Administrator : {{officer_list}}
+      Members       : {{group_startup.president_kerberos}}
+  blanche {{group_list}} -i
+  blanche -C {{group_list}} -G -M -desc "{{group.name}} members" -O {{officer_list}} -a {{group_startup.president_kerberos}}
+{% endif %}
+
+Please send confirmation of the completion to
+   {{officer_emails|join:", "}}
+and
+   asa-admin@mit.edu
+
+Thank you!
+
+The ASA Executive Board
+asa-exec@mit.edu
+{% endautoescape %}

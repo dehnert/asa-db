@@ -1,0 +1,16 @@
+{% autoescape off %}
+We tried to add the following {{add|length}} addresses to {{listname}}, and remove the following {{delete|length}} addresses.{%if errors%} Some errors occurred.{%endif%}
+
+Errors:
+{% if errors %}{{errors}}
+{% else %}No errors.
+{% endif %}
+
+Add:
+{% for email in add %}{{email}}
+{% endfor %}
+
+Delete:
+{% for email in delete %}{{email}}
+{% endfor %}
+{% endautoescape %}

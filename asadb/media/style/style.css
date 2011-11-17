@@ -235,3 +235,13 @@ table.group-change-officers-change td
 {
     text-align: center;
 }
+
+/*********
+ * FORMS *
+ *********/
+
+form table tr.optional th
+{
+    font-weight: normal;
+    font-style: italic;
+}

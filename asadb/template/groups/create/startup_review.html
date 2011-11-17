@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{group.name}}: Review startup information{% endblock %}
+{% block content %}
+
+<h1>{{group.name}}: Review startup information</h1>
+
+<table class='pretty-table'>
+<tr><th colspan='2'>Basic Information</th></tr>
+<tr><th>Name</th><td>{{group.name}}</td></tr>
+<tr>
+    <th>Abbreviation</th>
+    <td>{%if group.abbreviation%}{{group.abbreviation}}{%else%}<i>none</i>{%endif%}</td>
+</tr>
+<tr><th>Description</th><td>{{group.description}}</td></tr>
+
+<tr><th colspan='2'>Type</th></tr>
+<tr><th>President</th><td>{{startup.president_name}} ({{startup.president_kerberos}})</td></tr>
+<tr><th>Treasurer</th><td>{{startup.treasurer_name}} ({{startup.treasurer_kerberos}})</td></tr>
+
+<tr><th colspan='2'>Type</th></tr>
+<tr><th>Activity category</th><td>{{group.activity_category}}</td></tr>
+<tr><th>Group class</th><td>{{group.group_class.name}}</td></tr>
+<tr><th>Funding status</th><td>{{group.group_funding}}</td></tr>
+
+<tr><th colspan='2'>Technical Information</th></tr>
+<tr><th>Officer email</th><td>{{group.officer_email}}{% if startup.create_officer_list %} (create){% endif %}</td></tr>
+<tr><th>Group email</th><td>{{group.group_email}}{% if startup.create_group_list %} (create){% endif %}</td></tr>
+<tr><th>Athena locker</th><td>{{group.athena_locker}}{% if startup.create_athena_locker %} (create){% endif %}</td></tr>
+
+<tr><th colspan='2'>Additional Information</th></tr>
+<tr>
+    <th>Constitution</th>
+    <td><a href='{{group.constitution_url}}'>{{group.constitution_url}}</a></td>
+</tr>
+<tr><th>Application date</th><td>{{group.recognition_date}} by {{startup.submitter}}</td></tr>
+<tr><th>Last updated</th><td>{{group.update_string}}</td></tr>
+
+</table>
+
+<ul>
+    <li><a href='{% url admin:groups_groupstartup_change startup.pk %}'>Admin for startup information</a>
+    <li><a href='{% url groups:group-detail group.pk %}'>Group detail page</a></li>
+    <li><a href='{% url groups:group-manage-main group.pk %}'>Group update page</a></li>
+    <li><a href='{% url admin:groups_group_change group.pk %}'>Admin for group</a>
+</ul>
+
+{% if msg %}
+<div class='messagebox {{msg_type}}box'>
+<p>{{msg}}</p>
+</div>
+{% endif %}
+
+{% if disp_form %}
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+<input type='submit' name='approve' value='Approve' />
+<input type='submit' name='reject' value='Reject' />
+</form>
+{% endif %}
+
+{% endblock %}

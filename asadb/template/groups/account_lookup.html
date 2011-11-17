@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Account Lookup{% endblock %}
+{% block content %}
+
+<h1>Account Lookup</h1>
+
+{% if msg_type %}
+<div class='messagebox {{msg_type}}box'>
+<p>{{msg}}</p>
+</div>
+{% endif %}
+
+{% if group %}
+<table class='pretty-table'>
+<tr>
+    <th>Group</th>
+    <td>{{group}}</td>
+</tr>
+<tr>
+    <th>Account number</th>
+    <td>{{account_number}}</td>
+</tr>
+<tr>
+    <th>Username</th>
+    <td>{{username}}</td>
+</tr>
+<tr>
+    <th>Roles</th>
+    <td><ul>
+    {% for holder in office_holders %}
+    <li>{{holder.role}}</li>
+    {% empty %}
+    <li>No (public) roles</li>
+    {% endfor %}
+    </ul></td>
+</tr>
+</table>
+{% endif %}
+
+<table class='pretty-table'>
+<form enctype="multipart/form-data" method="get" action="">
+{{ form.as_table }}
+<tr><th colspan='2'><input type='submit' name='search' value='Search' /></th></tr>
+</form>
+</table>
+
+<h2>Available Roles</h2>
+
+<p>The following roles will be listed if the user has them:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Role</th>
+    <th>Description</th>
+</tr>
+{% for role in visible_roles %}
+<tr>
+    <th>{{role.display_name}}</th>
+    <td>{{role.description}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

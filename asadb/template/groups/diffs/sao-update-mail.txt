@@ -1,0 +1,20 @@
+{% autoescape off %}
+Hi SAO,
+   The following {{num_signatory_records}} signatory updates (of types you care about) have occurred. In addition, since we're sending mail anyway, the following {{num_groups}} groups have updated their information recently.
+
+In total, the following signatory updates by type have occurred:
+Added: {{signatory_type_counts.Added}}
+Expired: {{signatory_type_counts.Expired}}
+
+Thanks,
+ASA Database
+
+{% if signatories_message %}
+Signatories (types: {{signatory_types}}):
+{{signatories_message}}
+{% endif %}
+{% endautoescape %}
+{% if groups_message %}
+Groups:
+{{groups_message}}
+{% endif %}

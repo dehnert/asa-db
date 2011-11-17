@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load form_utils_tags %}
+
+{% block title %}Student Activity Startup Information{% endblock %}
+{% block content %}
+
+<h1>Student Activity Startup Information</h1>
+
+<p>This form is to be completed after you have submitted a New Group Application and your group has received ASA approval. If you have not done this, please refer to the <a href='http://web.mit.edu/asa/start/new-group-app.html'>New Group Application webpage</a>.</p>
+
+{% if msg %}
+<p>{{msg}}</p>
+{% endif %}
+
+<form enctype="multipart/form-data" method="post" action="">
+<h2>Group Information</h2>
+{% csrf_token %}
+{{ form|render }}
+
+
+<h2>Membership Confirmation</h2>
+
+<p>One of the requirements of new groups is that they consist of at least five active members. You must have five MIT students sign an electronic form attesting that they will become active members of the group after it receives ASA recognition. Please refer your members to <a href='https://asa.scripts.mit.edu:444/applications/startup/confirm-membership.py'>https://asa.scripts.mit.edu:444/applications/startup/confirm-membership.py</a> to have them sign.</p>
+
+
+<h2>Anti-Hazing Form</h2>
+<p>Before this group becomes an official group, you must have an officer of the group submit an <a href='https://asa.scripts.mit.edu:444/applications/hazing/saynotohazing.py'>anti-hazing form</a>, once again using your certificates to sign. All ASA groups must complete this once per year, so don't be surprised when you get another notice about this next year.</p>
+
+<input type='submit' value='Submit Startup Form' />
+</form>
+
+{% endblock %}

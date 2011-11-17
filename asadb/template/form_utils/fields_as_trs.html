@@ -9,6 +9,7 @@
   <td>
     {{ field.errors }}
     {{ field }}
+    {% if field.help_text %}<p>{{ field.help_text }}</p>{% endif %}
   </td>
 </tr>
 {% endif %}
