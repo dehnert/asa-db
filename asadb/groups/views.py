@@ -458,7 +458,7 @@ def startup_form(request, ):
 class GroupRecognitionForm(forms.Form):
     test = forms.BooleanField()
 
-@permission_required('groups.add_group')
+@permission_required('groups.recognize_group')
 def recognize_normal_group(request, pk, ):
     group_startup = get_object_or_404(groups.models.GroupStartup, pk=pk, )
     group = group_startup.group

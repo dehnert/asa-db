@@ -96,6 +96,7 @@ class Group(models.Model):
             ('admin_group', 'Administer basic group information'),
             ('view_signatories', 'View signatory information for all groups'),
             ('recognize_nge', 'Recognize Non-Group Entity'),
+            ('recognize_group', 'Recognize groups'),
         )
 
 
