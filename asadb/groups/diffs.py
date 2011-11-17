@@ -236,7 +236,7 @@ def diff_signatories(since, now, callbacks):
 
 def generate_diffs():
     now = datetime.datetime.now()
-    recent = now - datetime.timedelta(hours=3)
+    recent = now - datetime.timedelta(hours=24, minutes=15)
     objs = recent_groups(since=recent)
     callbacks = build_callbacks()
     for callback in callbacks: callback.start_run(since=recent, now=now, )
