@@ -242,10 +242,7 @@ def generate_diffs():
     for callback in callbacks: callback.start_run(since=recent, now=now, )
     diff_objects(objs, since=recent, callbacks=callbacks)
     diff_signatories(recent, now, callbacks=callbacks, )
-    print "\n\n"
     for callback in callbacks: callback.end_run()
-    print "Queries: %d" % (len(connection.queries), )
-    #for query in connection.queries: print query
 
 if __name__ == '__main__':
     generate_diffs()
