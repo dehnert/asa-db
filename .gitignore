@@ -7,4 +7,5 @@ asadb/media/fysm/logos/
 asadb/media/fysm/slides/
 asadb/media/page-previews/fysm/
 asadb/util/saved-data/
+asadb/util/static-data/
 asadb/util/warehouse-dump.csv
