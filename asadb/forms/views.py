@@ -229,7 +229,7 @@ def fysm_thanks(request, fysm, ):
 #####################
 
 class Form_GroupMembershipUpdate(ModelForm):
-    group = ModelChoiceField(queryset=groups.models.Group.active_groups.all())
+    group = ModelChoiceField(queryset=groups.models.Group.objects.filter(group_status__slug__in=['active', 'suspended', ]))
 
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
