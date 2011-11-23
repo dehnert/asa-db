@@ -228,8 +228,10 @@ def fysm_thanks(request, fysm, ):
 # Membership update #
 #####################
 
+membership_update_qs = groups.models.Group.objects.filter(group_status__slug__in=['active', 'suspended', ])
+
 class Form_GroupMembershipUpdate(ModelForm):
-    group = ModelChoiceField(queryset=groups.models.Group.objects.filter(group_status__slug__in=['active', 'suspended', ]))
+    group = ModelChoiceField(queryset=membership_update_qs)
 
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
@@ -329,7 +331,7 @@ def group_membership_update(request, ):
     return render_to_response('membership/update.html', context, context_instance=RequestContext(request), )
 
 class Form_PersonMembershipUpdate(ModelForm):
-    groups = ModelMultipleChoiceField(queryset=groups.models.Group.active_groups.all())
+    groups = ModelMultipleChoiceField(queryset=membership_update_qs)
     class Meta:
         model = forms.models.PersonMembershipUpdate
         fields = [
@@ -371,8 +373,7 @@ def person_membership_update(request, ):
 
     update_obj.save()
 
-    qs = groups.models.Group.active_groups
-    filterset = groups.views.GroupFilter(request.GET, qs)
+    filterset = groups.views.GroupFilter(request.GET, membership_update_qs)
     filtered_groups = filterset.qs.all()
     show_filtered_groups = ('search' in request.GET)
 
