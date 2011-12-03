@@ -148,7 +148,7 @@ class UpdateOfficerListCallback(DiffCallback):
             util.emails.email_from_template(
                 tmpl='groups/diffs/asa-official-update.txt',
                 context=context, subject=subject,
-                to=['testing@mit.edu'],
+                to=['asa-db@mit.edu'],
             ).send()
 
     def handle_group(self, before, after, before_fields, after_fields, ):
