@@ -24,6 +24,9 @@ DATABASES = {}
 
 ENABLE_SCRIPTS_AUTH = True
 
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+
 LOGFILE = "asa-db.log"
 
 # Local time zone for this installation. Choices can be found here:
