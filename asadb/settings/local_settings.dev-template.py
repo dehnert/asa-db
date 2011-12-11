@@ -24,5 +24,7 @@ else:
 # Generate the "something" with:
 # import random; ''.join([random.choice('abcdefghijklmnopqrstuvwxyz0123456789@#%&-_=+') for i in range(50)])
 
+SESSION_COOKIE_SECURE = False
+
 DEBUG = False
 DEBUG = True
