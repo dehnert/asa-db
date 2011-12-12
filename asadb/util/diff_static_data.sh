@@ -9,13 +9,21 @@ cd static-data
 ../dump_group_perms.py > group-perms.py
 git add group-perms.py
 
-echo
-echo Committing current static data:
-git commit -m "Updated static data: $(date +%F)" --allow-empty --author="$author"
 
 echo
-echo Changes in this commit:
-git show
+echo Committing current static data:
+set +e
+git commit -m "Updated static data: $(date +%F)" --author="$author"
+commit_result="$?"
+set -e
+
+if [ "$commit_result" = "0" ]; then
+    echo
+    echo Changes in this commit:
+    git show
+else
+    echo "(No changes made.)"
+fi
 
 echo
 echo
