@@ -23,6 +23,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+        # Create the various contenttypes and permissions and stuff
+        # Otherwise the permission stuff will fail horribly
+        # http://groups.google.com/group/south-users/browse_thread/thread/666994cabad1a185?pli=1
+        db.send_pending_create_signals()
+
         util.migrations.migrate_perms_forwards(orm, self.new_perms, )
         util.migrations.migrate_groups_forwards(orm, self.new_auth_groups, )
 

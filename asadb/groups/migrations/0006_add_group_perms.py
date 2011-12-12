@@ -13,6 +13,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+        # Create the various contenttypes and permissions and stuff
+        # Otherwise the we'll end with a group without a name
+        # http://groups.google.com/group/south-users/browse_thread/thread/666994cabad1a185?pli=1
+        db.send_pending_create_signals()
+
         # See http://stackoverflow.com/questions/1742021/adding-new-custom-permissions-in-django#answer-6149593
         ct, created = orm['contenttypes.ContentType'].objects.get_or_create(model='group', app_label='groups') # model must be lowercase!
         for codename, verbose_name in self.new_perms:

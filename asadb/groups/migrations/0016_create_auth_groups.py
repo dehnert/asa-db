@@ -73,8 +73,14 @@ auth_groups = [
 ]
 
 class Migration(DataMigration):
+
+    depends_on = (
+        ("forms", "0001_initial", ),
+    )
+
     def forwards(self, orm):
         "Write your forwards methods here."
+        db.send_pending_create_signals()
         util.migrations.migrate_groups_forwards(orm, auth_groups, )
         user_manager = django.contrib.auth.models.User.objects
         groupadmin_user, created = user_manager.get_or_create(username='groupadmin@SYSTEM', defaults={'password':'SYSTEM'})
