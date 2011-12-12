@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+    <object pk="1" model="groups.activitycategory">
+        <field type="CharField" name="name">Academic</field>
+    </object>
+    <object pk="2" model="groups.activitycategory">
+        <field type="CharField" name="name">Activism</field>
+    </object>
+    <object pk="3" model="groups.activitycategory">
+        <field type="CharField" name="name">Arts</field>
+    </object>
+    <object pk="4" model="groups.activitycategory">
+        <field type="CharField" name="name">Athletic</field>
+    </object>
+    <object pk="5" model="groups.activitycategory">
+        <field type="CharField" name="name">Campus Media</field>
+    </object>
+    <object pk="6" model="groups.activitycategory">
+        <field type="CharField" name="name">Cultural</field>
+    </object>
+    <object pk="7" model="groups.activitycategory">
+        <field type="CharField" name="name">FSILG</field>
+    </object>
+    <object pk="8" model="groups.activitycategory">
+        <field type="CharField" name="name">Government</field>
+    </object>
+    <object pk="9" model="groups.activitycategory">
+        <field type="CharField" name="name">Interest</field>
+    </object>
+    <object pk="10" model="groups.activitycategory">
+        <field type="CharField" name="name">Recreational</field>
+    </object>
+    <object pk="11" model="groups.activitycategory">
+        <field type="CharField" name="name">Religious</field>
+    </object>
+    <object pk="12" model="groups.activitycategory">
+        <field type="CharField" name="name">Service</field>
+    </object>
+    <object pk="13" model="groups.activitycategory">
+        <field type="CharField" name="name">Social</field>
+    </object>
+    <object pk="14" model="groups.activitycategory">
+        <field type="CharField" name="name">Technology</field>
+    </object>
+</django-objects>
