@@ -16,9 +16,9 @@ def perm_tuple(perm):
 
 def dump_group_perms():
     groups = []
-    for group in django.contrib.auth.models.Group.objects.all():
+    for group in django.contrib.auth.models.Group.objects.order_by('name'):
         groups.append((group.name, [
-            perm_tuple(perm) for perm in group.permissions.all()
+            perm_tuple(perm) for perm in group.permissions.order_by('content_type__app_label', 'content_type__model', 'codename', )
         ]))
     return groups
 
