@@ -55,6 +55,24 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
         user.save()
         return user
 
+def get_or_create_mit_user(username, ):
+    """
+    Given an MIT username, return a Django user object for them.
+    If necessary, create (and save) the Django user for them.
+    If the MIT user doesn't exist, raises ValueError.
+    """
+    user, created = auth.models.User.objects.get_or_create(username=username, )
+    if created:
+        backend = ScriptsRemoteUserBackend()
+        # Raises ValueError if the user doesn't exist
+        try:
+            return backend.configure_user(user), created
+        except ValueError:
+            user.delete()
+            raise
+    else:
+        return user, created
+
 def scripts_login(request, **kwargs):
     host = request.META['HTTP_HOST'].split(':')[0]
     if host == 'localhost':
