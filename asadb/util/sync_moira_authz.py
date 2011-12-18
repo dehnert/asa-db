@@ -6,6 +6,7 @@ import ldap.dn
 import ldap.filter
 import os
 import sys
+import subprocess
 
 if __name__ == '__main__':
     cur_file = os.path.abspath(__file__)
@@ -16,6 +17,7 @@ if __name__ == '__main__':
 import django.contrib.auth.models
 
 import mit
+import settings
 
 class DjangoConnector(object):
     def __init__(self, ):
@@ -112,8 +114,14 @@ class AFSConnector(DjangoConnector):
 
     def __init__(self, *args, **kwargs):
         super(AFSConnector, self).__init__(*args, **kwargs)
-        # TODO: possibly kinit and aklog
+        self.login()
         self.pts = afs.pts.PTS(sec=afs.pts.PTS_ENCRYPT, cell='athena.mit.edu', )
+    def login(self, ):
+        if settings.KRB_KEYTAB:
+            kinit_cmd = ['kinit', '-k', '-t', settings.KRB_KEYTAB, settings.KRB_PRINCIPAL, ]
+            subprocess.check_call(kinit_cmd)
+            subprocess.check_call(['aklog', 'athena', ])
+
     def get_members(self, groupname, ):
         afs_members = self.pts.getEntry("system:%s" % (groupname, )).members
         members = [ m.name for m in afs_members ]
