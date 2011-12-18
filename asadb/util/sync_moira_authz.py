@@ -128,7 +128,10 @@ class AFSConnector(DjangoConnector):
         return members
 
 sync_pairs = [
-    ('asa-internal', 'asa-ebm', ),
+    ('asa-admin', 'asa-ebm', ),
+    ('asa-db-mit-deskworker', 'mit-deskworker', ),
+    ('asa-db-mit-offices', 'mit-offices', ),
+    ('asa-db-mit-sao', 'mit-sao', ),
 ]
 
 def test_memberships(cons):
