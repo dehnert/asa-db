@@ -114,7 +114,7 @@ class AFSConnector(DjangoConnector):
 
     def __init__(self, *args, **kwargs):
         super(AFSConnector, self).__init__(*args, **kwargs)
-        self.login()
+        #self.login()
         self.pts = afs.pts.PTS(sec=afs.pts.PTS_ENCRYPT, cell='athena.mit.edu', )
     def login(self, ):
         if settings.KRB_KEYTAB:
