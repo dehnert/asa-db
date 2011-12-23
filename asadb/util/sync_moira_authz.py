@@ -23,15 +23,13 @@ class DjangoConnector(object):
     def __init__(self, ):
         self.dj_groups = django.contrib.auth.models.Group.objects
 
-    def sync_members(self, sys_name, dj_name, ):
+    def sync_helper(self, sys_name, dj_members, adder, remover, ):
         kept = []
         added = []
         nonexist = []
         created = []
         removed = []
         sys_members = self.get_members(sys_name)
-        dj_group = self.dj_groups.get(name=dj_name)
-        dj_members = dj_group.user_set.all()
         dj_usernames = set([m.username for m in dj_members])
         for username in sys_members:
             if username in dj_usernames:
@@ -41,7 +39,7 @@ class DjangoConnector(object):
                 try:
                     user, is_new = mit.get_or_create_mit_user(username, )
                     if is_new: created.append(username)
-                    user.groups.add(dj_group)
+                    adder(user)
                     added.append(username)
                 except ValueError:
                     nonexist.append(username)
@@ -50,7 +48,7 @@ class DjangoConnector(object):
             if username in sys_members:
                 assert username in kept
             else:
-                user.groups.remove(dj_group)
+                remover(user)
                 removed.append(username)
         return {
             'change' : len(added) + len(removed),
@@ -61,12 +59,32 @@ class DjangoConnector(object):
             'remove': removed,
         }
 
+    def sync_staff(self, sys_name, ):
+        dj_members = django.contrib.auth.models.User.objects.filter(is_staff=True, )
+        def adder(user, ):
+            user.is_staff = True
+            user.save()
+        def remover(user, ):
+            user.is_staff = False
+            user.save()
+        return self.sync_helper(sys_name, dj_members, adder, remover, )
+
+    def sync_members(self, sys_name, dj_name, ):
+        dj_group = self.dj_groups.get(name=dj_name)
+        dj_members = dj_group.user_set.all()
+        adder = lambda user: user.groups.add(dj_group)
+        remover = lambda user: user.groups.remove(dj_group)
+        return self.sync_helper(sys_name, dj_members, adder, remover, )
+
     def sync_many(con, what, force_print=False, ):
         changed = False
         results = {}
         for sys_name, dj_group in what:
             assert dj_group not in results
-            results[dj_group] = con_afs.sync_members(sys_name, dj_group)
+            if dj_group == "STAFF":
+                results[dj_group] = con_afs.sync_staff(sys_name, )
+            else:
+                results[dj_group] = con_afs.sync_members(sys_name, dj_group)
             if results[dj_group]['change']: changed = True
         if changed or force_print:
             for group in results:
@@ -128,6 +146,7 @@ class AFSConnector(DjangoConnector):
         return members
 
 sync_pairs = [
+    ('asa-admin', 'STAFF', ),
     ('asa-admin', 'asa-ebm', ),
     ('asa-db-mit-deskworker', 'mit-deskworker', ),
     ('asa-db-mit-offices', 'mit-offices', ),
