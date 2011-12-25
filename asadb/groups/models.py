@@ -34,7 +34,7 @@ class Group(models.Model):
     main_account_id = models.IntegerField(null=True, blank=True, )
     funding_account_id = models.IntegerField(null=True, blank=True, )
     athena_locker = models.CharField(max_length=20, blank=True)
-    recognition_date = models.DateField()
+    recognition_date = models.DateTimeField()
     update_date = models.DateTimeField(editable=False, )
     updater = models.CharField(max_length=30, editable=False, null=True, ) # match Django username field
     _updater_set = False

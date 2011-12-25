@@ -482,7 +482,7 @@ def recognize_normal_group(request, pk, ):
 
             group.group_status = groups.models.GroupStatus.objects.get(slug='active')
             group.constitution_url = ""
-            group.recognition_date = datetime.date.today()
+            group.recognition_date = datetime.datetime.now()
             group.set_updater(request.user)
 
             group.save()
