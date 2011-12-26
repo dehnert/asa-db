@@ -219,6 +219,22 @@ tr.private-info th:before
     content: "* ";
 }
 
+tr.group-status-active.group-active-True td.group-status
+{
+    background-color: green;
+    color: black;
+}
+tr.group-active-True td.group-status
+{
+    background-color: yellow;
+    color: black;
+}
+tr.group-active-False td.group-status
+{
+    background-color: red;
+    color: black;
+}
+
 
 /* Reset some stuff */
 h1, h2, h3, th

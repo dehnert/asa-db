@@ -16,10 +16,11 @@
 
 <h2>The Groups</h2>
 
-<table class='pretty-table'>
+<table class='pretty-table group-list'>
 <thead>
     <tr>
         <th>Name</th>
+        <th>Status</th>
         <th>Website</th>
         <th>ASA DB</th>
         <th>Description</th>
@@ -28,8 +29,9 @@
 </thead>
 <tbody>
 {% for group in group_list %}
-    <tr>
+    <tr class='group-status-{{group.group_status.slug}} group-active-{{group.group_status.is_active}}'>
         <th>{{group.name}}</th>
+        <td class='group-status'>{{group.group_status}}</td>
         <td>{% if group.website_url %}<a href='{{group.website_url}}'>Website</a>{%endif%}</td>
         <td><a href='{% url groups:group-detail group.pk %}'>DB Entry</a></td>
         <td>{{group.description}}</td>
