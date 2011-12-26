@@ -28,7 +28,7 @@
 <tbody>
 {%for group, role_list in officers %}
 <tr>
-    <th><a href='{% url groups:group-detail group.pk %}'>{{group}}</a></th>
+    <th><a href='{% url groups:group-detail group.pk %}'>{{group}}</a> ({{group.group_status}})</th>
     {%for holders in role_list%}
     <td>{% if holders %}<ul>{% for person in holders %}<li>{{person}}</li>{%endfor%}</ul>{% endif %}</td>
     {%endfor%}

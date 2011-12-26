@@ -1,0 +1,45 @@
+Hi everyone,
+   It's been a long time since we last talked about the database. I've made a lot of progress since I sent out a demo to the core group, and much more progress since I met with folks last spring. At this point, I believe the database code to be feature-complete and ready for production use. However, before we deploy, I wanted to make sure all the stakeholders have had a chance to use it and provide feedback.
+
+At the moment, I'm hoping to go live with the new database in late December or early January, and require that all groups be moved over by mid-January. (The motivation for the timing is I'd liked to start keeping track of office access in the database, primarily because it'll allow us to expire access to the small activities offices on W20-4, which I gather is not currently feasible.)
+
+A demo of the new database is currently living at
+http://asa.scripts.mit.edu/db2.0/. The demo primarily uses certs to do
+authentication. If you want to use a test account to see what it looks
+like to users at various privilege levels, I've created two accounts.
+You'll need to go to https://asa.mit.edu/db2.0/accounts/login/password/
+to login using a password instead of with certs
+
+* Normal user account: username db-norm, password [redacted]. It's
+treasurer of the ASA at the moment.
+* "MIT offices" account: username db-mit-offices-test, password [redacted].
+This account has access to see signatories and some other stuff. I think
+it *should* have all the bits that CAC, SAO, etc. need, though I could
+certainly have missed something.
+
+Once you visit, I can also give your account the appropriate access. Just let me know.
+
+While the database is feature-complete enough to deploy, there's definitely some work I still plan to do. The main user-visible issue is lack of a really good reporting interface, I think. I'd appreciate guidance in terms of what that would look like. There are also a handful of smaller issues that I'll be working on. Please let me know about anything you'd like to see in the new database that don't seem to be there (both awesome features that you've never had, and regressions from the current DB) --- let me know even if you think I know already, because I might have forgotten.
+
+Also, please let me know if this list should have different people on it --- I depend on you all to let me know who from your offices should be kept informed. The current membership looks like:
+
+$ blanche asa-db-stakeholders -t
+LIST:accounts (Accounts)
+LIST:asa-db (ASA)
+LIST:asa-db-core-stakeholders (core)
+LIST:campus-activities (CAC)
+LIST:finboard (UA Finboard)
+LIST:gsc-treasurer (GSC Funding Board)
+LIST:schedules (Schedules)
+
+$ blanche asa-db-core-stakeholders -t
+aeerwin (SAO)
+jbsmith (CAC)
+kamills (SAO)
+laflynn (SAO)
+pdc (DSL)
+pwalsh (CAC)
+LIST:asa-db (ASA)
+
+Thanks,
+Alex Dehnert

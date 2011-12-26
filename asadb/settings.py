@@ -22,8 +22,12 @@ MANAGERS = ADMINS
 
 DATABASES = {}
 
+KRB_KEYTAB = None
+KRB_PRINCIPAL = None
+
 ENABLE_SCRIPTS_AUTH = True
 
+COOKIES_PREFIX = "asadb_"
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 
@@ -49,6 +53,9 @@ USE_I18N = True
 DATETIME_FORMAT_PYTHON = "%c"
 
 from local_settings import *
+
+SESSION_COOKIE_NAME = COOKIES_PREFIX + "sessionid"
+CSRF_COOKIE_NAME = COOKIES_PREFIX + "csrftoken"
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
