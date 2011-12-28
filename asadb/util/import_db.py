@@ -1,7 +1,8 @@
 #!/usr/bin/python
-import sys
-import os
 import csv
+import datetime
+import os
+import sys
 
 if __name__ == '__main__':
     cur_file = os.path.abspath(__file__)
@@ -10,7 +11,6 @@ if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import groups.models
-import datetime
 
 def dictize_line(header, line,):
     line_dict = {}
