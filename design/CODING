@@ -1,0 +1,16 @@
+Guidelines for coding in the database
+=====================================
+
+Dependencies
+------------
+
+In order to prevent circular import issues, it's useful to specify what code can import what other code.
+
+  mit
+    Generally should be from the upstream SIPB snippets codebase. Should not depend on any ASA DB-specific code.
+  util
+    Utility functions, classes, etc.. Should not depend on ASA DB-specific code
+  groups.
+    Core database code. May depend on code in util/.
+  forms
+    Webforms in the database. May depend on code in groups/ and util/.
