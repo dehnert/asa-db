@@ -10,6 +10,9 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+import django.contrib.auth.models
+import reversion
+
 import groups.models
 
 def dictize_line(header, line,):
@@ -90,7 +93,11 @@ if __name__ == '__main__':
     indb = sys.stdin
     reader = csv.reader(indb)
     header = reader.next()
-    for line in reader:
-        d = dictize_line(header, line)
-        print d
-        import_group(d)
+    with reversion.create_revision():
+        for line in reader:
+            d = dictize_line(header, line)
+            print d
+            import_group(d)
+        importer = django.contrib.auth.models.User.objects.get(username='importer@SYSTEM', )
+        reversion.set_user(importer)
+        reversion.set_comment("Groups importer")
