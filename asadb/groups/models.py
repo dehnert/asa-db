@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import reversion
 
 import datetime
 
@@ -98,6 +99,7 @@ class Group(models.Model):
             ('recognize_nge', 'Recognize Non-Group Entity'),
             ('recognize_group', 'Recognize groups'),
         )
+reversion.register(Group)
 
 
 GROUP_STARTUP_STAGE_SUBMITTED = 10
@@ -120,6 +122,7 @@ class GroupStartup(models.Model):
     president_kerberos = models.CharField(max_length=8)
     treasurer_name = models.CharField(max_length=50)
     treasurer_kerberos = models.CharField(max_length=8)
+reversion.register(GroupStartup)
 
 
 class GroupNote(models.Model):
@@ -151,6 +154,7 @@ class GroupNote(models.Model):
             ('view_note_office',    'View notes intended for "offices" to see', ),
             ('view_note_all',       'View all notes', ),
         )
+reversion.register(GroupNote)
 
 
 class OfficerRole(models.Model):
@@ -183,6 +187,7 @@ class OfficerRole(models.Model):
     @classmethod
     def retrieve(cls, slug, ):
         return cls.objects.get(slug=slug)
+reversion.register(OfficerRole)
 
 
 class OfficeHolder_CurrentManager(models.Manager):
@@ -215,6 +220,7 @@ class OfficeHolder(models.Model):
 
     def __repr__(self, ):
         return str(self)
+reversion.register(OfficeHolder)
 
 
 class PerGroupAuthz:
