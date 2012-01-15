@@ -13,6 +13,7 @@
         <li><a href='{%url groups:search%}'>Search groups</a></li>
         <li><a href='{%url groups:list%}'>List of groups</a></li>
         {%if perms.groups.view_signatories %}<li><a href='{% url groups:signatories %}'>View Signatories</a></li>{%endif%}
+        <li><a href='{%url groups:account-lookup%}'>Account lookup</a></li>
     </ul></li>
     <li>First Year Summer Mailing<ul>
         <li><a href='{%url fysm%}'>View the entries</a></li>
