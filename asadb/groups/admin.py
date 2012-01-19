@@ -27,6 +27,19 @@ class GroupAdmin(VersionAdmin):
 admin.site.register(groups.models.Group, GroupAdmin)
 
 
+class Admin_GroupConstitution(VersionAdmin):
+    list_display = (
+        'pk',
+        'group',
+        'source_url',
+        'dest_file',
+        'last_update',
+        'last_download',
+        'failure_date',
+    )
+admin.site.register(groups.models.GroupConstitution, Admin_GroupConstitution)
+
+
 class Admin_GroupStartup(VersionAdmin):
     list_display = (
         'id',

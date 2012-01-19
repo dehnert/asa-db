@@ -1,8 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 import reversion
 
 import datetime
+import filecmp
+import mimetypes
+import os
+import re
+import shutil
+import urllib
 
 import settings
 
@@ -84,6 +91,9 @@ class Group(models.Model):
             office_holders = office_holders.filter(start_time__lte=as_of, end_time__gte=as_of)
         return office_holders
 
+    def slug(self, ):
+        return slugify(self.name)
+
     def __str__(self, ):
         return self.name
 
@@ -110,6 +120,88 @@ GROUP_STARTUP_STAGE = (
     (GROUP_STARTUP_STAGE_APPROVED,      'approved'),
     (GROUP_STARTUP_STAGE_REJECTED,      'rejected'),
 )
+
+constitution_dir = os.path.join(settings.SITE_ROOT, '..', 'constitutions')
+
+class GroupConstitution(models.Model):
+    group = models.ForeignKey(Group, unique=True, )
+    source_url = models.URLField()
+    dest_file = models.CharField(max_length=100)
+    last_update = models.DateTimeField(help_text='Last time when this constitution actually changed.')
+    last_download = models.DateTimeField(help_text='Last time we downloaded this constitution to see if it had changed.')
+    failure_date = models.DateTimeField(null=True, blank=True, default=None, help_text='Time this URL started failing to download. (Null if currently working.)')
+    status_msg = models.CharField(max_length=20)
+    failure_reason = models.CharField(max_length=100, blank=True, default="")
+
+    def update(self, ):
+        url = self.source_url
+        success = None
+        old_success = (self.failure_date is None)
+        if url:
+            url_opener = urllib.FancyURLopener()
+            now = datetime.datetime.now()
+            try:
+                tmp_path, headers = url_opener.retrieve(url)
+            except IOError:
+                self.failure_date = now
+                self.save()
+                success = False
+                self.status_msg = "retrieval failed"
+                self.failure_reason = self.status_msg
+                return (success, self.status_msg, old_success, )
+            if tmp_path == url:
+                mover = shutil.copyfile
+            else:
+                mover = shutil.move
+            save_filename = self.compute_filename(tmp_path, headers, )
+            dest_path = self.path_from_filename(self.dest_file)
+            if save_filename != self.dest_file:
+                if self.dest_file: os.remove(dest_path)
+                mover(tmp_path, self.path_from_filename(save_filename))
+                self.dest_file = save_filename
+                self.last_update = now
+                self.status_msg = "new path"
+            else:
+                if filecmp.cmp(tmp_path, dest_path, shallow=False, ):
+                    self.status_msg = "no change"
+                else:
+                    # changed
+                    mover(tmp_path, dest_path)
+                    self.last_update = now
+                    self.status_msg = "updated in place"
+            self.last_download = now
+            self.failure_date = None
+            self.failure_reason = ""
+            self.save()
+            success = True
+        else:
+            success = False
+            self.status_msg = "no url"
+            self.failure_reason = self.status_msg
+        return (success, self.status_msg, old_success, )
+
+    def compute_filename(self, tmp_path, headers, ):
+        slug = self.group.slug()
+        basename, fileext = os.path.splitext(tmp_path)
+        if fileext:
+            ext = fileext
+        else:
+            if headers.getheader('Content-Type'):
+                mimeext = mimetypes.guess_extension(headers.gettype())
+                if mimeext:
+                    ext = mimeext
+                else:
+                    ext = ''
+            else:
+                ext = ''
+        return "%04d-%s%s" % (self.group.pk, slug, ext, )
+
+    def path_from_filename(self, filename):
+        path = os.path.join(constitution_dir, filename)
+        return path
+
+reversion.register(GroupConstitution)
+
 
 class GroupStartup(models.Model):
     group = models.ForeignKey(Group)
