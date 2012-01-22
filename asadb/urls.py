@@ -16,7 +16,13 @@ about_patterns = patterns('',
         r'^data/$',
         'django.views.generic.simple.direct_to_template',
         {'template': 'about/data.html', 'extra_context': { 'pagename':'about' }, },
-        name='data',
+        name='about-data',
+    ),
+    url(
+        r'^$',
+        'django.views.generic.simple.direct_to_template',
+        {'template': 'about/index.html', 'extra_context': { 'pagename':'about' }, },
+        name='about',
     ),
 )
 

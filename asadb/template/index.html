@@ -31,6 +31,9 @@
         {%if perms.groups.add_group %}<li><a href='{% url groups:startup-list %}'>Review startup applications</a></li>{%endif%}
         {%if perms.groups.recognize_nge %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
     </ul></li>
+    <li><a href='{% url about %}'>About the ASA Database</a><ul>
+        <li><a href='{% url about-data %}'>Use of Data</a></li>
+    </ul></li>
 </ul>
 
 <h2>My Groups</h2>
