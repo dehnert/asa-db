@@ -200,6 +200,17 @@ class GroupConstitution(models.Model):
         path = os.path.join(constitution_dir, filename)
         return path
 
+    def webstat(self, ):
+        url = self.source_url
+        if url:
+            try:
+                stream = urllib.urlopen(self.source_url)
+                return stream.getcode()
+            except:
+                return "IOError"
+        else:
+            return "no-url"
+
 reversion.register(GroupConstitution)
 
 

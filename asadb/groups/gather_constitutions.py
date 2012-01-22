@@ -8,6 +8,7 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+import collections
 import datetime
 import subprocess
 
@@ -48,6 +49,32 @@ def update_repo(additions, changed, ):
     )
     subprocess.check_call(['git', 'commit', '--allow-empty', '-a', '-m', msg, ], cwd=git_dir, )
 
+def webstat():
+    constitutions = groups.models.GroupConstitution.objects.all()
+    codes = collections.defaultdict(list)
+    count = 0
+    for const in constitutions:
+        if count % 10 == 0: print count,
+        code = const.webstat()
+        codes[code].append(const)
+        count += 1
+    for code, gs in codes.items():
+        print "\nCode: %s (count: %d)" % (code, len(gs), )
+        for const in gs:
+            print const.group
+    for code, gs in codes.items():
+        print "\nCode: %s (count: %d)" % (code, len(gs), )
+        for const in gs:
+            print const.source_url
+    print "\n\n"
+    for code, gs in codes.items():
+        print "%4d\t%s" % (len(gs), code, )
+
 if __name__ == '__main__':
-    additions, changed = gather_constitutions()
-    update_repo(additions, changed)
+    if len(sys.argv) == 1 or sys.argv[1] == "gather":
+        additions, changed = gather_constitutions()
+        update_repo(additions, changed)
+    elif sys.argv[1] == "webstat":
+        webstat()
+    else:
+        raise NotImplementedError
