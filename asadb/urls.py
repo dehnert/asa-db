@@ -11,10 +11,20 @@ import settings
 import groups.urls
 import forms.views
 
+about_patterns = patterns('',
+    url(
+        r'^data/$',
+        'django.views.generic.simple.direct_to_template',
+        {'template': 'about/data.html', 'extra_context': { 'pagename':'about' }, },
+        name='data',
+    ),
+)
+
 urlpatterns = patterns('',
     # Example:
     # (r'^asadb/', include('asadb.foo.urls')),
     url(r'^$', 'groups.views.view_homepage', name='homepage', ),
+    (r'^about/', include(about_patterns, ), ),
 
     # FYSM
     url(
