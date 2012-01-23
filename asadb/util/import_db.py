@@ -15,12 +15,6 @@ import reversion
 
 import groups.models
 
-def dictize_line(header, line,):
-    line_dict = {}
-    for key, elem in zip(header, line, ):
-        line_dict[key]=elem
-    return line_dict
-
 def canonicalize_email(email):
     if '@' in email: return email
     elif email == '': return ''
@@ -91,13 +85,11 @@ def import_group(d):
 
 if __name__ == '__main__':
     indb = sys.stdin
-    reader = csv.reader(indb)
-    header = reader.next()
+    reader = csv.DictReader(indb)
     with reversion.create_revision():
         for line in reader:
-            d = dictize_line(header, line)
-            print d
-            import_group(d)
+            print line
+            import_group(line)
         importer = django.contrib.auth.models.User.objects.get(username='importer@SYSTEM', )
         reversion.set_user(importer)
         reversion.set_comment("Groups importer")
