@@ -20,6 +20,7 @@ from django import forms
 from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q
+from django.utils.safestring import mark_safe
 
 import form_utils.forms
 import reversion.models
@@ -109,6 +110,9 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             formfield = self.fields[field_name]
             value = getattr(self.instance, field_name)
             StaticWidget.replace_widget(formfield, value)
+        for field in self.force_required:
+            self.fields[field].required = True
+        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitutional URL, if you have one.<br>If your constitution is currently an AFS path, you can either use the corresponding web.mit.edu (e.g., http://web.mit.edu/locker/path/to/const.html) or stuff.mit.edu path, or just use http://asa.mit.edu/const/afs/your-afs-path.<br>If you don't currently know where your constitution is, put http://asa.mit.edu/const/missing/.<br>(In either of the http://asa.mit.edu/const/ cases, we'll get in touch with you later about putting something better in.)")
 
     exec_only_fields = [
         'name', 'abbreviation',
@@ -118,6 +122,13 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
     nobody_fields = [
         'recognition_date',
     ]
+    force_required = [
+        'activity_category', 'description',
+        'num_undergrads', 'num_grads', 'num_community', 'num_other',
+        'website_url', 'officer_email', 'group_email',
+        'constitution_url', 'athena_locker',
+    ]
+
 
     class Meta:
         fieldsets = [

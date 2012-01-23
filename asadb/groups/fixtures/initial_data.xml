@@ -42,4 +42,7 @@
     <object pk="14" model="groups.activitycategory">
         <field type="CharField" name="name">Technology</field>
     </object>
+    <object pk="15" model="groups.activitycategory">
+        <field type="CharField" name="name">Other</field>
+    </object>
 </django-objects>
