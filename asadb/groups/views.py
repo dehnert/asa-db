@@ -112,7 +112,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             StaticWidget.replace_widget(formfield, value)
         for field in self.force_required:
             self.fields[field].required = True
-        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitutional URL, if you have one.<br>If your constitution is currently an AFS path, you can either use the corresponding web.mit.edu (e.g., http://web.mit.edu/locker/path/to/const.html) or stuff.mit.edu path, or just use http://asa.mit.edu/const/afs/your-afs-path.<br>If you don't currently know where your constitution is, put http://mit.edu/asa/start/constitution-req.html.<br>(In either of these last two cases, we'll get in touch with you later about putting something better in.)")
+        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitution URL, if you have one.<br>If your constitution is currently an AFS path, you can either use the corresponding web.mit.edu (e.g., http://web.mit.edu/locker/path/to/const.html) or stuff.mit.edu path, or just use http://asa.mit.edu/const/afs/your-afs-path.<br>If you don't currently know where your constitution is, put http://mit.edu/asa/start/constitution-req.html.<br>(In either of these last two cases, we'll get in touch with you later about putting something better in.)")
 
     exec_only_fields = [
         'name', 'abbreviation',
