@@ -27,6 +27,7 @@
 </tr>{% endif %}
 
 <tr><th colspan='2'>People</th></tr>
+{% if user.is_authenticated %}
 {% for name, role, people in roles %}
 <tr>
     <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
@@ -35,6 +36,9 @@
     </ul></td>
 </tr>
 {% endfor %}
+{% else %}
+<tr><td colspan='2'>[log in to see people involved]</td></tr>
+{% endif %}
 
 <tr><th colspan='2'>Recognition</th></tr>
 <tr><th>Group status</th><td>{{group.group_status.name}}</td></tr>
