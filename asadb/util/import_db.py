@@ -10,6 +10,7 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from django.db import transaction
 import django.contrib.auth.models
 import reversion
 
@@ -83,9 +84,9 @@ def import_group(d):
     g.updater           = d['UPDATER']
     g.save()
 
-if __name__ == '__main__':
-    indb = sys.stdin
-    reader = csv.DictReader(indb)
+
+@transaction.commit_on_success
+def import_groups(reader):
     with reversion.create_revision():
         for line in reader:
             print line
@@ -93,3 +94,9 @@ if __name__ == '__main__':
         importer = django.contrib.auth.models.User.objects.get(username='importer@SYSTEM', )
         reversion.set_user(importer)
         reversion.set_comment("Groups importer")
+
+
+if __name__ == '__main__':
+    indb = sys.stdin
+    reader = csv.DictReader(indb)
+    import_groups(reader)
