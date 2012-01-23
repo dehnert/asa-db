@@ -84,6 +84,19 @@ def import_group(d):
     g.updater           = d['UPDATER']
     g.save()
 
+    if d['NOTE']:
+        notes, created = groups.models.GroupNote.objects.get_or_create(group=g, author='importer/legacy-notes@SYSTEM', )
+        notes.body = d['NOTE']
+        notes.acl_read_group = False
+        notes.acl_read_office = False
+        notes.save()
+
+    if d['OTHER_ACCOUNT_IDS']:
+        accounts, created = groups.models.GroupNote.objects.get_or_create(group=g, author='importer/other-accounts@SYSTEM', )
+        accounts.body = d['OTHER_ACCOUNT_IDS']
+        accounts.acl_read_group = True
+        accounts.acl_read_office = True
+        accounts.save()
 
 @transaction.commit_on_success
 def import_groups(reader):
