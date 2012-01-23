@@ -89,7 +89,7 @@ def import_group(d):
 def import_groups(reader):
     with reversion.create_revision():
         for line in reader:
-            print line
+            #print line
             import_group(line)
         importer = django.contrib.auth.models.User.objects.get(username='importer@SYSTEM', )
         reversion.set_user(importer)
