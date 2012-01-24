@@ -41,7 +41,10 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
         if len(result) == 1:
             user.first_name = result[0][1]['givenName'][0]
             user.last_name = result[0][1]['sn'][0]
-            user.email = result[0][1]['mail'][0]
+            try:
+                user.email = result[0][1]['mail'][0]
+            except KeyError:
+                user.email = username + '@mit.edu'
             try:
                 user.groups.add(auth.models.Group.objects.get(name='mit'))
             except ObjectDoesNotExist:
