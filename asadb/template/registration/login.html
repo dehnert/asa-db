@@ -10,9 +10,9 @@
 <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-<p>You should be able to log-in using MIT certificates. If you have trouble, please verify that you have unexpired certificates by visiting <a href='https://web.mit.edu/consult/www/certificate/test.html'>the IS&amp;T certificate test page</a>. If you don't have certificates, you should <a href='https://ca.mit.edu/ca/'>get them</a>. If you have certificates but still have trouble, please email <kbd>asa-db</kbd> and tell us what browser and OS you are using.</p>
+<p><strong>You should be able to log-in using MIT certificates.</strong> If you have trouble, please verify that you have unexpired certificates by visiting <a href='https://web.mit.edu/consult/www/certificate/test.html'>the IS&amp;T certificate test page</a>. If you don't have certificates, you should <a href='https://ca.mit.edu/ca/'>get them</a>. If you have certificates but still have trouble, please email <kbd>asa-db</kbd> and tell us what browser and OS you are using.</p>
 
-<p>In the unlikely event that you have a username and password, you can log in below.</p>
+<p><strong>In the unlikely event that you have a username and password</strong>, you can log in below.</p>
 
 <form method="post" action="{% url login-password %}">
 {% csrf_token %}
@@ -25,6 +25,7 @@
     <td>{{ form.password.label_tag }}</td>
     <td>{{ form.password }}</td>
 </tr>
+<tr><td colspan='2'><strong>Not Athena password</strong> (see above).</td></tr>
 </table>
 
 <input type="submit" value="login" />
