@@ -13,6 +13,7 @@ if __name__ == '__main__':
 
 import groups.models
 
+import collections
 import datetime
 
 from django.db import transaction
@@ -50,6 +51,7 @@ def load_people(dcm_people):
     stat_pre_del = 0
     stat_undel = 0
     stat_add = 0
+    stat_people = collections.defaultdict(list)
     for django_person in django_people:
         stat_loops += 1
         if stat_loops % 100 == 0:
@@ -71,13 +73,16 @@ def load_people(dcm_people):
                 if mutable:
                     django_person.del_date = None
                     stat_undel += 1
+                    stat_people['undel'].append(django_person.username)
             if changed:
                 if mutable:
                     django_person.mod_date = datetime.date.today()
                     django_person.save()
                     stat_changed += 1
+                    stat_people['changed'].append(django_person.username)
                 else:
                     stat_mut_ign += 1
+                    stat_people['mut_ign'].append(django_person.username)
             else:
                 stat_unchanged += 1
         else:
@@ -85,11 +90,14 @@ def load_people(dcm_people):
                 if mutable:
                     django_person.del_date = datetime.date.today()
                     stat_del += 1
+                    stat_people['del'].append(django_person.username)
                     django_person.save()
                 else:
                     stat_mut_ign += 1
+                    stat_people['mut_ign'].append(django_person.username)
             else:
                 stat_pre_del += 1
+                stat_people['pre_del'].append(django_person.username)
     for username, dcm_person in dcm_people.items():
         stat_loops += 1
         if stat_loops % 100 == 0:
@@ -100,6 +108,7 @@ def load_people(dcm_people):
             django_person.__dict__[key] = dcm_person[key]
         django_person.add_date = datetime.date.today()
         stat_add += 1
+        stat_people['add'].append(django_person.username)
         django_person.save()
     transaction.commit()
     stats = {
@@ -114,7 +123,7 @@ def load_people(dcm_people):
         'undel': stat_undel,
         'add': stat_add,
     }
-    return stats
+    return stats, stat_people
 
 
 if __name__ == '__main__':
@@ -122,7 +131,7 @@ if __name__ == '__main__':
     dcm_people = load_dcm(sys.stdin)
     print "Phase 1 (DCM parsing): complete at %s" % (datetime.datetime.now(), )
     print "Phase 2 (Django updating): starting at %s" % (datetime.datetime.now(), )
-    stats = load_people(dcm_people)
+    stats, stat_people = load_people(dcm_people)
     print "Phase 2 (Django updating): complete at %s" % (datetime.datetime.now(), )
     print """
 Loop iterations:    %(loops)6d
@@ -135,3 +144,8 @@ Deleted:            %(del)6d
 Already Deleted:    %(pre_del)6d
 Undeleted:          %(undel)6d
 Added:              %(add)6d""" % stats
+
+    for change_type, people in stat_people.items():
+        for person in people:
+            print "%12s\t%s" % (change_type, person, )
+        print ""
