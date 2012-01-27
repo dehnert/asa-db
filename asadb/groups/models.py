@@ -349,6 +349,10 @@ class PerGroupAuthz:
         if getattr(user_obj, 'is_system', False):
             return False
         if isinstance(obj, Group):
+            # Having the unqualified perm means that you should have it
+            # on any object
+            if user_obj.has_perm(perm):
+                return True
             # Now we can do the real work
             holders = obj.officers(person=user_obj.username).select_related('role__grant_user')
             sys_users = OfficerRole.getGrantUsers([holder.role for holder in holders])
