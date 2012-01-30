@@ -76,6 +76,7 @@ class StaticMailCallback(DiffCallback):
         self.updates.append(update)
 
     def handle_signatories(self, signatories, ):
+        prev_group = None
         for signatory in signatories:
             if signatory.end_time > self.now:
                 change_type = "Added"
@@ -87,6 +88,8 @@ class StaticMailCallback(DiffCallback):
             else:
                 counter[signatory.role.slug] = 0
             if signatory.role.slug in self.interesting_signatories:
+                if signatory.group != prev_group:
+                    self.signatory_updates.append("")
                 self.signatory_updates.append(
                     "%s: %s: %s: %s:\n\trange %s to %s" % (
                         change_type,
@@ -96,6 +99,7 @@ class StaticMailCallback(DiffCallback):
                         signatory.start_time.strftime(settings.DATETIME_FORMAT_PYTHON),
                         signatory.end_time.strftime(settings.DATETIME_FORMAT_PYTHON),
                     ))
+                prev_group = signatory.group
             else:
                 print "Ignoring role %s (signatory %s)" % (signatory.role.slug, signatory, )
 
@@ -171,7 +175,7 @@ def build_callbacks():
     callbacks = []
     callbacks.append(StaticMailCallback(
         fields=['name', 'abbreviation', 'officer_email', 'constitution_url', ],
-        address='asa-exec@mit.edu',
+        address='asa-admin@mit.edu',
         template='groups/diffs/asa-update-mail.txt',
         signatories=['president', 'treasurer', 'financial', ]
     ))
