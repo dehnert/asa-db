@@ -7,7 +7,24 @@
 
 <p>Here you can find and submit information about groups recognized by the <a href='http://web.mit.edu/asa/'>MIT Association of Student Activities</a>.</p>
 
-<div class='toolbox'>
+<h2>My Groups</h2>
+
+{% if user.is_anonymous %}
+<p><a href='{% url login %}'>Login</a> to see your groups.</p>
+{% else %}
+{%if not groups %}
+<p>You do not currently appear to be listed with any groups.</p>
+{% endif %}
+{% endif %}
+
+{% if groups %}
+<ul>
+{% for group in groups %}
+    <li><a href='{% url groups:group-detail group.pk %}'>{{group}}</a></li>
+{%endfor%}
+</ul>
+{% endif %}
+
 <h2>Tools</h2>
 <ul>
     <li><a href='http://web.mit.edu/asa/'>ASA Homepage</a></li>
@@ -37,25 +54,6 @@
         <li><a href='{% url about-data %}'>Use of Data</a></li>
     </ul></li>
 </ul>
-</div>
-
-<h2>My Groups</h2>
-
-{% if user.is_anonymous %}
-<p><a href='{% url login %}'>Login</a> to see your groups.</p>
-{% else %}
-{%if not groups %}
-<p>You do not currently appear to be listed with any groups.</p>
-{% endif %}
-{% endif %}
-
-{% if groups %}
-<ul>
-{% for group in groups %}
-    <li><a href='{% url groups:group-detail group.pk %}'>{{group}}</a></li>
-{%endfor%}
-</ul>
-{% endif %}
 
 {% if has_perms %}
 <h2>Permissions</h2>
