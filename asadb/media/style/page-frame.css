@@ -68,6 +68,8 @@ ul.tab-navigation li.selected a
     color: white;
 }
 
+#content .bottom-content { clear: both; }
+
 .toolbox
 {
     float: right;
