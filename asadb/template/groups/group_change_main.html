@@ -12,17 +12,20 @@
 <p>{{msg}}</p>
 {% endif %}
 
+<div class='toolbox'>
+<h2>Tools</h2>
+
+<ul>
+    <li><a href='{% url groups:group-manage-history group.pk %}'>View update history</a></li>
+    <li><a href='{% url groups:group-manage-officers group.pk %}'>Update officers, signatories, etc.</a></li>
+</ul>
+</div>
+
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
 {{ form|render }}
 <input type='submit' value='Update' />
 </form>
 
-<h2>Other Options</h2>
-
-<ul>
-    <li><a href='{% url groups:group-manage-history group.pk %}'>View update history</a></li>
-    <li><a href='{% url groups:group-manage-officers group.pk %}'>Update officers, signatories, etc.</a></li>
-</ul>
 
 {% endblock %}

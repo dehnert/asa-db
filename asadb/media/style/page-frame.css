@@ -77,6 +77,8 @@ ul.tab-navigation li.selected a
     color: black;
     border: 1px solid #777;
     padding: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 .toolbox h2
 {
