@@ -73,15 +73,15 @@ ul.tab-navigation li.selected a
 .toolbox
 {
     float: right;
-    background-color: #999;
+    background-color: #bbb;
     color: black;
-    border: 1px solid #555;
+    border: 1px solid #777;
     padding: 10px;
 }
 .toolbox h2
 {
-    background-color: #777;
-    border-bottom: 1px solid #555;
+    background-color: #888;
+    border-bottom: 1px solid #777;
     margin-top: -10px;
     margin-left: -10px;
     margin-right: -10px;
