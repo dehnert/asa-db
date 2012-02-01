@@ -67,3 +67,21 @@ ul.tab-navigation li.selected a
 {
     color: white;
 }
+
+.toolbox
+{
+    float: right;
+    background-color: #999;
+    color: black;
+    border: 1px solid #555;
+    padding: 10px;
+}
+.toolbox h2
+{
+    background-color: #777;
+    border-bottom: 1px solid #555;
+    margin-top: -10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    padding: 5px;
+}
