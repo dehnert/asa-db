@@ -6,20 +6,13 @@
 
 <h1>{{group.name}}: Change main information</h1>
 
+{% include "groups/group_tools.part.html" %}
+
 <p>We're using the transition from the old ASA Database to this new one as an opportunity to verify that old information is still accurate. Thus, we have intentionally limited the amount of information we copied from the old database. While filling this out, feel free to refer to the <a href='https://sisapp2.mit.edu/asa/student_group_detail.do?action=detail&amp;studentGroupId={{group.pk}}'>old database</a>. However, please verify that information is accurate as you copy it over. As always, if you have trouble, please <a href='mailto:asa-exec@mit.edu'>contact us</a>.</p>
 
 {% if msg %}
 <p>{{msg}}</p>
 {% endif %}
-
-<div class='toolbox'>
-<h2>Tools</h2>
-
-<ul>
-    <li><a href='{% url groups:group-manage-history group.pk %}'>View update history</a></li>
-    <li><a href='{% url groups:group-manage-officers group.pk %}'>Update officers, signatories, etc.</a></li>
-</ul>
-</div>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}

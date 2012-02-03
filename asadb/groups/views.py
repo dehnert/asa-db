@@ -786,6 +786,8 @@ class GroupHistoryView(ListView):
         if 'pk' in self.kwargs:
             group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
             context['title'] = "History for %s" % (group.name, )
+            context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
+            context['group'] = group
         else:
             context['title'] = "Recent Changes"
         return context

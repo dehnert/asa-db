@@ -3,9 +3,9 @@
 {% block title %}{{group.name}}{% endblock %}
 {% block content %}
 
-<h1>{{group.name}}{% if group.abbreviation %} ({{group.abbreviation}}){%endif%}
-{% if adminpriv %}<a href='{%url groups:group-manage-main group.pk %}'>[update]</a></p>{%endif%}
-</h1>
+<h1>{{group.name}}{% if group.abbreviation %} ({{group.abbreviation}}){%endif%}</h1>
+
+{% if adminpriv %}{% include "groups/group_tools.part.html" %}{%endif%}
 
 <table class='pretty-table'>
 <tr><th colspan='2'>Basic Information</th></tr>

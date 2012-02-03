@@ -5,6 +5,10 @@
 
 <h1>{{title}}</h1>
 
+{% if adminpriv %}
+{% include "groups/group_tools.part.html" %}
+{% endif %}
+
 <table class='pretty-table'>
 <tr>
     <th>#</th>

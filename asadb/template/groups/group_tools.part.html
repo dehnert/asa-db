@@ -1,0 +1,9 @@
+<div class='toolbox'>
+<h2>Tools</h2>
+<ul>
+    <li><a href='{% url groups:group-detail group.pk %}'>View</a></li>
+    <li><a href='{% url groups:group-manage-main group.pk %}'>Update main</a></li>
+    <li><a href='{% url groups:group-manage-officers group.pk %}'>Update people</a></li>
+    <li><a href='{% url groups:group-manage-history group.pk %}'>History</a></li>
+</ul>
+</div>
