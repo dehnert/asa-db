@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'south',
     'groups',
     'forms',
+    'space',
 )
 
 from local_settings_after import *
