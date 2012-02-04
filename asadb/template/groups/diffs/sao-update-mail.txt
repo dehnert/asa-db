@@ -13,8 +13,8 @@ ASA Database
 Signatories (types: {{signatory_types}}):
 {{signatories_message}}
 {% endif %}
-{% endautoescape %}
 {% if groups_message %}
 Groups:
 {{groups_message}}
 {% endif %}
+{% endautoescape %}
