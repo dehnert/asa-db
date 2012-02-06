@@ -17,9 +17,9 @@ import groups.models
 
 def get_roles():
     roles = [
-        ['treasurer', 'No treasurer listed', ],
-        ['financial', 'No financial signatories listed. At minimum, this should generally be your president and treasurer.', ],
-        ['reservation', 'No reservation signatories listed. Members reserving space for the group should be reservation signatories.', ],
+        ['treasurer', True, 'No treasurer listed', ],
+        ['financial', False, 'No financial signatories listed. At minimum, this should generally be your president and treasurer.', ],
+        ['reservation', False, 'No reservation signatories listed. Members reserving space for the group should be reservation signatories.', ],
     ]
     for role in roles:
         obj = groups.models.OfficerRole.objects.get(slug=role[0])
@@ -28,14 +28,17 @@ def get_roles():
 
 def check_group(group, roles, ):
     problems = []
+    fail = False
     if group.officer_email or group.description:
         pass
     else:
         problems.append("No basic group information listed")
-    for role, msg in roles:
+        fail = True
+    for role, cause_fail, msg in roles:
         if len(group.officers(role=role)) == 0:
             problems.append(msg)
-    return problems
+            if cause_fail: fail = True
+    return fail, problems
 
 def officers_lists(fd, ):
     reader = csv.DictReader(fd)
@@ -51,8 +54,8 @@ def check_groups(old_groups_data):
     tmpl = get_template('groups/letters/missing-transition.txt')
     emails = []
     for group in groups.models.Group.active_groups.all():
-        problems = check_group(group, roles, )
-        if problems:
+        fail, problems = check_group(group, roles, )
+        if fail:
             to = [officers[group.pk]]
             if group.officer_email:
                 to.append(group.officer_email)
