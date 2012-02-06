@@ -313,6 +313,9 @@ class OfficeHolder(models.Model):
     objects = models.Manager()
     current_holders = OfficeHolder_CurrentManager()
 
+    def format_person(self, ):
+        return AthenaMoiraAccount.try_format_by_username(self.person, )
+
     def expire(self, ):
         self.end_time = datetime.datetime.now()-self.EXPIRE_OFFSET
         self.save()
@@ -437,6 +440,9 @@ class AthenaMoiraAccount(models.Model):
         # XXX: Is this... right?
         return self.account_class == 'G' or self.account_class.isdigit()
 
+    def format(self, ):
+        return "%s %s <%s>" % (self.first_name, self.last_name, self.username, )
+
     def __str__(self, ):
         if self.mutable:
             mutable_str = ""
@@ -449,6 +455,14 @@ class AthenaMoiraAccount(models.Model):
 
     def __repr__(self, ):
         return str(self)
+
+    @classmethod
+    def try_format_by_username(cls, username):
+        try:
+            moira = AthenaMoiraAccount.objects.get(username=username)
+            return moira.format()
+        except AthenaMoiraAccount.DoesNotExist:
+            return "%s (name not available)" % (username)
 
     class Meta:
         verbose_name = "Athena (Moira) account"

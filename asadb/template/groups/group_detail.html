@@ -32,7 +32,7 @@
 <tr>
     <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
     <td><ul>
-    {% for person in people %}<li>{{person.person}}</li>{%endfor%}
+    {% for person in people %}<li>{{person.format_person}}</li>{%endfor%}
     </ul></td>
 </tr>
 {% endfor %}

@@ -594,11 +594,15 @@ def load_officers(group, ):
     people = list(set([ officer.person for officer in officers ]))
     roles  = groups.models.OfficerRole.objects.all()
 
+    name_map = {}
+    for name in people:
+        name_map[name] = groups.models.AthenaMoiraAccount.try_format_by_username(name)
     officers_map = {}
+
     for officer in officers:
         officers_map[(officer.person, officer.role)] = officer
 
-    return people, roles, officers_map
+    return people, roles, name_map, officers_map
 
 def manage_officers(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
@@ -608,7 +612,7 @@ def manage_officers(request, pk, ):
 
     max_new = 4
 
-    people, roles, officers_map = load_officers(group)
+    people, roles, name_map, officers_map = load_officers(group)
 
     msgs = []
     changes = []
@@ -682,7 +686,7 @@ def manage_officers(request, pk, ):
         if changes:
             group.set_updater(request.user)
             group.save()
-        people, roles, officers_map = load_officers(group)
+        people, roles, name_map, officers_map = load_officers(group)
 
     officers_data = []
     for person in people:
@@ -692,10 +696,10 @@ def manage_officers(request, pk, ):
                 role_list.append((role, True))
             else:
                 role_list.append((role, False))
-        officers_data.append((False, person, role_list))
+        officers_data.append((False, person, name_map[person], role_list))
     null_role_list = [(role, False) for role in roles]
     for i in range(max_new):
-        officers_data.append((True, "extra.%d" % (i, ), null_role_list))
+        officers_data.append((True, "extra.%d" % (i, ), "", null_role_list))
 
     context = {
         'group': group,
