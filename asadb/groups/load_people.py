@@ -97,7 +97,6 @@ def load_people(dcm_people):
                     stat_people['mut_ign'].append(django_person.username)
             else:
                 stat_pre_del += 1
-                stat_people['pre_del'].append(django_person.username)
     for username, dcm_person in dcm_people.items():
         stat_loops += 1
         if stat_loops % 100 == 0:
