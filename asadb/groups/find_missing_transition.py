@@ -40,12 +40,17 @@ def check_group(group, roles, ):
             if cause_fail: fail = True
     return fail, problems
 
+def canonicalize_email(email):
+    if '@' in email: return email
+    elif email == '': return ''
+    else: return email + "@mit.edu"
+
 def officers_lists(fd, ):
     reader = csv.DictReader(fd)
     lists = {}
     for d in reader:
         pk = int(d['ASA_STUDENT_GROUP_KEY'])
-        lists[pk] = d['OFFICER_EMAIL']
+        lists[pk] = canonicalize_email(d['OFFICER_EMAIL'])
     return lists
 
 def check_groups(old_groups_data):
@@ -69,12 +74,14 @@ def check_groups(old_groups_data):
                 body=body,
                 from_email='asa-exec@mit.edu',
                 to=to,
-                bcc=['asa-admin@mit.edu' , 'asa-db-outgoing@mit.edu'],
+                bcc=['asa-db-outgoing@mit.edu'],
             )
             emails.append(email)
 
     connection = mail.get_connection()
-    connection.send_messages(emails)
+    #connection.send_messages(emails)
+    for email in emails: print email.subject
+    print len(emails)
 
 if __name__ == '__main__':
     check_groups(sys.argv[1])

@@ -2,14 +2,17 @@
 Dear officers of {{group.name}},
    We believe that you have not yet fully updated your entry in the new ASA Group Database. As we have said previously (e.g., in an email to asa-official@mit.edu on 1/23/2012), the ASA is transitioning to a new database.  As part of this transition, groups are responsible for inputting most of their group's information to ensure that it is up-to-date.  MIT offices will be starting to use the new database now. It is critical to your group's ability to continue making financial transactions and reserving space that you list your signatories soon. Additionally, without updating basic information such as officer's email, the ASA will be unable to keep you updated on important news like midway, funding, and application deadlines.
 
-More information about accessing and using the new Database and which fields need to be updated is posted at: http://web.mit.edu/asa/database/
+More information about accessing and using the new Database and which fields need to be updated is posted at: http://web.mit.edu/asa/database/.
 
+Your group's page can be found at https://asa.mit.edu/groups/{{group.pk}}/.
 
 In particular, we believe that your group's entry has the following issues:
 {% for prob in problems %}* {{prob}}
 {% endfor %}
 
-We appreciate you cooperation in fixing these quickly. If you have any questions, comments, or concerns, please contact asa-exec@mit.edu.
+We appreciate you cooperation in fixing these quickly. If you believe this message to be in error, please be sure to contact us at asa-exec@mit.edu.
+
+If you have questions, comments, concerns, or suggestions for improving the new database, please let us know.
 
 Thanks,
 The ASA Database team
