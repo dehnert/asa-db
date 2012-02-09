@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{group.name}}: Office Access{% endblock %}
+{% block content %}
+
+<h1>{{group.name}}: Office Access</h1>
+
+{% include "groups/group_tools.part.html" %}
+
+<h2>Offices</h2>
+{% if office_pairs %}
+<table class='pretty-table'>
+<tr>
+    <th>Room</th>
+    <th>Access</th>
+</tr>
+<tr>
+    <th>All</th>
+    <td><ul>{% for person in office %}
+        <li>{{person.format_person}}</li>
+    {% endfor %}</ul></td>
+</tr>
+{% for assignment, entries in office_pairs %}
+<tr>
+    <th>{{assignment.space}}</th>
+    <td><ul>{% for entry in entries %}
+        <li>{{entry.format_name}}<li>
+    {% empty %}
+        <li>No single-room access</li>
+    {% endfor %}</ul></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No office assigned.</p>
+{% endif %}
+
+
+<h2>Lockers</h2>
+{% if locker_pairs %}
+<table class='pretty-table'>
+<tr>
+    <th>Room</th>
+    <th>Locker</th>
+    <th>Access</th>
+</tr>
+<tr>
+    <th colspan='2'>All</th>
+    <td><ul>{% for person in locker %}
+        <li>{{person.format_person}}</li>
+    {% endfor %}</ul></td>
+</tr>
+{% for assignment, entries in locker_pairs %}
+<tr>
+    <th>{{assignment.space.number}}</th>
+    <th>{{assignment.locker_num}}</th>
+    <td><ul>{% for entry in entries %}
+        <li>{{entry.format_name}}<li>
+    {% empty %}
+        <li>No specific access</li>
+    {% endfor %}</ul></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No storage lockers assigned.</p>
+{% endif %}
+
+{% endblock %}
