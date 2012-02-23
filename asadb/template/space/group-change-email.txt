@@ -1,0 +1,10 @@
+{% autoescape off %}
+Hi {{group.name}},
+    Thank you for updating office access on the ASA database today. We've forwarded the following changes on to CAC:
+
+{{msg}}
+
+Thanks,
+ASA Exec
+
+{% endautoescape %}

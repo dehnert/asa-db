@@ -1,6 +1,8 @@
+import collections
 import datetime
 
 from django.db import models
+from django.db.models import Q
 
 import reversion
 
@@ -19,6 +21,60 @@ class Space(models.Model):
         else:
             asa_str = "Non-ASA"
         return u"%s (%s)" % (self.number, asa_str)
+
+    def build_access(self, time=None, group=None, ):
+        """Assemble a list of who had access to this Space.
+
+        time:
+            optional; indicate that you want access as of a particular time.
+            If omitted, uses the present.
+        group:
+            optional; indicates that you want access via a particular group.
+            If omitted, finds access via any group.
+
+        Return value:
+            tuple (access, assignments, aces, errors)
+            access is the main field that matters, but the others are potentially useful supplementary information
+
+            access:
+                Group.pk -> (ID -> Set name)
+                Indicates who has access. Grouped by group and ID number.
+                Usually, the sets will each have one member, but ID 999999999 is decently likely to have several.
+                The SpaceAccessListEntrys will be filtered to reflect assignments as of that time.
+            assignments:
+                [SpaceAssignment]
+                QuerySet of all SpaceAssignments involving the space and group at the time
+            aces:
+                [SpaceAccessListEntry]
+                QuerySet of all SpaceAccessListEntrys involving the space and group at the time.
+                This is not filtered for the ace's group having a relevant SpaceAssignment.
+            errors:
+                [String]
+                errors/warnings that occurred.
+                Includes messages about groups no longer having access.
+        """
+
+        if time is None:
+            time = datetime.datetime.now()
+        errors = []
+        time_q = Q(end__gte=time, start__lte=time)
+        assignments = SpaceAssignment.objects.filter(time_q, space=self)
+        aces = SpaceAccessListEntry.objects.filter(time_q, space=self)
+        if group:
+            assignments = assignments.filter(group=group)
+            aces = aces.filter(group=group)
+        access = {}    # Group.pk -> (ID -> Set name)
+        for assignment in assignments:
+            if assignment.group.pk not in access:
+                access[assignment.group.pk] = collections.defaultdict(set)
+        for ace in aces:
+            if ace.group.pk in access:
+                access[ace.group.pk][ace.card_number].add(ace.name)
+            else:
+                # This group appears to no longer have access...
+                errors.append("Group %s no longer has access to %s, but has live ACEs." % (ace.group, self, ))
+        return access, assignments, aces, errors
+
 reversion.register(Space)
 
 
