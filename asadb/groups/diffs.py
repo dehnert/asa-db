@@ -223,7 +223,7 @@ def diff_objects(objs, since, callbacks, stats, ):
             else:
                 # New group that's been edited since. Diff against the creation
                 # (since creation sent mail, but later changes haven't)
-                after = after_versions[-1]
+                before = after_versions.reverse()[0]
                 stats['change_new'] += 1
             stats['change_total'] += 1
             #print "Change?: before=%s (%d), after=%s (%d), type=%s, new=%s" % (
@@ -237,6 +237,10 @@ def diff_objects(objs, since, callbacks, stats, ):
                 callback.handle_group(before, after, before_fields, after_fields)
         else:
             # New group that's only been edited once
+            # Note that "normal" new groups will have their startup form
+            # (which creates the Group object) and the approval (which makes
+            # more changes, so this is group startups + NGEs, not actually
+            # normal new groups)
             stats['new_group'] += 1
 
 def diff_signatories(since, now, callbacks):
