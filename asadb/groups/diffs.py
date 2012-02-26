@@ -178,7 +178,7 @@ def build_callbacks():
         fields=['name', 'abbreviation', 'officer_email', 'constitution_url', ],
         address='asa-admin@mit.edu',
         template='groups/diffs/asa-update-mail.txt',
-        signatories=['president', 'treasurer', 'financial', ]
+        signatories=['president', 'treasurer', 'financial', 'group-admin', 'temp-admin', ]
     ))
     sao_callback = StaticMailCallback(
         fields=['name', 'abbreviation', 'officer_email', ],
