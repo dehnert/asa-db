@@ -651,13 +651,15 @@ def manage_officers(request, pk, ):
                 for person in people:
                     if person in new_holders:
                         if (person, role) in officers_map:
-                            if role.require_student and not moira_accounts[person].is_student():
+                            if person not in moira_accounts:
+                                pass # already errored above
+                            elif role.require_student and not moira_accounts[person].is_student():
                                 msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.) You should replace this person ASAP.' % (role, person, ))
                             #changes.append(("Kept", "yellow", person, role))
                             kept += 1
                         else:
                             if person not in moira_accounts:
-                                msgs.append('Could not add nonexistent Athena account "%s" as %s.' % (person, role, ))
+                                pass # already errored above
                             elif role.require_student and not moira_accounts[person].is_student():
                                 msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.)' % (role, person, ))
                             else:
@@ -675,6 +677,7 @@ def manage_officers(request, pk, ):
                     if "extra.%d" % (i, ) in new_holders:
                         if i in new_people:
                             person = new_people[i]
+                            assert person in moira_accounts
                             if role.require_student and not moira_accounts[person].is_student():
                                 msgs.append('Only students can have the %s role, and %s does not appear to be a student.' % (role, person, ))
                             else:
