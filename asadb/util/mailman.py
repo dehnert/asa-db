@@ -32,6 +32,10 @@ class MailmanList():
         cmdline = [MMBLANCHE_PATH, self.name, ]
         for member in add_members:
             cmdline.append('-a')
+            if type(member) == type(()):
+                name, email = member
+                name = name.replace('"', "''")
+                member = '"%s" <%s>' % (name, email, )
             cmdline.append(member)
         for member in delete_members:
             cmdline.append('-d')

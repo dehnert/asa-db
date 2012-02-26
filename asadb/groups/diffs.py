@@ -157,7 +157,8 @@ class UpdateOfficerListCallback(DiffCallback):
 
     def handle_group(self, before, after, before_fields, after_fields, ):
         if before_fields['officer_email'] != after_fields['officer_email']:
-            self.add.append("%s <%s>" % (after_fields['name'], after_fields['officer_email'], ))
+            name = after_fields['name']
+            self.add.append((after_fields['name'], after_fields['officer_email'], ))
             self.delete.append(before_fields['officer_email'])
 
     def new_group(self, after, after_fields, ):
