@@ -1,0 +1,14 @@
+Deploying a new version of the ASA database:
+* Skim the changes (git log stable..master) and verify they're reasonable to deploy
+* Draft email to asa-db-core-stakeholders
+    git log --oneline stable..master
+    git log stable..master > /tmp/commits.txt       # attach
+    Summarize any interesting changes
+* run locally:
+    git checkout stable; git merge master; git checkout master
+    git push
+* run on server
+    git pull --ff-only
+    ./manage.py migrate
+* verify that changes happened and it looks mostly sane
+* send the email
