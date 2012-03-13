@@ -21,7 +21,7 @@ class Admin_SpaceAssignment(admin.ModelAdmin):
     )
     list_display_links = list_display
     list_filter = ('space', )
-    search_fields = ( 'group__name', 'group__officers_email', 'space__number', )
+    search_fields = ( 'group__name', 'group__officer_email', 'space__number', )
 admin.site.register(space.models.SpaceAssignment, Admin_SpaceAssignment)
 
 class Admin_SpaceAccessListEntry(admin.ModelAdmin):
