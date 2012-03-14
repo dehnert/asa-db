@@ -160,6 +160,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
         ]
         model = groups.models.Group
 
+@login_required
 def manage_main(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
 
@@ -606,6 +607,7 @@ def load_officers(group, ):
 
     return people, roles, name_map, officers_map
 
+@login_required
 def manage_officers(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
 
