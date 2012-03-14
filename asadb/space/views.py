@@ -16,6 +16,7 @@ import django_filters
 import groups.models
 import space.models
 
+@login_required
 def view_access(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
     if not request.user.has_perm('groups.admin_group', group):
