@@ -63,6 +63,7 @@ class StaticMailCallback(DiffCallback):
         }
         self.since = since
         self.now = now
+        self.stats = collections.defaultdict(lambda: 0)
 
     def handle_group(self, before, after, before_fields, after_fields, ):
         after_revision = after.revision
@@ -101,9 +102,15 @@ class StaticMailCallback(DiffCallback):
                     ))
                 prev_group = signatory.group
             else:
-                print "Ignoring role %s (signatory %s)" % (signatory.role.slug, signatory, )
+                self.stats["role." + signatory.role.slug] += 1
+                #print "Ignoring role %s (signatory %s)" % (signatory.role.slug, signatory, )
 
     def end_run(self, ):
+        print "\nChange stats for email to %s:" % (self.address, )
+        for stat_key, stat_val in self.stats.items():
+            print "%20s:\t%6d" % (stat_key, stat_val, )
+        print ""
+
         message = "\n\n".join(self.updates)
         signatories_message = "\n".join(self.signatory_updates)
         if (self.care_about_groups and self.updates) or (self.care_about_signatories and self.signatory_updates):
@@ -157,7 +164,8 @@ class UpdateOfficerListCallback(DiffCallback):
 
     def handle_group(self, before, after, before_fields, after_fields, ):
         if before_fields['officer_email'] != after_fields['officer_email']:
-            self.add.append("%s <%s>" % (after_fields['name'], after_fields['officer_email'], ))
+            name = after_fields['name']
+            self.add.append((after_fields['name'], after_fields['officer_email'], ))
             self.delete.append(before_fields['officer_email'])
 
     def new_group(self, after, after_fields, ):
@@ -177,7 +185,7 @@ def build_callbacks():
         fields=['name', 'abbreviation', 'officer_email', 'constitution_url', ],
         address='asa-admin@mit.edu',
         template='groups/diffs/asa-update-mail.txt',
-        signatories=['president', 'treasurer', 'financial', ]
+        signatories=['president', 'treasurer', 'financial', 'group-admin', 'temp-admin', ]
     ))
     sao_callback = StaticMailCallback(
         fields=['name', 'abbreviation', 'officer_email', ],
@@ -197,7 +205,7 @@ def recent_groups(since):
     objs = versions.values("content_type", "object_id").distinct()
     return objs
 
-def diff_objects(objs, since, callbacks):
+def diff_objects(objs, since, callbacks, stats, ):
     revs  = reversion.models.Revision.objects.all()
     old_revs = revs.filter(date_created__lte=since)
     new_revs = revs.filter(date_created__gte=since)
@@ -211,22 +219,29 @@ def diff_objects(objs, since, callbacks):
         if len(before_versions) > 0 or len(after_versions) > 1:
             if len(before_versions) > 0:
                 before = before_versions[0]
+                stats['change_old'] += 1
             else:
                 # New group that's been edited since. Diff against the creation
                 # (since creation sent mail, but later changes haven't)
-                after = after_versions[-1]
-            print "Change?: before=%s (%d), after=%s (%d), type=%s, new=%s" % (
-                before, before.pk,
-                after, after.pk,
-                after.type, after.field_dict,
-            )
+                before = after_versions.reverse()[0]
+                stats['change_new'] += 1
+            stats['change_total'] += 1
+            #print "Change?: before=%s (%d), after=%s (%d), type=%s, new=%s" % (
+            #    before, before.pk,
+            #    after, after.pk,
+            #    after.type, after.field_dict,
+            #)
             before_fields = before.field_dict
             after_fields = after.field_dict
             for callback in callbacks:
                 callback.handle_group(before, after, before_fields, after_fields)
         else:
             # New group that's only been edited once
-            pass
+            # Note that "normal" new groups will have their startup form
+            # (which creates the Group object) and the approval (which makes
+            # more changes, so this is group startups + NGEs, not actually
+            # normal new groups)
+            stats['new_group'] += 1
 
 def diff_signatories(since, now, callbacks):
     # First: still around; then added recently
@@ -243,10 +258,16 @@ def generate_diffs():
     recent = now - datetime.timedelta(hours=24, minutes=15)
     objs = recent_groups(since=recent)
     callbacks = build_callbacks()
+    stats = collections.defaultdict(lambda: 0)
     for callback in callbacks: callback.start_run(since=recent, now=now, )
-    diff_objects(objs, since=recent, callbacks=callbacks)
+    diff_objects(objs, since=recent, callbacks=callbacks, stats=stats)
     diff_signatories(recent, now, callbacks=callbacks, )
     for callback in callbacks: callback.end_run()
+
+    print "\nOverall change stats:"
+    for stat_key, stat_val in stats.items():
+        print "%20s:\t%6d" % (stat_key, stat_val, )
+    print ""
 
 if __name__ == '__main__':
     generate_diffs()

@@ -73,7 +73,7 @@ def load_groups():
     return group_map
 
 @transaction.commit_on_success
-def perform_sync(stats, dj_map, wh_map, ):
+def perform_sync(stats, dj_map, wh_map, roles=None, dj_groups=None, ):
     # Statistics
     stats['loops'] = 0
     stats['postdate_start'] = 0
@@ -82,10 +82,13 @@ def perform_sync(stats, dj_map, wh_map, ):
     stats['missing_wh'] = 0
     stats['added'] = 0
     stats['missing_rg'] = 0
+    stats['missing_role'] = 0
 
     today = datetime.date.today()
-    roles = load_roles()
-    dj_groups = load_groups()
+    if roles is None:
+        roles = load_roles()
+    if dj_groups is None:
+        dj_groups = load_groups()
     for key in set(dj_map.keys()).union(wh_map.keys()):
         stats['loops'] += 1
         if stats['loops'] % 1000 == 0:
@@ -129,31 +132,67 @@ def perform_sync(stats, dj_map, wh_map, ):
                         dj_holder.save()
                         stats['added'] += 1
                     else:
-                        print "Missing role or group: person=%s, role=%s, group=%d, start=%s, expiry=%s" % (
-                            person, role_slug, group_id, start, expiry,
-                        )
-                        stats['missing_rg'] += 1
+                        if role_slug not in roles:
+                            stats['missing_role'] += 1
+                        else:
+                            print "Missing role or group: person=%s, role=%s, group=%d, start=%s, expiry=%s" % (
+                                person, role_slug, group_id, start, expiry,
+                            )
+                            stats['missing_rg'] += 1
+
 
 if __name__ == '__main__':
-    stats = {}
+    stats = {
+        'group_ign': 0,
+    }
+
+    mode = 'all'
+    roles = None # default
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'squash':
+            mode = 'squash'
+        elif sys.argv[1] == 'all':
+            pass
+        else:
+            raise NotImplementedError
+    if mode == 'squash':
+        roles = load_roles()
+        repl = roles['temp-admin']
+        for slug, role in roles.items():
+            if slug in ('president', 'treasurer', 'financial', ):
+                roles[slug] = repl
+            else:
+                del roles[slug]
 
     print "Phase 1: %s: Loading Django officer information" % (datetime.datetime.now(), )
     dj_map = load_django(stats)
     print "Phase 1: %s: Complete: Loading Django officer information" % (datetime.datetime.now(), )
 
-    print "Phase 2: %s: Loading warehouse officer information" % (datetime.datetime.now(), )
-    wh_map = load_warehouse(stats)
-    print "Phase 2: %s: Complete: Loading warehouse officer information" % (datetime.datetime.now(), )
+    print "Phase 2: %s: Loading Django group information" % (datetime.datetime.now(), )
+    dj_groups = load_groups()
+    if mode == 'squash':
+        for pk, group in dj_groups.items():
+            if len(group.officers()) > 1:
+                stats['group_ign'] += 1
+                del dj_groups[pk]
+            else:
+                print "Keeping ", group
+    print "Phase 2: %s: Complete: Loading Django group information" % (datetime.datetime.now(), )
 
-    print "Phase 3: %s: Performing sync" % (datetime.datetime.now(), )
-    perform_sync(stats, dj_map, wh_map, )
-    print "Phase 3: %s: Complete: Performing sync" % (datetime.datetime.now(), )
+    print "Phase 3: %s: Loading warehouse officer information" % (datetime.datetime.now(), )
+    wh_map = load_warehouse(stats)
+    print "Phase 3: %s: Complete: Loading warehouse officer information" % (datetime.datetime.now(), )
+
+    print "Phase 4: %s: Performing sync" % (datetime.datetime.now(), )
+    perform_sync(stats, dj_map, wh_map, roles, dj_groups, )
+    print "Phase 4: %s: Complete: Performing sync" % (datetime.datetime.now(), )
 
     print """
     All phases complete. Statistics:
     
     Django current:         %(dj_total_current)6d
     Django distinct:        %(dj_distinct_current)6d
+    Django ignored groups:  %(group_ign)6d
 
     Warehouse p/r/g tuples: %(wh_size)6d
     Warehouse entries:      %(wh_entries)6d
@@ -163,5 +202,7 @@ if __name__ == '__main__':
     People kept:            %(kept)6d
     People expired:         %(expired)6d
     People missing from WH: %(missing_wh)6d
+    People in missing group:%(missing_rg)6d
+    People for missing role:%(missing_role)6d
     People added:           %(added)6d
     """ % stats

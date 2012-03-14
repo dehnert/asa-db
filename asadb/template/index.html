@@ -38,12 +38,14 @@
         <li><a href='{%url fysm%}'>View the entries</a></li>
         <li><a href='{%url fysm-select%}'>Submit an entry</a></li>
     </ul></li>
+    {% comment %}
     <li>Membership updates<ul>
         <li><a href='{%url membership-update%}'>Group update</a></li>
         <li><a href='{%url membership-confirm%}'>Individual confirmations</a></li>
         <li><a href='{%url membership-submitted%}'>Groups with submitted updates</a></li>
         {% if perms.groups.view_group_private_info %}<li><a href='{%url membership-issues%}'>Issues</a> (CSV)</li>{% endif %}
     </ul></li>
+    {% endcomment %}
     <li>Group recognition<ul>
         <li><a href='http://web.mit.edu/asa/start/new-group-app.html'>New Group Application</a></li>
         {%if perms.groups.add_group %}<li><a href='{% url groups:startup %}'>Startup form</a></li>{%endif%}
@@ -52,6 +54,11 @@
     </ul></li>
     <li><a href='{% url about %}'>About the ASA Database</a><ul>
         <li><a href='{% url about-data %}'>Use of Data</a></li>
+    </ul></li>
+    <li>Related resources<ul>
+        <li><a href='http://web.mit.edu/asa/'>Association of Student Activities (ASA)</a></li>
+        <li><a href='http://studentlife.mit.edu/sao'>Student Activities Office (SAO)</a></li>
+        <li><a href='http://studentlife.mit.edu/cac'>Campus Activities Complex (CAC)</a></li>
     </ul></li>
 </ul>
 

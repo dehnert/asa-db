@@ -20,6 +20,7 @@
 <thead>
     <tr>
         <th>Name</th>
+        <th>Abbreviation</th>
         <th>Status</th>
         <th>Website</th>
         <th>ASA DB</th>
@@ -31,6 +32,7 @@
 {% for group in group_list %}
     <tr class='group-status-{{group.group_status.slug}} group-active-{{group.group_status.is_active}}'>
         <th>{{group.name}}</th>
+        <th>{{group.abbreviation}}</th>
         <td class='group-status'>{{group.group_status}}</td>
         <td>{% if group.website_url %}<a href='{{group.website_url}}'>Website</a>{%endif%}</td>
         <td><a href='{% url groups:group-detail group.pk %}'>DB Entry</a></td>

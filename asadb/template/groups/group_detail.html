@@ -88,6 +88,26 @@
 </tr>
 </table>
 
+<h2>My Connection</h2>
+
+{% if my_roles %}
+<p>You have the following connections to this group:</p>
+<table class='pretty-table'>
+<tr>
+    <th>Connection</th>
+    <th>Description</th>
+</tr>
+{% for holder in my_roles %}
+<tr>
+    <th>{{holder.role.display_name}}</th>
+    <td>{{holder.role.description}}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No roles in this group.</p>
+{% endif %}
+
 <h2>Notes</h2>
 
 {% if notes %}

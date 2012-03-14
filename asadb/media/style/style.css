@@ -26,6 +26,12 @@ table.pretty-table th a, table.pretty-table caption a
 {
     color: #008;
 }
+
+table.group-list tbody th
+{
+    text-align: left;
+}
+
 ul.errorlist
 {
     color: red;

@@ -16,7 +16,7 @@
 
 <h2>The Groups</h2>
 
-<table class='pretty-table'>
+<table class='pretty-table group-list'>
 <thead>
 <tr>
     <th></th>
@@ -28,7 +28,11 @@
 <tbody>
 {%for group, role_list in officers %}
 <tr>
-    <th><a href='{% url groups:group-detail group.pk %}'>{{group}}</a> ({{group.group_status}})</th>
+    <th>
+        <a href='{% url groups:group-detail group.pk %}'>{{group}}</a> ({{group.group_status}})
+        {% if group.abbreviation %}<br>Abbreviation: {{group.abbreviation}}{% endif %}
+        {% if user.is_authenticated and group.officer_email %}<br>Officer list: {{group.officer_email}}{% endif %}
+    </th>
     {%for holders in role_list%}
     <td>{% if holders %}<ul>{% for person in holders %}<li>{{person}}</li>{%endfor%}</ul>{% endif %}</td>
     {%endfor%}
