@@ -1,12 +1,22 @@
 {% autoescape off %}
 Dear officers of {{group.name}},
-   This is a followup to our email earlier this week. You have still not updated your entry in the ASA Database. We have gotten complaints from some MIT offices (e.g., Schedules) that this is delaying their work, and it also interferes with our own work.
+   This is a followup to our previous email from a couple of weeks ago.
+You have still not updated your entry in the ASA Database. We have gotten
+complaints from some MIT offices (e.g., Schedules) that this is delaying
+their work, and it also interferes with our own work.
 
-*We will fine* groups that haven't updated their records by Monday $50, unless they've contacted us at asa-exec@mit.edu about difficulties doing so.
+*We will suspend* groups that haven't updated their records --- both main info
+and listed people --- by Wednesday 3/21, unless they have contacted us at
+asa-exec@mit.edu about difficulties doing so. Further penalties may follow
+thereafter.
 
-Additionally, starting Monday Schedules will refuse to reserve rooms if the reserver is not listed in the new database (as opposed to just refering back to the old database, as they have been doing so far).
+Offices (e.g., SAO, CAC, and Schedules) are already stopping checking
+the old database for signatories. It's to your advantage to update the
+database *before* you attempt to spend money, reserve spaces, and perform
+other functions that will block on your not having updated the database.
 
-More information about accessing and using the new Database and which fields need to be updated is posted at: http://web.mit.edu/asa/database/.
+More information about accessing and using the new Database and which
+fields need to be updated is posted at: http://web.mit.edu/asa/database/.
 
 Your group's page can be found at https://asa.mit.edu/groups/{{group.pk}}/.
 
@@ -15,7 +25,9 @@ In particular, we believe that your group's entry has the following issues:
 {% for prob in problems %}* {{prob}}
 {% endfor %}
 
-We appreciate your cooperation in fixing these quickly. If you believe this message to be in error, please be sure to contact us at asa-exec@mit.edu.
+We appreciate your cooperation in fixing these quickly. If you believe
+this message to be in error, please be sure to contact us at
+asa-exec@mit.edu.
 
 Thanks,
 The ASA Database team
