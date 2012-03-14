@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import collections
+import csv
 import datetime
 import os
 import sys
@@ -30,11 +31,15 @@ def gather_users():
     return space_users
 
 def print_info(space_users):
+    writer = csv.writer(sys.stdout)
+    writer.writerow(("space", "last_name", "first_name", "username", "mit_id", ))
     for space_id, users in space_users.items():
-        print "\n\n%s:" % (space.models.Space.objects.get(pk=space_id), )
-        user_objs = groups.models.AthenaMoiraAccount.objects.filter(username__in=users)
+        writer.writerow(())
+        cur_space = space.models.Space.objects.get(pk=space_id)
+        writer.writerow((cur_space, ))
+        user_objs = groups.models.AthenaMoiraAccount.objects.filter(username__in=users).order_by('last_name', 'first_name', )
         for user in user_objs:
-            print "%s (%s %s, %s)" % (user.username, user.first_name, user.last_name, user.mit_id)
+            writer.writerow((cur_space, user.last_name, user.first_name, user.username, user.mit_id))
 
 if __name__ == '__main__':
     space_users = gather_users()
