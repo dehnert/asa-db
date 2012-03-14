@@ -399,6 +399,7 @@ def recognize_nge(request, ):
     }
     return render_to_response('groups/create/nge.html', context, context_instance=RequestContext(request), )
 
+@login_required
 def startup_form(request, ):
     msg = None
 
