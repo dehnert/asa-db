@@ -58,8 +58,8 @@ class StaticMailCallback(DiffCallback):
         self.updates = []
         self.signatory_updates = []
         self.signatory_type_counts = {
-            'Added': {},
-            'Expired': {},
+            'Added': collections.defaultdict(lambda: 0),
+            'Expired': collections.defaultdict(lambda: 0),
         }
         self.since = since
         self.now = now
@@ -84,10 +84,7 @@ class StaticMailCallback(DiffCallback):
             else:
                 change_type = "Expired"
             counter = self.signatory_type_counts[change_type]
-            if signatory.role.slug in counter:
-                counter[signatory.role.slug] += 1
-            else:
-                counter[signatory.role.slug] = 0
+            counter[signatory.role.slug] += 1
             if signatory.role.slug in self.interesting_signatories:
                 if signatory.group != prev_group:
                     self.signatory_updates.append("")
