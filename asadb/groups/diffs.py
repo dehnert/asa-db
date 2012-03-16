@@ -114,7 +114,12 @@ class StaticMailCallback(DiffCallback):
         lines.append(line); line = ""
 
         for sig_type in self.signatory_types_seen:
-            line += "%20s" % (sig_type, )
+            anno_sig = sig_type
+            if sig_type in self.interesting_signatories:
+                anno_sig += " "
+            else:
+                anno_sig += "*"
+            line += "%20s" % (anno_sig, )
             for change_type in change_types:
                 if sig_type in self.signatory_type_counts[change_type]:
                     count = self.signatory_type_counts[change_type][sig_type]
@@ -125,6 +130,9 @@ class StaticMailCallback(DiffCallback):
                 out = "\t%4d" % (count, )
                 line += out
             lines.append(line); line = ""
+
+        line = "* Details for this signatory type not included in email."
+        lines.append(line)
 
         return "\n".join(lines), care_about
 
