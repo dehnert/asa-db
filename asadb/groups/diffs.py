@@ -61,9 +61,9 @@ class StaticMailCallback(DiffCallback):
             'Added': collections.defaultdict(lambda: 0),
             'Expired': collections.defaultdict(lambda: 0),
         }
+        self.signatory_types_seen = set()
         self.since = since
         self.now = now
-        self.stats = collections.defaultdict(lambda: 0)
 
     def handle_group(self, before, after, before_fields, after_fields, ):
         after_revision = after.revision
@@ -85,6 +85,7 @@ class StaticMailCallback(DiffCallback):
                 change_type = "Expired"
             counter = self.signatory_type_counts[change_type]
             counter[signatory.role.slug] += 1
+            self.signatory_types_seen.add(signatory.role.slug)
             if signatory.role.slug in self.interesting_signatories:
                 if signatory.group != prev_group:
                     self.signatory_updates.append("")
@@ -99,14 +100,38 @@ class StaticMailCallback(DiffCallback):
                     ))
                 prev_group = signatory.group
             else:
-                self.stats["role." + signatory.role.slug] += 1
+                pass
                 #print "Ignoring role %s (signatory %s)" % (signatory.role.slug, signatory, )
 
+    def build_change_stats(self, ):
+        lines = []
+        care_about = 0
+
+        line = "%20s" % ("", )
+        change_types = self.signatory_type_counts.keys()
+        for change_type in change_types:
+            line += "\t%s" % (change_type, )
+        lines.append(line); line = ""
+
+        for sig_type in self.signatory_types_seen:
+            line += "%20s" % (sig_type, )
+            for change_type in change_types:
+                if sig_type in self.signatory_type_counts[change_type]:
+                    count = self.signatory_type_counts[change_type][sig_type]
+                else:
+                    count = 0
+                if sig_type in self.interesting_signatories:
+                    care_about += count
+                out = "\t%4d" % (count, )
+                line += out
+            lines.append(line); line = ""
+
+        return "\n".join(lines), care_about
+
     def end_run(self, ):
+        change_stats, care_about = self.build_change_stats()
         print "\nChange stats for email to %s:" % (self.address, )
-        for stat_key, stat_val in self.stats.items():
-            print "%20s:\t%6d" % (stat_key, stat_val, )
-        print ""
+        print change_stats
 
         message = "\n\n".join(self.updates)
         signatories_message = "\n".join(self.signatory_updates)
@@ -118,9 +143,9 @@ class StaticMailCallback(DiffCallback):
         ctx = Context({
             'num_groups': len(self.updates),
             'groups_message': message,
-            'num_signatory_records': len(self.signatory_updates),
+            'care_about': care_about,
+            'change_stats': change_stats,
             'signatory_types': self.interesting_signatories,
-            'signatory_type_counts': self.signatory_type_counts,
             'signatories_message': signatories_message,
         })
         body = tmpl.render(ctx)
