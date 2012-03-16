@@ -249,7 +249,7 @@ def diff_signatories(since, now, callbacks):
     # First: already gone; then it existed for a while; finally expired recently
     qobj_expired = Q(end_time__lte=now, start_time__lte=since, end_time__gte=since)
     changed_signatories = groups.models.OfficeHolder.objects.filter(qobj_added|qobj_expired)
-    changed_signatories.order_by('group__name', 'role__display_name', 'person', )
+    changed_signatories = changed_signatories.order_by('group__name', 'role__display_name', 'person', )
     changed_signatories = changed_signatories.select_related('role', 'group')
     for callback in callbacks: callback.handle_signatories(changed_signatories)
 
