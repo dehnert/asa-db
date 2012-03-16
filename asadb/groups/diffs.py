@@ -143,6 +143,7 @@ class UpdateOfficerListCallback(DiffCallback):
     def start_run(self, since, now, ):
         self.add = []
         self.delete = []
+        self.notes = []
 
     def end_run(self, ):
         if self.add or self.delete:
@@ -155,6 +156,7 @@ class UpdateOfficerListCallback(DiffCallback):
                 'add': self.add,
                 'delete': self.delete,
                 'errors': errors,
+                'notes': self.notes,
             }
             util.emails.email_from_template(
                 tmpl='groups/diffs/asa-official-update.txt',
@@ -163,10 +165,19 @@ class UpdateOfficerListCallback(DiffCallback):
             ).send()
 
     def handle_group(self, before, after, before_fields, after_fields, ):
-        if before_fields['officer_email'] != after_fields['officer_email']:
+        before_addr = before_fields['officer_email']
+        after_addr  = after_fields['officer_email']
+        if before_addr != after_addr:
             name = after_fields['name']
-            self.add.append((after_fields['name'], after_fields['officer_email'], ))
-            self.delete.append(before_fields['officer_email'])
+            if after_addr:
+                self.add.append((name, after_addr, ))
+            else:
+                self.notes.append("%s: Not adding because address is blank." % (name, ))
+            if before_addr and after_addr:
+                # Don't remove an address unless there's a replacement
+                self.delete.append(before_fields['officer_email'])
+            else:
+                self.notes.append("%s: Not removing '%s' (to add '%s') because at least one is blank." % (name, before_addr, after_addr, ))
 
     def new_group(self, after, after_fields, ):
         self.add.append(after_fields['officer_email'])
