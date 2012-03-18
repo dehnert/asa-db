@@ -112,15 +112,6 @@ class Group(models.Model):
 reversion.register(Group)
 
 
-GROUP_STARTUP_STAGE_SUBMITTED = 10
-GROUP_STARTUP_STAGE_APPROVED = 20
-GROUP_STARTUP_STAGE_REJECTED = -10
-GROUP_STARTUP_STAGE = (
-    (GROUP_STARTUP_STAGE_SUBMITTED,     'submitted'),
-    (GROUP_STARTUP_STAGE_APPROVED,      'approved'),
-    (GROUP_STARTUP_STAGE_REJECTED,      'rejected'),
-)
-
 constitution_dir = os.path.join(settings.SITE_ROOT, '..', 'constitutions')
 
 class GroupConstitution(models.Model):
@@ -212,6 +203,15 @@ class GroupConstitution(models.Model):
             return "no-url"
 
 reversion.register(GroupConstitution)
+
+GROUP_STARTUP_STAGE_SUBMITTED = 10
+GROUP_STARTUP_STAGE_APPROVED = 20
+GROUP_STARTUP_STAGE_REJECTED = -10
+GROUP_STARTUP_STAGE = (
+    (GROUP_STARTUP_STAGE_SUBMITTED,     'submitted'),
+    (GROUP_STARTUP_STAGE_APPROVED,      'approved'),
+    (GROUP_STARTUP_STAGE_REJECTED,      'rejected'),
+)
 
 
 class GroupStartup(models.Model):
