@@ -142,7 +142,8 @@ Changed:            %(changed)6d
 Change ignored:     %(mut_ign)6d
 Deleted:            %(del)6d
 Undeleted:          %(undel)6d
-Added:              %(add)6d""" % stats
+Added:              %(add)6d
+""" % stats
 
     for change_type, people in stat_people.items():
         for person in people:
