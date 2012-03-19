@@ -41,7 +41,7 @@ class Group(models.Model):
     officer_email = models.EmailField(verbose_name="officers' email list")
     main_account_id = models.IntegerField(null=True, blank=True, )
     funding_account_id = models.IntegerField(null=True, blank=True, )
-    athena_locker = models.CharField(max_length=20, blank=True)
+    athena_locker = models.CharField(max_length=20, blank=True, help_text="Often, this will appear in your group's URL --- http://web.mit.edu/SOME_VARIANT_OF_GROUP_NAME/, http://www.mit.edu/~SOME_VARIANT_OF_GROUP_NAME/ and http://SOME_VARIANT_OF_GROUP_NAME.scripts.mit.edu/ all correspond to a locker name of SOME_VARIANT_OF_GROUP_NAME. Also, you can probably find this in your entry in the old database.")
     recognition_date = models.DateTimeField()
     update_date = models.DateTimeField(editable=False, )
     updater = models.CharField(max_length=30, editable=False, null=True, ) # match Django username field
