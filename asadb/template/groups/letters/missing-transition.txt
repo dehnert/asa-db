@@ -1,4 +1,18 @@
 {% autoescape off %}
+Hello again,
+   As a reminder, you have only a couple of days (until Wed 3/21) to update
+the ASA group database before we suspend your group for delinquency. Please
+be sure to visit https://asa.mit.edu:444/groups/{{group.pk}}/. If your
+president is not available to make this update, please email us
+(asa-exec@mit.edu) ASAP, CC'ing your officers' list of record (check the To
+line of this email). If you have other questions/difficulties, please don't
+hesitate to contact asa-exec@mit.edu.
+
+Thanks,
+ASA Executive Board
+
+====
+
 Dear officers of {{group.name}},
    This is a followup to our previous email from a couple of weeks ago.
 You have still not updated your entry in the ASA Database. We have gotten
