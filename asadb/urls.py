@@ -14,8 +14,8 @@ import forms.views
 about_patterns = patterns('',
     url(
         r'^data/$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'about/data.html', 'extra_context': { 'pagename':'about' }, },
+        'django.views.generic.simple.redirect_to',
+        {'url': 'http://web.mit.edu/asa/database/use-of-data.html'},
         name='about-data',
     ),
     url(
