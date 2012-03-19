@@ -20,9 +20,9 @@
 <tr><th colspan='2'>Contact Information</th></tr>
 <tr><th>Website</th><td><a href="{{group.website_url}}">{{group.website_url}}</a></td></tr>
 <tr><th>Meeting times</th><td>{{group.meeting_times}}</td></tr>
-<tr><th>Officer email</th><td>{% if user.is_authenticated %}{{group.officer_email}}{% else %}[<a href='{% url login %}'>log in</a> to see emails]{% endif %}</td></tr>
+<tr><th>Officers' email list</th><td>{% if user.is_authenticated %}{{group.officer_email}}{% else %}[<a href='{% url login %}'>log in</a> to see emails]{% endif %}</td></tr>
 {% if viewpriv %}<tr class='private-info'>
-    <th>Group email</th>
+    <th>Group email list</th>
     <td>{{group.group_email}}</td>
 </tr>{% endif %}
 
