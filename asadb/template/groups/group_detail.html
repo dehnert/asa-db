@@ -40,8 +40,8 @@
 <tr><th colspan='2'>People</th></tr>
 {% if user.is_authenticated %}
 {% for name, role, people in roles %}
-<tr>
-    <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
+<tr{%if not role.publicly_visible %} class='private-info'{%endif%}>
+    <th>{{name}}</th>
     <td><ul>
     {% for person in people %}<li>{{person.format_person}}</li>{%endfor%}
     </ul></td>
