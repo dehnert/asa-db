@@ -7,9 +7,7 @@
 
 {% include "groups/group_tools.part.html" %}
 
-<p>Please adjust your signatories below. You can add up to {{max_new}} new people at a time at the bottom. If you need to add more than that, just break it up into a couple of submissions.</p>
-
-<p>The following roles are available:</p>
+<p>Please adjust your signatories below. The following roles are available:</p>
 
 <table class='pretty-table'>
 <tr>
@@ -53,7 +51,12 @@
 <p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
 {% endif %}
 
-<p>Add or update people:</p>
+<p>Add or update people. Please note:</p>
+<ul>
+    <li>We don't track "group membership" &mdash; people will show up in the list below only if they have one of the roles listed</li>
+    <li>Type only the <em>Athena username</em> to add people &mdash; do not type full names or names plus username</li>
+    <li>To add <em>more than four</em> new people, add four at a time and <em>submit multiple times</em></li>
+</ul>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
