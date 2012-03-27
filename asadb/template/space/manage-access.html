@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{group.name}}: Office Access{% endblock %}
+{% block content %}
+
+<h1>{{group.name}}: Office Access</h1>
+
+{% include "groups/group_tools.part.html" %}
+
+{% if changes %}
+<h2>Changes</h2>
+<table class='pretty-table'>
+<tr>
+    <th>Action</th>
+    <th>Space</th>
+    <th>Person</th>
+</tr>
+{% for action,space,entry in changes %}
+<tr>
+    <td>{{action}}</td>
+    <td>{{space}}</td>
+    <td>{{entry.name}}</td>
+</tr>
+{%endfor%}
+</table>
+{%endif%}
+
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+<h2>Offices</h2>
+{% if office_pairs %}
+<table class='pretty-table'>
+<tr>
+    <th>Room</th>
+    <th>Access</th>
+</tr>
+<tr>
+    <th>All</th>
+    <td>
+        <ul>{% for person in office %}
+            <li>{{person.format_person}}</li>
+        {% endfor %}</ul>
+        <p>Manage on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page.</p>
+    </td>
+</tr>
+{% for assignment, entries in office_pairs %}
+<tr>
+    <th>{{assignment.space}}</th>
+    <td>
+        <table class='pretty-table'>
+            <tr>
+                <th>Grant</th>
+                <th>Name</th>
+                <th>MIT ID</th>
+            </tr>
+        {% for entry in entries %}
+            <tr>
+                <td><input type='checkbox' name='grant[{{assignment.pk}}][{{entry.pk}}]' checked='checked'></td>
+                <td>{{entry.name}}</td>
+                <td>{{entry.card_number}}</td>
+            </tr>{% endfor %}
+        {% for index in extras_indices %}
+            <tr>
+                <td></td>
+                <td><input type='text' name='new[{{assignment.pk}}][{{index}}][name]'></td>
+                <td><input type='text' name='new[{{assignment.pk}}][{{index}}][card]'></td>
+            </tr>{% endfor %}
+        </table>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No office assigned.</p>
+{% endif %}
+
+
+<h2>Lockers</h2>
+{% if locker_pairs %}
+<table class='pretty-table'>
+<tr>
+    <th>Room</th>
+    <th>Locker</th>
+    <th>Access</th>
+</tr>
+<tr>
+    <th colspan='2'>All</th>
+    <td>
+        <ul>{% for person in locker %}
+            <li>{{person.format_person}}</li>
+        {% endfor %}</ul>
+        <p>Manage on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page.</p>
+    </td>
+</tr>
+{% for assignment, entries in locker_pairs %}
+<tr>
+    <th>{{assignment.space.number}}</th>
+    <th>{{assignment.locker_num}}</th>
+    <td><ul>{% for entry in entries %}
+        <li>{{entry.format_name}}<li>
+    {% empty %}
+        <li>No specific access</li>
+    {% endfor %}</ul></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p>No storage lockers assigned.</p>
+{% endif %}
+
+{% if submit_button %}
+<input type='submit' name='submit' value='Update' />
+{% endif %}
+</form>
+
+{% endblock %}

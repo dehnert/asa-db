@@ -16,8 +16,30 @@ import django_filters
 import groups.models
 import space.models
 
+# Note: Not a view.
+def process_access_changes(request, group, assignment, entries, changes, extras_indices, ):
+    for entry in entries:
+        key = "grant[%d][%d]" % (assignment.pk, entry.pk)
+        if key in request.POST:
+            pass
+        else:
+            changes.append(('Expire', assignment.space, entry))
+            entry.expire()
+    for index in extras_indices:
+        key = "new[%d][%d]" % (assignment.pk, index)
+        name = request.POST.get(key+"[name]", "")
+        if name:
+            entry = space.models.SpaceAccessListEntry(
+                group=group,
+                space=assignment.space,
+            )
+            entry.name = name
+            entry.card_number = request.POST.get(key+"[card]", "")
+            changes.append(('Add', assignment.space, entry))
+            entry.save()
+
 @login_required
-def view_access(request, pk, ):
+def manage_access(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
     if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
@@ -26,19 +48,36 @@ def view_access(request, pk, ):
     assignments = space.models.SpaceAssignment.current.filter(group=group)
     office_pairs = []
     locker_pairs = []
+    changes = []
+    extras_indices = range(6)
+    if request.method == 'POST':
+        edited = True
+    else:
+        edited = False
     for assignment in assignments:
         entries = space.models.SpaceAccessListEntry.current.filter(group=group, space=assignment.space)
-        pair = (assignment, entries)
         if assignment.is_locker():
-            locker_pairs.append(pair)
+            pairs = locker_pairs
         else:
-            office_pairs.append(pair)
+            pairs = office_pairs
+        if edited:
+            process_access_changes(
+                request, group,
+                assignment, entries.filter(),
+                changes, extras_indices,
+            )
+        pair = (assignment, entries)
+        pairs.append(pair)
+    submit_button = (len(office_pairs) + len(locker_pairs)) > 0
     context = {
         'group': group,
         'office': office_access,
         'locker': locker_access,
         'office_pairs': office_pairs,
         'locker_pairs': locker_pairs,
+        'changes': changes,
+        'submit_button': submit_button,
+        'extras_indices': extras_indices,
         'pagename':'group',
     }
-    return render_to_response('space/view-access.html', context, context_instance=RequestContext(request), )
+    return render_to_response('space/manage-access.html', context, context_instance=RequestContext(request), )
