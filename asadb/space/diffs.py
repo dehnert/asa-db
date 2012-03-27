@@ -58,9 +58,9 @@ class GroupInfo(object):
         self.offices[space_pk] = collections.defaultdict(lambda: (set(), set()))
         space_data = self.offices[space_pk]
         for mit_id, old_set in old_access.items():
-            space_data[mit_id][0].extend(old_set)
+            space_data[mit_id][0].update(old_set)
         for mit_id, new_set in new_access.items():
-            space_data[mit_id][1].extend(new_set_set)
+            space_data[mit_id][1].update(new_set)
 
     def add_space_signatories(self, old_time, new_time, ):
         group = self.group
