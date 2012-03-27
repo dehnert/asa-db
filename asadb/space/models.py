@@ -8,7 +8,7 @@ import reversion
 
 import groups.models
 
-# Create your models here.
+EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
 
 class Space(models.Model):
     number = models.CharField(max_length=20, unique=True, )
@@ -123,12 +123,15 @@ class CurrentACLEntryManager(models.Manager):
             end__gte=datetime.datetime.now,
         )
 
+def now_offset():
+    return datetime.datetime.now()-EXPIRE_OFFSET
+
 class SpaceAccessListEntry(models.Model):
     END_NEVER       = datetime.datetime.max
 
     group = models.ForeignKey(groups.models.Group)
     space = models.ForeignKey(Space)
-    start = models.DateTimeField(default=datetime.datetime.now)
+    start = models.DateTimeField(default=now_offset)
     end = models.DateTimeField(default=END_NEVER)
 
     name = models.CharField(max_length=50)
@@ -138,7 +141,7 @@ class SpaceAccessListEntry(models.Model):
     current = CurrentACLEntryManager()
 
     def expire(self, ):
-        self.end_time = datetime.datetime.now()-self.EXPIRE_OFFSET
+        self.end = now_offset()
         self.save()
 
     def format_name(self, ):
