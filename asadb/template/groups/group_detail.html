@@ -116,7 +116,11 @@
 {% endfor %}
 </table>
 {% else %}
+{% if user.is_authenticated %}
 <p>No roles in this group.</p>
+{% else %}
+<p><a href='{% url login %}?next={% firstof request.path '/' %}'>Log in</a> to see any roles in this group.</p>
+{% endif %}
 {% endif %}
 
 <h2>Notes</h2>
