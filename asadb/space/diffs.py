@@ -143,8 +143,8 @@ def space_specific_access(group_data, old_time, new_time, ):
         old_data = the_space.build_access(time=old_time)
         new_data = the_space.build_access(time=new_time)
         all_spaces[the_space.pk] = the_space
-        init_groups(group_data, old_data[1])
-        init_groups(group_data, new_data[1])
+        init_groups(group_data, old_data[2])
+        init_groups(group_data, new_data[2])
         for group_pk, group in group_data.items():
             if group_pk in old_data[0] or group_pk in new_data[0]:
                 group.learn_access(the_space.pk, old_data[0], new_data[0])

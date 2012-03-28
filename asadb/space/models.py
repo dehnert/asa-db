@@ -41,6 +41,11 @@ class Space(models.Model):
                 Indicates who has access. Grouped by group and ID number.
                 Usually, the sets will each have one member, but ID 999999999 is decently likely to have several.
                 The SpaceAccessListEntrys will be filtered to reflect assignments as of that time.
+            access_by_id:
+                ID -> (Name -> (Set Group.pk))
+                Indicates who has access. Grouped by ID number and name.
+                Usually, each ID dict will have one member, but ID 999999999 is, again, likely to have several.
+                This is intended for rooms that have one access list (e.g., W20-437 and W20-441)
             assignments:
                 [SpaceAssignment]
                 QuerySet of all SpaceAssignments involving the space and group at the time
@@ -64,16 +69,20 @@ class Space(models.Model):
             assignments = assignments.filter(group=group)
             aces = aces.filter(group=group)
         access = {}    # Group.pk -> (ID -> Set name)
+        access_by_id = {} # ID -> (Name -> (Set Group.pk))
         for assignment in assignments:
             if assignment.group.pk not in access:
                 access[assignment.group.pk] = collections.defaultdict(set)
         for ace in aces:
             if ace.group.pk in access:
                 access[ace.group.pk][ace.card_number].add(ace.name)
+                if ace.card_number not in access_by_id:
+                    access_by_id[ace.card_number] = collections.defaultdict(set)
+                access_by_id[ace.card_number][ace.name].add(ace.group.pk)
             else:
                 # This group appears to no longer have access...
                 errors.append("Group %s no longer has access to %s, but has live ACEs." % (ace.group, self, ))
-        return access, assignments, aces, errors
+        return access, access_by_id, assignments, aces, errors
 
 reversion.register(Space)
 
