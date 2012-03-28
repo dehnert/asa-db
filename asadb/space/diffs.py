@@ -62,23 +62,21 @@ class GroupInfo(object):
         for mit_id, new_set in new_access.items():
             space_data[mit_id][1].update(new_set)
 
-    def add_space_signatories(self, old_time, new_time, ):
+    def add_office_signatories_per_time(self, ind, time):
         group = self.group
-        old_people = group.officers(as_of=old_time, role=role['office'])
-        new_people = group.officers(as_of=new_time, role=role['office'])
-        for holder in old_people:
-            fill_people(holder)
-        for holder in new_people:
+        people = group.officers(as_of=time, role=role['office'])
+        for holder in people:
             fill_people(holder)
         for office_id, office_data in self.offices.items():
-            for holder in old_people:
+            for holder in people:
                 holder_name = people_name[holder.person]
                 holder_id = people_id[holder.person]
-                office_data[holder_id][0].add(holder_name)
-            for holder in new_people:
-                holder_name = people_name[holder.person]
-                holder_id = people_id[holder.person]
-                office_data[holder_id][1].add(holder_name)
+                office_data[holder_id][ind].add(holder_name)
+
+    def add_office_signatories(self, old_time, new_time, ):
+        group = self.group
+        self.add_office_signatories_per_time(0, old_time)
+        self.add_office_signatories_per_time(1, new_time)
 
     def list_changes(self, ):
         cac_lines = []
@@ -141,7 +139,7 @@ def space_access_diffs():
     changed_groups = []
     space_specific_access(group_data, old_time, new_time)
     for group_pk, group_info in group_data.items():
-        group_info.add_space_signatories(old_time, new_time)
+        group_info.add_office_signatories(old_time, new_time)
         changes, cac_changes, group_changes = group_info.list_changes()
         if changes:
             changed_groups.append((group_info.group, cac_changes, group_changes))
