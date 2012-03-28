@@ -21,14 +21,32 @@ import groups.models
 import space.models
 import util.emails
 
-role = {}
+role = {
+    'office': groups.models.OfficerRole.objects.get(slug='office-access')
+}
+
 people_name = {} # username -> full name
 people_id = {} # username -> MIT ID
 
 all_spaces = {} # Space.pk -> Space
 
+def bulk_fill_people(times):
+    max_time = max(times)
+    min_time = min(times)
+    active_holders = groups.models.OfficeHolder.objects.filter(
+        start_time__lte=max_time,
+        end_time__gte=min_time,
+        role__in=role.values(),
+    )
+    usernames = active_holders.values_list('person', flat=True,)
+    people = groups.models.AthenaMoiraAccount.objects.filter(username__in=usernames)
+    for person in people:
+        people_name[person.username] = person.format()
+        people_id[person.username] = person.mit_id
+
 def fill_people(holder):
     if not holder.person in people_name:
+        #print "Person %s not pre-cached" % (holder.person, )
         try:
             person = groups.models.AthenaMoiraAccount.objects.get(username=holder.person)
             people_name[holder.person] = person.format()
@@ -135,6 +153,7 @@ def space_specific_access(group_data, old_time, new_time, ):
 def space_access_diffs():
     new_time = datetime.datetime.utcnow()
     old_time = new_time - datetime.timedelta(days=1)
+    bulk_fill_people([old_time, new_time])
     group_data = {} # Group.pk -> GroupInfo
     changed_groups = []
     space_specific_access(group_data, old_time, new_time)
