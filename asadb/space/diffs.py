@@ -261,7 +261,7 @@ def space_specific_access(the_space, group_data, old_time, new_time, ):
 
 def space_access_diffs():
     new_time = datetime.datetime.utcnow()
-    old_time = new_time - datetime.timedelta(days=1)
+    old_time = new_time - datetime.timedelta(days=1, minutes=15)
     bulk_fill_people([old_time, new_time])
     group_data = {} # Group.pk -> GroupInfo
     cac_locker_msgs = []
