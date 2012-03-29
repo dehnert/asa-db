@@ -280,13 +280,14 @@ def space_access_diffs():
             changed_groups.append((group_info.group, cac_changes, group_office_changes, group_info.locker_messages, ))
 
     asa_rcpts = ['asa-space@mit.edu', 'asa-db@mit.edu', ]
-    util.emails.email_from_template(
-        tmpl='space/cac-change-email.txt',
-        context={'changed_groups': changed_groups, 'locker_msgs':cac_locker_msgs, },
-        subject="Space access updates",
-        to=['caclocks@mit.edu'],
-        cc=asa_rcpts,
-    ).send()
+    if changed_groups:
+        util.emails.email_from_template(
+            tmpl='space/cac-change-email.txt',
+            context={'changed_groups': changed_groups, 'locker_msgs':cac_locker_msgs, },
+            subject="Space access updates",
+            to=['caclocks@mit.edu'],
+            cc=asa_rcpts,
+        ).send()
     for group, cac_msg, group_office_msg, group_locker_msgs in changed_groups:
         util.emails.email_from_template(
             tmpl='space/group-change-email.txt',
