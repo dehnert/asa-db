@@ -1,18 +1,47 @@
 {% autoescape off %}
-Dear officers of {{group.name}},
-   We believe that you have not yet fully updated your entry in the new ASA Group Database. As we have said previously (e.g., in an email to asa-official@mit.edu on 1/23/2012), the ASA is transitioning to a new database.  As part of this transition, groups are responsible for inputting most of their group's information to ensure that it is up-to-date.  MIT offices will be starting to use the new database now. It is critical to your group's ability to continue making financial transactions and reserving space that you list your signatories soon. Additionally, without updating basic information such as officer's email, the ASA will be unable to keep you updated on important news like midway, funding, and application deadlines.
+Hello again,
+   As a reminder, you have only a couple of days (until Wed 3/21) to update
+the ASA group database before we suspend your group for delinquency. Please
+be sure to visit https://asa.mit.edu:444/groups/{{group.pk}}/. If your
+president is not available to make this update, please email us
+(asa-exec@mit.edu) ASAP, CC'ing your officers' list of record (check the To
+line of this email). If you have other questions/difficulties, please don't
+hesitate to contact asa-exec@mit.edu.
 
-More information about accessing and using the new Database and which fields need to be updated is posted at: http://web.mit.edu/asa/database/.
+Thanks,
+ASA Executive Board
+
+====
+
+Dear officers of {{group.name}},
+   This is a followup to our previous email from a couple of weeks ago.
+You have still not updated your entry in the ASA Database. We have gotten
+complaints from some MIT offices (e.g., Schedules) that this is delaying
+their work, and it also interferes with our own work.
+
+*We will suspend* groups that haven't updated their records --- both main info
+and listed people --- by Wednesday 3/21, unless they have contacted us at
+asa-exec@mit.edu about difficulties doing so. Further penalties may follow
+thereafter.
+
+Offices (e.g., SAO, CAC, and Schedules) are already stopping checking
+the old database for signatories. It's to your advantage to update the
+database *before* you attempt to spend money, reserve spaces, and perform
+other functions that will block on your not having updated the database.
+
+More information about accessing and using the new Database and which
+fields need to be updated is posted at: http://web.mit.edu/asa/database/.
 
 Your group's page can be found at https://asa.mit.edu/groups/{{group.pk}}/.
+
 
 In particular, we believe that your group's entry has the following issues:
 {% for prob in problems %}* {{prob}}
 {% endfor %}
 
-We appreciate you cooperation in fixing these quickly. If you believe this message to be in error, please be sure to contact us at asa-exec@mit.edu.
-
-If you have questions, comments, concerns, or suggestions for improving the new database, please let us know.
+We appreciate your cooperation in fixing these quickly. If you believe
+this message to be in error, please be sure to contact us at
+asa-exec@mit.edu.
 
 Thanks,
 The ASA Database team

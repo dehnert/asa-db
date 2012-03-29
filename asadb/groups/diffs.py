@@ -58,12 +58,12 @@ class StaticMailCallback(DiffCallback):
         self.updates = []
         self.signatory_updates = []
         self.signatory_type_counts = {
-            'Added': {},
-            'Expired': {},
+            'Added': collections.defaultdict(lambda: 0),
+            'Expired': collections.defaultdict(lambda: 0),
         }
+        self.signatory_types_seen = set()
         self.since = since
         self.now = now
-        self.stats = collections.defaultdict(lambda: 0)
 
     def handle_group(self, before, after, before_fields, after_fields, ):
         after_revision = after.revision
@@ -84,10 +84,8 @@ class StaticMailCallback(DiffCallback):
             else:
                 change_type = "Expired"
             counter = self.signatory_type_counts[change_type]
-            if signatory.role.slug in counter:
-                counter[signatory.role.slug] += 1
-            else:
-                counter[signatory.role.slug] = 0
+            counter[signatory.role.slug] += 1
+            self.signatory_types_seen.add(signatory.role.slug)
             if signatory.role.slug in self.interesting_signatories:
                 if signatory.group != prev_group:
                     self.signatory_updates.append("")
@@ -102,14 +100,46 @@ class StaticMailCallback(DiffCallback):
                     ))
                 prev_group = signatory.group
             else:
-                self.stats["role." + signatory.role.slug] += 1
+                pass
                 #print "Ignoring role %s (signatory %s)" % (signatory.role.slug, signatory, )
 
+    def build_change_stats(self, ):
+        lines = []
+        care_about = 0
+
+        line = "%20s" % ("", )
+        change_types = self.signatory_type_counts.keys()
+        for change_type in change_types:
+            line += "\t%s" % (change_type, )
+        lines.append(line); line = ""
+
+        for sig_type in self.signatory_types_seen:
+            anno_sig = sig_type
+            if sig_type in self.interesting_signatories:
+                anno_sig += " "
+            else:
+                anno_sig += "*"
+            line += "%20s" % (anno_sig, )
+            for change_type in change_types:
+                if sig_type in self.signatory_type_counts[change_type]:
+                    count = self.signatory_type_counts[change_type][sig_type]
+                else:
+                    count = 0
+                if sig_type in self.interesting_signatories:
+                    care_about += count
+                out = "\t%4d" % (count, )
+                line += out
+            lines.append(line); line = ""
+
+        line = "* Details for this signatory type not included in email."
+        lines.append(line)
+
+        return "\n".join(lines), care_about
+
     def end_run(self, ):
+        change_stats, care_about = self.build_change_stats()
         print "\nChange stats for email to %s:" % (self.address, )
-        for stat_key, stat_val in self.stats.items():
-            print "%20s:\t%6d" % (stat_key, stat_val, )
-        print ""
+        print change_stats
 
         message = "\n\n".join(self.updates)
         signatories_message = "\n".join(self.signatory_updates)
@@ -121,9 +151,9 @@ class StaticMailCallback(DiffCallback):
         ctx = Context({
             'num_groups': len(self.updates),
             'groups_message': message,
-            'num_signatory_records': len(self.signatory_updates),
+            'care_about': care_about,
+            'change_stats': change_stats,
             'signatory_types': self.interesting_signatories,
-            'signatory_type_counts': self.signatory_type_counts,
             'signatories_message': signatories_message,
         })
         body = tmpl.render(ctx)
@@ -143,6 +173,7 @@ class UpdateOfficerListCallback(DiffCallback):
     def start_run(self, since, now, ):
         self.add = []
         self.delete = []
+        self.notes = []
 
     def end_run(self, ):
         if self.add or self.delete:
@@ -155,6 +186,7 @@ class UpdateOfficerListCallback(DiffCallback):
                 'add': self.add,
                 'delete': self.delete,
                 'errors': errors,
+                'notes': self.notes,
             }
             util.emails.email_from_template(
                 tmpl='groups/diffs/asa-official-update.txt',
@@ -163,10 +195,19 @@ class UpdateOfficerListCallback(DiffCallback):
             ).send()
 
     def handle_group(self, before, after, before_fields, after_fields, ):
-        if before_fields['officer_email'] != after_fields['officer_email']:
+        before_addr = before_fields['officer_email']
+        after_addr  = after_fields['officer_email']
+        if before_addr != after_addr:
             name = after_fields['name']
-            self.add.append((after_fields['name'], after_fields['officer_email'], ))
-            self.delete.append(before_fields['officer_email'])
+            if after_addr:
+                self.add.append((name, after_addr, ))
+            else:
+                self.notes.append("%s: Not adding because address is blank." % (name, ))
+            if before_addr and after_addr:
+                # Don't remove an address unless there's a replacement
+                self.delete.append(before_fields['officer_email'])
+            else:
+                self.notes.append("%s: Not removing '%s' (to add '%s') because at least one is blank." % (name, before_addr, after_addr, ))
 
     def new_group(self, after, after_fields, ):
         self.add.append(after_fields['officer_email'])
@@ -249,7 +290,7 @@ def diff_signatories(since, now, callbacks):
     # First: already gone; then it existed for a while; finally expired recently
     qobj_expired = Q(end_time__lte=now, start_time__lte=since, end_time__gte=since)
     changed_signatories = groups.models.OfficeHolder.objects.filter(qobj_added|qobj_expired)
-    changed_signatories.order_by('group__name', 'role__display_name', 'person', )
+    changed_signatories = changed_signatories.order_by('group__name', 'role__display_name', 'person', )
     changed_signatories = changed_signatories.select_related('role', 'group')
     for callback in callbacks: callback.handle_signatories(changed_signatories)
 

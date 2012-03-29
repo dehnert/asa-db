@@ -5,7 +5,18 @@
 
 <h1>{{group.name}}{% if group.abbreviation %} ({{group.abbreviation}}){%endif%}</h1>
 
-{% if adminpriv %}{% include "groups/group_tools.part.html" %}{%endif%}
+{% if adminpriv %}{% include "groups/group_tools.part.html" %}
+{% else %}
+<div class='toolbox'>
+<h2>Tools</h2>
+{% if user.is_authenticated %}
+<p>You are not an admin of this group.</p>
+<p><a href='http://web.mit.edu/asa/database/faq.html#perm'>See FAQ</a> for more info.</p>
+{% else %}
+<p>No tools available without <a href='{% url login %}?next={% firstof request.path '/' %}'>logging in</a>.</p>
+{% endif %}
+</div>
+{% endif %}
 
 <table class='pretty-table'>
 <tr><th colspan='2'>Basic Information</th></tr>
@@ -20,24 +31,24 @@
 <tr><th colspan='2'>Contact Information</th></tr>
 <tr><th>Website</th><td><a href="{{group.website_url}}">{{group.website_url}}</a></td></tr>
 <tr><th>Meeting times</th><td>{{group.meeting_times}}</td></tr>
-<tr><th>Officer email</th><td>{% if user.is_authenticated %}{{group.officer_email}}{% else %}[<a href='{% url login %}'>log in</a> to see emails]{% endif %}</td></tr>
+<tr><th>Officers' email list</th><td>{% if user.is_authenticated %}{{group.officer_email}}{% else %}[<a href='{% url login %}?next={% firstof request.path '/' %}'>log in</a> to see emails]{% endif %}</td></tr>
 {% if viewpriv %}<tr class='private-info'>
-    <th>Group email</th>
+    <th>Group email list</th>
     <td>{{group.group_email}}</td>
 </tr>{% endif %}
 
 <tr><th colspan='2'>People</th></tr>
 {% if user.is_authenticated %}
 {% for name, role, people in roles %}
-<tr>
-    <th>{{name}}{%if not role.publicly_visible %}*{%endif%}</th>
+<tr{%if not role.publicly_visible %} class='private-info'{%endif%}>
+    <th>{{name}}</th>
     <td><ul>
     {% for person in people %}<li>{{person.format_person}}</li>{%endfor%}
     </ul></td>
 </tr>
 {% endfor %}
 {% else %}
-<tr><td colspan='2'>[<a href='{% url login %}'>log in</a> to see people involved]</td></tr>
+<tr><td colspan='2'>[<a href='{% url login %}?next={% firstof request.path '/' %}'>log in</a> to see people involved]</td></tr>
 {% endif %}
 
 <tr><th colspan='2'>Recognition</th></tr>
@@ -105,7 +116,11 @@
 {% endfor %}
 </table>
 {% else %}
+{% if user.is_authenticated %}
 <p>No roles in this group.</p>
+{% else %}
+<p><a href='{% url login %}?next={% firstof request.path '/' %}'>Log in</a> to see any roles in this group.</p>
+{% endif %}
 {% endif %}
 
 <h2>Notes</h2>

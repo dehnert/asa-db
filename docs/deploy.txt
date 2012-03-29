@@ -1,5 +1,7 @@
 Deploying a new version of the ASA database:
-* Skim the changes (git log stable..master) and verify they're reasonable to deploy
+* Skim the changes (git log stable..master)
+    * verify they're reasonable to deploy
+    * make sure any Trac tickets (http://asa.scripts.mit.edu/trac/query) have been marked resolved if applicable
 * Draft email to asa-db-core-stakeholders
     git log --oneline stable..master
     git log stable..master > /tmp/commits.txt       # attach

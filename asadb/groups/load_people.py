@@ -136,13 +136,14 @@ if __name__ == '__main__':
 Loop iterations:    %(loops)6d
 Initial in Django:  %(django_people)6d
 People in DCM:      %(dcm_people)6d
+Already Deleted:    %(pre_del)6d
+Unchanged:          %(unchanged)6d
 Changed:            %(changed)6d
 Change ignored:     %(mut_ign)6d
-Unchanged:          %(unchanged)6d
 Deleted:            %(del)6d
-Already Deleted:    %(pre_del)6d
 Undeleted:          %(undel)6d
-Added:              %(add)6d""" % stats
+Added:              %(add)6d
+""" % stats
 
     for change_type, people in stat_people.items():
         for person in people:

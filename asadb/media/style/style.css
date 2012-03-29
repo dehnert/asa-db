@@ -222,7 +222,7 @@ span.username
  *****************/
 tr.private-info th:before
 {
-    content: "* ";
+    content: "\2020  ";
 }
 
 tr.group-status-active.group-active-True td.group-status

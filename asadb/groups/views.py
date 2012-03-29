@@ -92,7 +92,9 @@ class GroupDetailView(DetailView):
         for role in just_roles:
             roles.append((role.display_name, role, group.officers(role=role), ))
         context['roles'] = roles
-        context['my_roles'] = group.officers(person=self.request.user.username).select_related('role')
+        context['my_roles'] = []
+        if self.request.user.is_authenticated():
+            context['my_roles'] = group.officers(person=self.request.user.username).select_related('role')
 
         return context
 

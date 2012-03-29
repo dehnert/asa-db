@@ -17,6 +17,7 @@ import groups.models
 
 def get_roles():
     roles = [
+        ['president', True, 'No president listed', ],
         ['treasurer', True, 'No treasurer listed', ],
         ['financial', False, 'No financial signatories listed. At minimum, this should generally be your president and treasurer.', ],
         ['reservation', False, 'No reservation signatories listed. Members reserving space for the group should be reservation signatories.', ],
@@ -61,7 +62,10 @@ def check_groups(old_groups_data):
     for group in groups.models.Group.active_groups.all():
         fail, problems = check_group(group, roles, )
         if fail:
-            to = [officers[group.pk]]
+            try:
+                to = [officers[group.pk]]
+            except KeyError:
+                print "Group %s not found in CSV" % (group, )
             if group.officer_email:
                 to.append(group.officer_email)
             ctx = Context({
@@ -80,7 +84,9 @@ def check_groups(old_groups_data):
 
     connection = mail.get_connection()
     #connection.send_messages(emails)
-    for email in emails: print email.subject
+    for email in emails:
+        print email.subject
+    print email.body
     print len(emails)
 
 if __name__ == '__main__':

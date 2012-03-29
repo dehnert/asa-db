@@ -13,4 +13,9 @@ Add:
 Delete:
 {% for email in delete %}{{email}}
 {% endfor %}
+
+Notes:
+{% for note in notes %}{{note}}
+{% empty %}No notes.
+{% endfor %}
 {% endautoescape %}
