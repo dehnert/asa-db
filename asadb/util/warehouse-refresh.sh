@@ -1,12 +1,14 @@
 #!/bin/bash -e
 
 author="$USER warehouse-refresh.sh on $(hostname) <asa-db@mit.edu>"
+basedir="$(dirname "$(readlink -f "$0")")"
+database="$("$basedir/../settings/fetch" database NAME)"
 
 date
 
 cd saved-data
 
-mysqldump --skip-extended-insert asa+forms > data.sql
+mysqldump --skip-extended-insert "$database" > data.sql
 
 echo
 echo Committing previous DB:
@@ -19,9 +21,9 @@ git show --stat
 echo
 echo
 echo Performing replacement
-echo "TRUNCATE TABLE groups_group" | mysql asa+forms
+echo "TRUNCATE TABLE groups_group" | mysql "$database"
 ../import_db.py < ../warehouse-dump.csv > /dev/null
-mysqldump --skip-extended-insert asa+forms > data.sql
+mysqldump --skip-extended-insert "$database" > data.sql
 
 echo
 echo Committing new DB:
