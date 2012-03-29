@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import os
+import sys
+
+if __name__ == '__main__':
+    cur_file = os.path.abspath(__file__)
+    django_dir = os.path.abspath(os.path.join(os.path.dirname(cur_file), '..'))
+    sys.path.append(django_dir)
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+from django.conf import settings
+
+if __name__ == "__main__":
+    mode = sys.argv[1]
+    if mode == 'setting':
+        print getattr(settings, sys.argv[2])
+    elif mode == 'database':
+        # Uncomment below to set up default values
+        # No, I'm not sure how somebody thought it was a good idea for
+        # side-effect-ful imports to be a thing (well, it's probably partially
+        # "who'd try to use database parameters except through a connection").
+        #import django.db
+        print settings.DATABASES['default'][sys.argv[2]]
+    else:
+        raise NotImplementedError, 'Requested mode "%s" not supported' % (mode, )
