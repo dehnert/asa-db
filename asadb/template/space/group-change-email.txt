@@ -1,8 +1,18 @@
 {% autoescape off %}
 Hi {{group.name}},
-    Thank you for updating office access on the ASA database today. We've forwarded the following changes on to CAC:
+    Thank you for updating space access on the ASA database today. We've forwarded the following changes on to CAC:
 
-{{msg}}
+{% if office_msg %}
+Office access:
+
+{{office_msg}}
+{% endif %}{% if locker_msgs %}
+Locker (shared storage) access:
+{% for msg in locker_msgs %}
+{{msg}}{% endfor %}
+{% endif %}
+
+If you believe these changes are incorrect in any way, please let us know --- beyond just notifying CAC, we also want to find out why the errors happened.
 
 Thanks,
 ASA Exec

@@ -13,6 +13,7 @@ EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
 class Space(models.Model):
     number = models.CharField(max_length=20, unique=True, )
     asa_owned = models.BooleanField(default=True, )
+    merged_acl = models.BooleanField(default=False, help_text="Does this room have a single merged ACL, that combines all groups together, or CAC maintain a separate ACL per-group? Generally, the shared storage offices get a merged ACL and everything else doesn't.")
     notes = models.TextField(blank=True, )
 
     def __unicode__(self, ):
@@ -69,15 +70,14 @@ class Space(models.Model):
             assignments = assignments.filter(group=group)
             aces = aces.filter(group=group)
         access = {}    # Group.pk -> (ID -> Set name)
-        access_by_id = {} # ID -> (Name -> (Set Group.pk))
+        # ID -> (Name -> (Set Group.pk))
+        access_by_id = collections.defaultdict(lambda: collections.defaultdict(set))
         for assignment in assignments:
             if assignment.group.pk not in access:
                 access[assignment.group.pk] = collections.defaultdict(set)
         for ace in aces:
             if ace.group.pk in access:
                 access[ace.group.pk][ace.card_number].add(ace.name)
-                if ace.card_number not in access_by_id:
-                    access_by_id[ace.card_number] = collections.defaultdict(set)
                 access_by_id[ace.card_number][ace.name].add(ace.group.pk)
             else:
                 # This group appears to no longer have access...

@@ -5,11 +5,19 @@ Hi CAC,
 Thanks,
 ASA Exec
 
-{% for group, cac_changes, group_changes in changed_groups %}
+{% if locker_msgs %}Locker room access:
+{% for msg in locker_msgs %}
+{{msg}}
+{% endfor %}
+{% endif %}
+
+
+{% for group, cac_changes, group_office_changes, group_locker_changes in changed_groups %}
 Group: {{group.name}} (ID#{{group.pk}})
 Officer email: {{group.officer_email}}
 
-{{cac_changes}}
+{% if cac_changes %}{{cac_changes}}
 
-
-{% endfor %}{% endautoescape %}
+{% endif %}
+{% endfor %}
+{% endautoescape %}

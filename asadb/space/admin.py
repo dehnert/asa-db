@@ -7,6 +7,7 @@ class Admin_Space(VersionAdmin):
         'id',
         'number',
         'asa_owned',
+        'merged_acl',
     )
     list_display_links = ( 'id', 'number', )
     search_fields = ('number', )

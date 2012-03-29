@@ -21,7 +21,10 @@ def process_row(line):
     if group_id < 0:
         print "Ignoring missing group: %s: %s" % (line['group'], line, )
         return
-    the_space, created = space.models.Space.objects.get_or_create(number=line['office_number'])
+    the_space, created = space.models.Space.objects.get_or_create(
+        number=line['office_number'],
+        defaults=dict(merged_acl=bool(line['locker_number'])),
+    )
     group = groups.models.Group.objects.get(id=group_id)
     try:
         assignment = space.models.SpaceAssignment.objects.get(group=group, space=the_space, locker_num=line['locker_number'], end__gte=today)
