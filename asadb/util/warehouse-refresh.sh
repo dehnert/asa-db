@@ -6,7 +6,7 @@ database="$("$basedir/../settings/fetch" database NAME)"
 
 date
 
-cd saved-data
+cd "$basedir/saved-data"
 
 mysqldump --skip-extended-insert "$database" > data.sql
 
