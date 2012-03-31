@@ -763,7 +763,13 @@ def search_groups(request, ):
     if 'signatories' in request.GET:
         dest = reverse('groups:signatories')
         print dest
-    elif 'group-info' in request.GET:
+    elif 'group-goto' in request.GET:
+        if len(groups_filterset.qs) == 1:
+            group = groups_filterset.qs[0]
+            return redirect(reverse('groups:group-detail', kwargs={'pk':group.pk}))
+        else:
+            dest = reverse('groups:list')
+    elif 'group-list' in request.GET:
         dest = reverse('groups:list')
 
     if dest:
