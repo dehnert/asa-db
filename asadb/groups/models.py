@@ -97,6 +97,11 @@ class Group(models.Model):
     def __str__(self, ):
         return self.name
 
+    @classmethod
+    def reporting_fields(cls, ):
+        fields = cls._meta.fields
+        return [(f.name, f.verbose_name) for f in fields]
+
     class Meta:
         ordering = ('name', )
         permissions = (

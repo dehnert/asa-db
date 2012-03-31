@@ -781,6 +781,63 @@ def search_groups(request, ):
         }
         return render_to_response('groups/group_search.html', context, context_instance=RequestContext(request), )
 
+class ReportingForm(form_utils.forms.BetterForm):
+    _basic_fields = groups.models.Group.reporting_fields()
+    basic_fields_labels = dict(_basic_fields) # name -> verbose_name
+    basic_fields = forms.fields.MultipleChoiceField(choices=_basic_fields, widget=forms.CheckboxSelectMultiple)
+
+    class Meta:
+        fieldsets = [
+            ('filter', {
+                'legend': 'Filter Groups',
+                'fields': ['name', 'abbreviation', 'activity_category', 'group_class', 'group_status', 'group_funding', ],
+            }),
+            ('display', {
+                'legend': 'Data to display',
+                'fields': ['basic_fields', ],
+            }),
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super(ReportingForm, self).__init__(*args, **kwargs)
+
+class GroupReportingFilter(GroupFilter):
+    class Meta(GroupFilter.Meta):
+        form = ReportingForm
+
+    def __init__(self, data=None, *args, **kwargs):
+        if data is None: data = {}
+        else: data = data.copy()
+        #data.setdefault('basic_fields', ['id', 'name'], )
+        super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
+
+@permission_required('groups.view_group_private_info')
+def reporting(request, ):
+    the_groups = groups.models.Group.objects.all()
+    groups_filterset = GroupReportingFilter(request.GET, the_groups)
+    form = groups_filterset.form
+
+    col_labels = []
+    report_groups = []
+    run_report = 'go' in request.GET and form.is_valid()
+    if run_report:
+        basic_fields = form.cleaned_data['basic_fields']
+        col_labels = [form.basic_fields_labels[field] for field in basic_fields]
+        for group in groups_filterset.qs:
+            group_data = [getattr(group, field) for field in basic_fields]
+            report_groups.append(group_data)
+    else:
+        pass
+
+    context = {
+        'form': form,
+        'run_report': run_report,
+        'column_labels': col_labels,
+        'report_groups': report_groups,
+        'pagename': 'groups',
+    }
+    return render_to_response('groups/reporting.html', context, context_instance=RequestContext(request), )
+
 
 class GroupHistoryView(ListView):
     context_object_name = "version_list"
