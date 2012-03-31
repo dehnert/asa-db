@@ -830,7 +830,14 @@ def reporting(request, ):
         basic_fields = form.cleaned_data['basic_fields']
         output_format, output_disposition = form.cleaned_data['output_format'].split('/')
         col_labels = [form.basic_fields_labels[field] for field in basic_fields]
-        for group in groups_filterset.qs:
+
+        # Set up query
+        qs = groups_filterset.qs
+        # Prefetch foreign keys
+        prefetch_fields = groups.models.Group.reporting_prefetch()
+        prefetch_fields.intersection_update(basic_fields)
+        qs = qs.select_related(*list(prefetch_fields))
+        for group in qs:
             group_data = [getattr(group, field) for field in basic_fields]
             report_groups.append(group_data)
 

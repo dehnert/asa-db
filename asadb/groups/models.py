@@ -98,6 +98,10 @@ class Group(models.Model):
         return self.name
 
     @classmethod
+    def reporting_prefetch(cls, ):
+        return set(['activity_category', 'group_class', 'group_status', 'group_funding'])
+
+    @classmethod
     def reporting_fields(cls, ):
         fields = cls._meta.fields
         return [(f.name, f.verbose_name) for f in fields]
