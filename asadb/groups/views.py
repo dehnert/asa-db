@@ -790,6 +790,12 @@ class ReportingForm(form_utils.forms.BetterForm):
         initial = ['id', 'name'],
     )
 
+    people_fields = forms.models.ModelMultipleChoiceField(
+        queryset=groups.models.OfficerRole.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
     _format_choices = [
         ('html/inline',     "Web (HTML)", ),
         ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
@@ -805,7 +811,7 @@ class ReportingForm(form_utils.forms.BetterForm):
             }),
             ('fields', {
                 'legend': 'Data to display',
-                'fields': ['basic_fields', ],
+                'fields': ['basic_fields', 'people_fields', ],
             }),
             ('final', {
                 'legend': 'Final options',
@@ -877,6 +883,16 @@ def reporting(request, ):
         if prefetch_fields:
             qs = qs.select_related(*list(prefetch_fields))
 
+        # Set up people
+        people_fields = form.cleaned_data['people_fields']
+        people_data = groups.models.OfficeHolder.current_holders.filter(group__in=qs, role__in=people_fields)
+        # Group.pk -> (OfficerRole.pk -> set(username))
+        people_map = collections.defaultdict(lambda: collections.defaultdict(set))
+        for holder in people_data:
+            people_map[holder.group_id][holder.role_id].add(holder.person)
+        for field in people_fields:
+            col_labels.append(field.display_name)
+
         # Assemble data
         if output_format == 'html':
             formatters = reporting_html_formatters
@@ -889,6 +905,10 @@ def reporting(request, ):
             return val
         for group in qs:
             group_data = [fetch_item(group, field) for field in basic_fields]
+            for field in people_fields:
+                people = people_map[group.pk][field.pk]
+                group_data.append(", ".join(people))
+
             report_groups.append(group_data)
 
         if output_format == 'csv':
