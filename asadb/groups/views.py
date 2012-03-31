@@ -888,6 +888,10 @@ class ReportingForm(form_utils.forms.BetterForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
+    show_as_emails = forms.BooleanField(
+        help_text='Append "@mit.edu" to each value of people fields to allow use as email addresses?',
+        required=False,
+    )
 
     _format_choices = [
         ('html/inline',     "Web (HTML)", ),
@@ -904,7 +908,7 @@ class ReportingForm(form_utils.forms.BetterForm):
             }),
             ('fields', {
                 'legend': 'Data to display',
-                'fields': ['basic_fields', 'people_fields', ],
+                'fields': ['basic_fields', 'people_fields', 'show_as_emails', ],
             }),
             ('final', {
                 'legend': 'Final options',
@@ -990,6 +994,7 @@ def reporting(request, ):
             formatters = reporting_html_formatters
         else:
             formatters = {}
+        show_as_emails = form.cleaned_data['show_as_emails']
         def fetch_item(group, field):
             val = getattr(group, field)
             if field in formatters:
@@ -999,6 +1004,7 @@ def reporting(request, ):
             group_data = [fetch_item(group, field) for field in basic_fields]
             for field in people_fields:
                 people = people_map[group.pk][field.pk]
+                if show_as_emails: people = ["%s@mit.edu" % p for p in people]
                 group_data.append(", ".join(people))
 
             report_groups.append(group_data)
