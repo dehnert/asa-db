@@ -1,6 +1,7 @@
 # Create your views here.
 
 import collections
+import csv
 import datetime
 
 import groups.models
@@ -13,7 +14,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.template import Context, Template
 from django.template.loader import get_template
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
 from django import forms
@@ -786,15 +787,26 @@ class ReportingForm(form_utils.forms.BetterForm):
         initial = ['id', 'name'],
     )
 
+    _format_choices = [
+        ('html/inline',     "Web (HTML)", ),
+        ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
+        ('csv/download',    "Spreadsheet (CSV) --- download", ),
+    ]
+    output_format = forms.fields.ChoiceField(choices=_format_choices, widget=forms.RadioSelect, initial='html')
+
     class Meta:
         fieldsets = [
             ('filter', {
                 'legend': 'Filter Groups',
                 'fields': ['name', 'abbreviation', 'activity_category', 'group_class', 'group_status', 'group_funding', ],
             }),
-            ('display', {
+            ('fields', {
                 'legend': 'Data to display',
                 'fields': ['basic_fields', ],
+            }),
+            ('final', {
+                'legend': 'Final options',
+                'fields': ['output_format', ],
             }),
         ]
 
@@ -816,12 +828,25 @@ def reporting(request, ):
     run_report = 'go' in request.GET and form.is_valid()
     if run_report:
         basic_fields = form.cleaned_data['basic_fields']
+        output_format, output_disposition = form.cleaned_data['output_format'].split('/')
         col_labels = [form.basic_fields_labels[field] for field in basic_fields]
         for group in groups_filterset.qs:
             group_data = [getattr(group, field) for field in basic_fields]
             report_groups.append(group_data)
-    else:
-        pass
+
+        if output_format == 'csv':
+            if output_disposition == 'download':
+                mimetype = 'text/csv'
+            else:
+                # Firefox, at least, downloads text/csv regardless
+                mimetype = 'text/plain'
+            response = HttpResponse(mimetype=mimetype)
+            if output_disposition == 'download':
+                response['Content-Disposition'] = 'attachment; filename=asa-db-report.csv'
+            writer = csv.writer(response)
+            writer.writerow(col_labels)
+            for row in report_groups: writer.writerow(row)
+            return response
 
     context = {
         'form': form,
