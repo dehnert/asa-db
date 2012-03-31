@@ -563,11 +563,10 @@ class GroupFilter(django_filters.FilterSet):
         ]
 
     def __init__(self, data=None, *args, **kwargs):
-        if data is None: data = {}
-        else: data = data.copy()
-        active_pk = groups.models.GroupStatus.objects.get(slug='active').pk
-        data.setdefault('group_status', active_pk, )
+        if not data: data = None
         super(GroupFilter, self).__init__(data, *args, **kwargs)
+        active_pk = groups.models.GroupStatus.objects.get(slug='active').pk
+        self.form.initial['group_status'] = active_pk
 
 
 class GroupListView(ListView):
