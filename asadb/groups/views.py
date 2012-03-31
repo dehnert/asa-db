@@ -796,15 +796,13 @@ class ReportingForm(form_utils.forms.BetterForm):
 
     def __init__(self, *args, **kwargs):
         super(ReportingForm, self).__init__(*args, **kwargs)
+        self.initial['basic_fields'] = ['id' ,'name']
 
 class GroupReportingFilter(GroupFilter):
     class Meta(GroupFilter.Meta):
         form = ReportingForm
 
     def __init__(self, data=None, *args, **kwargs):
-        if data is None: data = {}
-        else: data = data.copy()
-        #data.setdefault('basic_fields', ['id', 'name'], )
         super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
 
 @permission_required('groups.view_group_private_info')
