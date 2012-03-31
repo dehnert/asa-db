@@ -471,9 +471,6 @@ def startup_form(request, ):
     }
     return render_to_response('groups/create/startup.html', context, context_instance=RequestContext(request), )
 
-class GroupRecognitionForm(forms.Form):
-    test = forms.BooleanField()
-
 @permission_required('groups.recognize_group')
 def recognize_normal_group(request, pk, ):
     group_startup = get_object_or_404(groups.models.GroupStartup, pk=pk, )
