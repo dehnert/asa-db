@@ -780,7 +780,11 @@ def search_groups(request, ):
 class ReportingForm(form_utils.forms.BetterForm):
     _basic_fields = groups.models.Group.reporting_fields()
     basic_fields_labels = dict(_basic_fields) # name -> verbose_name
-    basic_fields = forms.fields.MultipleChoiceField(choices=_basic_fields, widget=forms.CheckboxSelectMultiple)
+    basic_fields = forms.fields.MultipleChoiceField(
+        choices=_basic_fields,
+        widget=forms.CheckboxSelectMultiple,
+        initial = ['id', 'name'],
+    )
 
     class Meta:
         fieldsets = [
@@ -793,10 +797,6 @@ class ReportingForm(form_utils.forms.BetterForm):
                 'fields': ['basic_fields', ],
             }),
         ]
-
-    def __init__(self, *args, **kwargs):
-        super(ReportingForm, self).__init__(*args, **kwargs)
-        self.initial['basic_fields'] = ['id' ,'name']
 
 class GroupReportingFilter(GroupFilter):
     class Meta(GroupFilter.Meta):
