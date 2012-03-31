@@ -35,6 +35,8 @@ from util.emails import email_from_template
 urlvalidator = URLValidator()
 emailvalidator = EmailValidator(email_re)
 
+
+
 ############
 # Homepage #
 ############
@@ -205,6 +207,60 @@ def manage_main(request, pk, ):
         'msg':   msg,
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
+
+
+
+##################
+# ACCOUNT LOOKUP #
+##################
+
+class AccountLookupForm(forms.Form):
+    account_number = forms.IntegerField()
+    username = forms.CharField(help_text="Athena username of person to check")
+
+def account_lookup(request, ):
+    msg = None
+    msg_type = ""
+    account_number = None
+    username = None
+    group = None
+    office_holders = []
+
+    visible_roles  = groups.models.OfficerRole.objects.filter(publicly_visible=True)
+
+    initial = {}
+
+    if 'search' in request.GET: # If the form has been submitted...
+        # A form bound to the POST data
+        form = AccountLookupForm(request.GET)
+
+        if form.is_valid(): # All validation rules pass
+            account_number = form.cleaned_data['account_number']
+            username = form.cleaned_data['username']
+            account_q = Q(main_account_id=account_number) | Q(funding_account_id=account_number)
+            try:
+                group = groups.models.Group.objects.get(account_q)
+                office_holders = group.officers(person=username)
+                office_holders = office_holders.filter(role__in=visible_roles)
+            except groups.models.Group.DoesNotExist:
+                msg = "Group not found"
+                msg_type = "error"
+
+    else:
+        form = AccountLookupForm()
+
+    context = {
+        'username':     username,
+        'account_number': account_number,
+        'group':        group,
+        'office_holders': office_holders,
+        'form':         form,
+        'msg':          msg,
+        'msg_type':     msg_type,
+        'visible_roles':    visible_roles,
+    }
+    return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )
+
 
 
 ##################
@@ -547,6 +603,7 @@ class GroupStartupListView(ListView):
         return context
 
 
+
 ##################
 # Multiple group #
 ##################
@@ -781,6 +838,42 @@ def search_groups(request, ):
         }
         return render_to_response('groups/group_search.html', context, context_instance=RequestContext(request), )
 
+
+class GroupHistoryView(ListView):
+    context_object_name = "version_list"
+    template_name = "groups/group_version.html"
+
+    def get_queryset(self):
+        history_entries = None
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
+            history_entries = reversion.models.Version.objects.get_for_object(group)
+        else:
+            history_entries = reversion.models.Version.objects.all()
+            group_content_type = ContentType.objects.get_for_model(groups.models.Group)
+            history_entries = history_entries.filter(content_type=group_content_type)
+        length = len(history_entries)
+        if length > 150:
+            history_entries = history_entries[length-100:]
+        return history_entries
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupHistoryView, self).get_context_data(**kwargs)
+        if 'pk' in self.kwargs:
+            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
+            context['title'] = "History for %s" % (group.name, )
+            context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
+            context['group'] = group
+        else:
+            context['title'] = "Recent Changes"
+        return context
+
+
+
+#######################
+# REPORTING COMPONENT #
+#######################
+
 class ReportingForm(form_utils.forms.BetterForm):
     basic_fields_choices = groups.models.Group.reporting_fields()
     basic_fields_labels = dict(basic_fields_choices) # name -> verbose_name
@@ -830,6 +923,10 @@ class GroupReportingFilter(GroupFilter):
     def __init__(self, data=None, *args, **kwargs):
         super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
 
+def format_id(pk):
+    url = reverse('groups:group-detail', kwargs={'pk':pk})
+    return mark_safe("<a href='%s'>%d</a>" % (url, pk))
+
 def format_url(url):
     try:
         urlvalidator(url)
@@ -847,11 +944,6 @@ def format_email(email):
     else:
         escaped = html.escape(email)
         return mark_safe("<a href='mailto:%s'>%s</a>" % (escaped, escaped))
-
-
-def format_id(pk):
-    url = reverse('groups:group-detail', kwargs={'pk':pk})
-    return mark_safe("<a href='%s'>%d</a>" % (url, pk))
 
 reporting_html_formatters = {
     'id': format_id,
@@ -911,6 +1003,7 @@ def reporting(request, ):
 
             report_groups.append(group_data)
 
+        # Handle output as CSV
         if output_format == 'csv':
             if output_disposition == 'download':
                 mimetype = 'text/csv'
@@ -925,6 +1018,7 @@ def reporting(request, ):
             for row in report_groups: writer.writerow(row)
             return response
 
+    # Handle output as HTML
     context = {
         'form': form,
         'run_report': run_report,
@@ -933,81 +1027,3 @@ def reporting(request, ):
         'pagename': 'groups',
     }
     return render_to_response('groups/reporting.html', context, context_instance=RequestContext(request), )
-
-
-class GroupHistoryView(ListView):
-    context_object_name = "version_list"
-    template_name = "groups/group_version.html"
-
-    def get_queryset(self):
-        history_entries = None
-        if 'pk' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            history_entries = reversion.models.Version.objects.get_for_object(group)
-        else:
-            history_entries = reversion.models.Version.objects.all()
-            group_content_type = ContentType.objects.get_for_model(groups.models.Group)
-            history_entries = history_entries.filter(content_type=group_content_type)
-        length = len(history_entries)
-        if length > 150:
-            history_entries = history_entries[length-100:]
-        return history_entries
-
-    def get_context_data(self, **kwargs):
-        context = super(GroupHistoryView, self).get_context_data(**kwargs)
-        if 'pk' in self.kwargs:
-            group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            context['title'] = "History for %s" % (group.name, )
-            context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)
-            context['group'] = group
-        else:
-            context['title'] = "Recent Changes"
-        return context
-
-
-class AccountLookupForm(forms.Form):
-    account_number = forms.IntegerField()
-    username = forms.CharField(help_text="Athena username of person to check")
-
-def account_lookup(request, ):
-    msg = None
-    msg_type = ""
-    account_number = None
-    username = None
-    group = None
-    office_holders = []
-
-    visible_roles  = groups.models.OfficerRole.objects.filter(publicly_visible=True)
-
-    initial = {}
-
-    if 'search' in request.GET: # If the form has been submitted...
-        # A form bound to the POST data
-        form = AccountLookupForm(request.GET)
-
-        if form.is_valid(): # All validation rules pass
-            account_number = form.cleaned_data['account_number']
-            username = form.cleaned_data['username']
-            account_q = Q(main_account_id=account_number) | Q(funding_account_id=account_number)
-            try:
-                group = groups.models.Group.objects.get(account_q)
-                office_holders = group.officers(person=username)
-                office_holders = office_holders.filter(role__in=visible_roles)
-            except groups.models.Group.DoesNotExist:
-                msg = "Group not found"
-                msg_type = "error"
-
-    else:
-        form = AccountLookupForm()
-
-    context = {
-        'username':     username,
-        'account_number': account_number,
-        'group':        group,
-        'office_holders': office_holders,
-        'form':         form,
-        'msg':          msg,
-        'msg_type':     msg_type,
-        'visible_roles':    visible_roles,
-    }
-    return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )
