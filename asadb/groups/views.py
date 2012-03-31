@@ -16,11 +16,13 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.validators import URLValidator, EmailValidator, email_re
 from django.core.mail import EmailMessage, mail_admins
 from django import forms
 from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q
+from django.utils import html
 from django.utils.safestring import mark_safe
 
 import form_utils.forms
@@ -30,7 +32,8 @@ import django_filters
 from util.db_form_utils import StaticWidget
 from util.emails import email_from_template
 
-
+urlvalidator = URLValidator()
+emailvalidator = EmailValidator(email_re)
 
 ############
 # Homepage #
@@ -821,6 +824,37 @@ class GroupReportingFilter(GroupFilter):
     def __init__(self, data=None, *args, **kwargs):
         super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
 
+def format_url(url):
+    try:
+        urlvalidator(url)
+    except ValidationError:
+        return url
+    else:
+        escaped = html.escape(url)
+        return mark_safe("<a href='%s'>%s</a>" % (escaped, escaped))
+
+def format_email(email):
+    try:
+        emailvalidator(email)
+    except ValidationError:
+        return email
+    else:
+        escaped = html.escape(email)
+        return mark_safe("<a href='mailto:%s'>%s</a>" % (escaped, escaped))
+
+
+def format_id(pk):
+    url = reverse('groups:group-detail', kwargs={'pk':pk})
+    return mark_safe("<a href='%s'>%d</a>" % (url, pk))
+
+reporting_html_formatters = {
+    'id': format_id,
+    'website_url': format_url,
+    'constitution_url': format_url,
+    'group_email': format_email,
+    'officer_email': format_email,
+}
+
 @permission_required('groups.view_group_private_info')
 def reporting(request, ):
     the_groups = groups.models.Group.objects.all()
@@ -842,8 +876,19 @@ def reporting(request, ):
         prefetch_fields = prefetch_fields.intersection(basic_fields)
         if prefetch_fields:
             qs = qs.select_related(*list(prefetch_fields))
+
+        # Assemble data
+        if output_format == 'html':
+            formatters = reporting_html_formatters
+        else:
+            formatters = {}
+        def fetch_item(group, field):
+            val = getattr(group, field)
+            if field in formatters:
+                val = formatters[field](val)
+            return val
         for group in qs:
-            group_data = [getattr(group, field) for field in basic_fields]
+            group_data = [fetch_item(group, field) for field in basic_fields]
             report_groups.append(group_data)
 
         if output_format == 'csv':
