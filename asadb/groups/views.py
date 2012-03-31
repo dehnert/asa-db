@@ -839,8 +839,9 @@ def reporting(request, ):
         qs = groups_filterset.qs
         # Prefetch foreign keys
         prefetch_fields = groups.models.Group.reporting_prefetch()
-        prefetch_fields.intersection_update(basic_fields)
-        qs = qs.select_related(*list(prefetch_fields))
+        prefetch_fields = prefetch_fields.intersection(basic_fields)
+        if prefetch_fields:
+            qs = qs.select_related(*list(prefetch_fields))
         for group in qs:
             group_data = [getattr(group, field) for field in basic_fields]
             report_groups.append(group_data)
