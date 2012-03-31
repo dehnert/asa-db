@@ -779,10 +779,10 @@ def search_groups(request, ):
         return render_to_response('groups/group_search.html', context, context_instance=RequestContext(request), )
 
 class ReportingForm(form_utils.forms.BetterForm):
-    _basic_fields = groups.models.Group.reporting_fields()
-    basic_fields_labels = dict(_basic_fields) # name -> verbose_name
+    basic_fields_choices = groups.models.Group.reporting_fields()
+    basic_fields_labels = dict(basic_fields_choices) # name -> verbose_name
     basic_fields = forms.fields.MultipleChoiceField(
-        choices=_basic_fields,
+        choices=basic_fields_choices,
         widget=forms.CheckboxSelectMultiple,
         initial = ['id', 'name'],
     )
@@ -806,13 +806,17 @@ class ReportingForm(form_utils.forms.BetterForm):
             }),
             ('final', {
                 'legend': 'Final options',
-                'fields': ['output_format', ],
+                'fields': ['o', 'output_format', ],
             }),
         ]
 
 class GroupReportingFilter(GroupFilter):
     class Meta(GroupFilter.Meta):
         form = ReportingForm
+        order_by = True # we customize the field, so the value needs to be true-like but doesn't matter otherwise
+
+    def get_ordering_field(self):
+        return forms.ChoiceField(label="Ordering", required=False, choices=ReportingForm.basic_fields_choices)
 
     def __init__(self, data=None, *args, **kwargs):
         super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
