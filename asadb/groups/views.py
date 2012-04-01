@@ -1,6 +1,7 @@
 # Create your views here.
 
 import collections
+import csv
 import datetime
 
 import groups.models
@@ -13,13 +14,15 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.template import Context, Template
 from django.template.loader import get_template
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.validators import URLValidator, EmailValidator, email_re
 from django.core.mail import EmailMessage, mail_admins
 from django import forms
 from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q
+from django.utils import html
 from django.utils.safestring import mark_safe
 
 import form_utils.forms
@@ -28,6 +31,9 @@ import django_filters
 
 from util.db_form_utils import StaticWidget
 from util.emails import email_from_template
+
+urlvalidator = URLValidator()
+emailvalidator = EmailValidator(email_re)
 
 
 
@@ -201,6 +207,60 @@ def manage_main(request, pk, ):
         'msg':   msg,
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
+
+
+
+##################
+# ACCOUNT LOOKUP #
+##################
+
+class AccountLookupForm(forms.Form):
+    account_number = forms.IntegerField()
+    username = forms.CharField(help_text="Athena username of person to check")
+
+def account_lookup(request, ):
+    msg = None
+    msg_type = ""
+    account_number = None
+    username = None
+    group = None
+    office_holders = []
+
+    visible_roles  = groups.models.OfficerRole.objects.filter(publicly_visible=True)
+
+    initial = {}
+
+    if 'search' in request.GET: # If the form has been submitted...
+        # A form bound to the POST data
+        form = AccountLookupForm(request.GET)
+
+        if form.is_valid(): # All validation rules pass
+            account_number = form.cleaned_data['account_number']
+            username = form.cleaned_data['username']
+            account_q = Q(main_account_id=account_number) | Q(funding_account_id=account_number)
+            try:
+                group = groups.models.Group.objects.get(account_q)
+                office_holders = group.officers(person=username)
+                office_holders = office_holders.filter(role__in=visible_roles)
+            except groups.models.Group.DoesNotExist:
+                msg = "Group not found"
+                msg_type = "error"
+
+    else:
+        form = AccountLookupForm()
+
+    context = {
+        'username':     username,
+        'account_number': account_number,
+        'group':        group,
+        'office_holders': office_holders,
+        'form':         form,
+        'msg':          msg,
+        'msg_type':     msg_type,
+        'visible_roles':    visible_roles,
+    }
+    return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )
+
 
 
 ##################
@@ -471,9 +531,6 @@ def startup_form(request, ):
     }
     return render_to_response('groups/create/startup.html', context, context_instance=RequestContext(request), )
 
-class GroupRecognitionForm(forms.Form):
-    test = forms.BooleanField()
-
 @permission_required('groups.recognize_group')
 def recognize_normal_group(request, pk, ):
     group_startup = get_object_or_404(groups.models.GroupStartup, pk=pk, )
@@ -546,6 +603,7 @@ class GroupStartupListView(ListView):
         return context
 
 
+
 ##################
 # Multiple group #
 ##################
@@ -566,11 +624,10 @@ class GroupFilter(django_filters.FilterSet):
         ]
 
     def __init__(self, data=None, *args, **kwargs):
-        if data is None: data = {}
-        else: data = data.copy()
-        active_pk = groups.models.GroupStatus.objects.get(slug='active').pk
-        data.setdefault('group_status', active_pk, )
+        if not data: data = None
         super(GroupFilter, self).__init__(data, *args, **kwargs)
+        active_pk = groups.models.GroupStatus.objects.get(slug='active').pk
+        self.form.initial['group_status'] = active_pk
 
 
 class GroupListView(ListView):
@@ -763,7 +820,13 @@ def search_groups(request, ):
     if 'signatories' in request.GET:
         dest = reverse('groups:signatories')
         print dest
-    elif 'group-info' in request.GET:
+    elif 'group-goto' in request.GET:
+        if len(groups_filterset.qs) == 1:
+            group = groups_filterset.qs[0]
+            return redirect(reverse('groups:group-detail', kwargs={'pk':group.pk}))
+        else:
+            dest = reverse('groups:list')
+    elif 'group-list' in request.GET:
         dest = reverse('groups:list')
 
     if dest:
@@ -806,49 +869,167 @@ class GroupHistoryView(ListView):
         return context
 
 
-class AccountLookupForm(forms.Form):
-    account_number = forms.IntegerField()
-    username = forms.CharField(help_text="Athena username of person to check")
 
-def account_lookup(request, ):
-    msg = None
-    msg_type = ""
-    account_number = None
-    username = None
-    group = None
-    office_holders = []
+#######################
+# REPORTING COMPONENT #
+#######################
 
-    visible_roles  = groups.models.OfficerRole.objects.filter(publicly_visible=True)
+class ReportingForm(form_utils.forms.BetterForm):
+    basic_fields_choices = groups.models.Group.reporting_fields()
+    basic_fields_labels = dict(basic_fields_choices) # name -> verbose_name
+    basic_fields = forms.fields.MultipleChoiceField(
+        choices=basic_fields_choices,
+        widget=forms.CheckboxSelectMultiple,
+        initial = ['id', 'name'],
+    )
 
-    initial = {}
+    people_fields = forms.models.ModelMultipleChoiceField(
+        queryset=groups.models.OfficerRole.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+    show_as_emails = forms.BooleanField(
+        help_text='Append "@mit.edu" to each value of people fields to allow use as email addresses?',
+        required=False,
+    )
 
-    if 'search' in request.GET: # If the form has been submitted...
-        # A form bound to the POST data
-        form = AccountLookupForm(request.GET)
+    _format_choices = [
+        ('html/inline',     "Web (HTML)", ),
+        ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
+        ('csv/download',    "Spreadsheet (CSV) --- download", ),
+    ]
+    output_format = forms.fields.ChoiceField(choices=_format_choices, widget=forms.RadioSelect, initial='html')
 
-        if form.is_valid(): # All validation rules pass
-            account_number = form.cleaned_data['account_number']
-            username = form.cleaned_data['username']
-            account_q = Q(main_account_id=account_number) | Q(funding_account_id=account_number)
-            try:
-                group = groups.models.Group.objects.get(account_q)
-                office_holders = group.officers(person=username)
-                office_holders = office_holders.filter(role__in=visible_roles)
-            except groups.models.Group.DoesNotExist:
-                msg = "Group not found"
-                msg_type = "error"
+    class Meta:
+        fieldsets = [
+            ('filter', {
+                'legend': 'Filter Groups',
+                'fields': ['name', 'abbreviation', 'activity_category', 'group_class', 'group_status', 'group_funding', ],
+            }),
+            ('fields', {
+                'legend': 'Data to display',
+                'fields': ['basic_fields', 'people_fields', 'show_as_emails', ],
+            }),
+            ('final', {
+                'legend': 'Final options',
+                'fields': ['o', 'output_format', ],
+            }),
+        ]
 
+class GroupReportingFilter(GroupFilter):
+    class Meta(GroupFilter.Meta):
+        form = ReportingForm
+        order_by = True # we customize the field, so the value needs to be true-like but doesn't matter otherwise
+
+    def get_ordering_field(self):
+        return forms.ChoiceField(label="Ordering", required=False, choices=ReportingForm.basic_fields_choices)
+
+    def __init__(self, data=None, *args, **kwargs):
+        super(GroupReportingFilter, self).__init__(data, *args, **kwargs)
+
+def format_id(pk):
+    url = reverse('groups:group-detail', kwargs={'pk':pk})
+    return mark_safe("<a href='%s'>%d</a>" % (url, pk))
+
+def format_url(url):
+    try:
+        urlvalidator(url)
+    except ValidationError:
+        return url
     else:
-        form = AccountLookupForm()
+        escaped = html.escape(url)
+        return mark_safe("<a href='%s'>%s</a>" % (escaped, escaped))
 
+def format_email(email):
+    try:
+        emailvalidator(email)
+    except ValidationError:
+        return email
+    else:
+        escaped = html.escape(email)
+        return mark_safe("<a href='mailto:%s'>%s</a>" % (escaped, escaped))
+
+reporting_html_formatters = {
+    'id': format_id,
+    'website_url': format_url,
+    'constitution_url': format_url,
+    'group_email': format_email,
+    'officer_email': format_email,
+}
+
+@permission_required('groups.view_group_private_info')
+def reporting(request, ):
+    the_groups = groups.models.Group.objects.all()
+    groups_filterset = GroupReportingFilter(request.GET, the_groups)
+    form = groups_filterset.form
+
+    col_labels = []
+    report_groups = []
+    run_report = 'go' in request.GET and form.is_valid()
+    if run_report:
+        basic_fields = form.cleaned_data['basic_fields']
+        output_format, output_disposition = form.cleaned_data['output_format'].split('/')
+        col_labels = [form.basic_fields_labels[field] for field in basic_fields]
+
+        # Set up query
+        qs = groups_filterset.qs
+        # Prefetch foreign keys
+        prefetch_fields = groups.models.Group.reporting_prefetch()
+        prefetch_fields = prefetch_fields.intersection(basic_fields)
+        if prefetch_fields:
+            qs = qs.select_related(*list(prefetch_fields))
+
+        # Set up people
+        people_fields = form.cleaned_data['people_fields']
+        people_data = groups.models.OfficeHolder.current_holders.filter(group__in=qs, role__in=people_fields)
+        # Group.pk -> (OfficerRole.pk -> set(username))
+        people_map = collections.defaultdict(lambda: collections.defaultdict(set))
+        for holder in people_data:
+            people_map[holder.group_id][holder.role_id].add(holder.person)
+        for field in people_fields:
+            col_labels.append(field.display_name)
+
+        # Assemble data
+        if output_format == 'html':
+            formatters = reporting_html_formatters
+        else:
+            formatters = {}
+        show_as_emails = form.cleaned_data['show_as_emails']
+        def fetch_item(group, field):
+            val = getattr(group, field)
+            if field in formatters:
+                val = formatters[field](val)
+            return val
+        for group in qs:
+            group_data = [fetch_item(group, field) for field in basic_fields]
+            for field in people_fields:
+                people = people_map[group.pk][field.pk]
+                if show_as_emails: people = ["%s@mit.edu" % p for p in people]
+                group_data.append(", ".join(people))
+
+            report_groups.append(group_data)
+
+        # Handle output as CSV
+        if output_format == 'csv':
+            if output_disposition == 'download':
+                mimetype = 'text/csv'
+            else:
+                # Firefox, at least, downloads text/csv regardless
+                mimetype = 'text/plain'
+            response = HttpResponse(mimetype=mimetype)
+            if output_disposition == 'download':
+                response['Content-Disposition'] = 'attachment; filename=asa-db-report.csv'
+            writer = csv.writer(response)
+            writer.writerow(col_labels)
+            for row in report_groups: writer.writerow(row)
+            return response
+
+    # Handle output as HTML
     context = {
-        'username':     username,
-        'account_number': account_number,
-        'group':        group,
-        'office_holders': office_holders,
-        'form':         form,
-        'msg':          msg,
-        'msg_type':     msg_type,
-        'visible_roles':    visible_roles,
+        'form': form,
+        'run_report': run_report,
+        'column_labels': col_labels,
+        'report_groups': report_groups,
+        'pagename': 'groups',
     }
-    return render_to_response('groups/account_lookup.html', context, context_instance=RequestContext(request), )
+    return render_to_response('groups/reporting.html', context, context_instance=RequestContext(request), )

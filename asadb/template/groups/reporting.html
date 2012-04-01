@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load form_utils_tags %}
+
+{% block title %}Reporting{% endblock %}
+{% block content %}
+
+<h1>Reporting</h1>
+
+<h2>Results</h2>
+{% if run_report %}
+<table class='pretty-table'>
+<thead>
+    <tr>
+        {% for col in column_labels %}<th>{{col}}</th>{%endfor%}
+    </tr>
+</thead>
+<tbody>
+    {% for row in report_groups %}
+    <tr>
+        {% for col in row %}<td>{{col}}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No results yet. Configure your report below to get some.</p>
+{% endif %}
+
+<h2>Configuration</h2>
+<form action="" method="get">
+    {{ form|render }}
+    <input type="submit" name="go" value="Go" />
+</form>
+
+{% endblock %}
