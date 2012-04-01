@@ -1,0 +1,53 @@
+Transitioning Databases
+=======================
+
+We made a conscious decision to have groups do a significant part of the database transition by hand. As the Database FAQ puts it:
+
+> Why is the transition so manual? Why can't you copy our information for us?
+> 
+> While we could do the transition automatically — and, indeed, we wrote code
+> to do a fully-automatic transition that we used to populate our testing
+> databases — we decided we preferred to do a more manual transition. There are
+> two main reason for this.
+> 
+> First, it provides some impetus to keep the information up-to-date. We
+> believe that a large portion of the information in the old database was
+> highly outdated. By having groups input data by hand, we hoped that they
+> would notice information in the old database that was out of date and update
+> it while they were inputting it.
+> 
+> Second, it ensures that information in the database is valid. For example, we
+> want to move towards having Athena lockers, constitutions, and so forth on
+> file for all groups. This is a good opportunity to have groups input that
+> information.
+> 
+> We believe that while this increases the work each group needs to do, it has
+> enough value to be worth doing.
+
+My conclusion from watching the transition process is that our assumptions were flawed. We assumed we would get accurate data when we asked groups to supply it. In practice, this did not occur. Particularly common errors were:
+* Putting personal email addresses in for the officers' list and/or group list
+* Putting "n/a", "don't know", or similar for the Athena locker (or, in some particularly confused cases, a room number)
+* Changing activity categories, sometimes in ways contrary to our interpretations of those categories (e.g., "Government" for groups that aren't student governments)
+* Putting http://web.mit.edu/ for the group website, or putting the group website as the constitution URL
+
+Confusion over how to fill out the database was very high, causing a large support load. In addition to the usual range of computer difficulties and reading comprehension failure, we got a number of questions about the correct value for various fields (particularly the Athena locker) and permissions-related issues.
+
+As to permissions: the old database allowed the president and treasurer (one person each) and financial signatories (up to six people, though generally including president and treasurer) to update the database. The new database allowed updates by the president and treasurer (up to two each) and, starting midway through the transition, a new field called "group admin" (up to three). Financial signatories no longer could edit group entries. Morever, only the president was copied over --- not the treasurer or financial signatories. Consequently, there was a great deal of confusion over treasurers or financial signatories who could no longer edit the database, or groups whose president was not available.
+
+The transition was also carried out before the database was fully ready. I wanted to start managing office access through the database, and decided that a good time to start doing that would be during the 2012 space allocation cycle, since groups would be moving and setting up access anyway. As a result, I accepted less than optimal code completion in order to make that deadline. This had a few disadvantages:
+* There was no usability testing, which might have revealed various confusing aspects of the UI
+* Functionality that would have helped with the transition was not yet in place
+    * http://asa.scripts.mit.edu/trac/ticket/6 and similar functionality as a validation step: code to warn about incorrect constitution URLs, non-lists for officers' or group email lists, non-existent lockers
+* Particularly unfortunately, the office access code was not complete when we started the transition. We had the data-gathering set up, but identifying changes and requesting CAC actually update the locks wasn't working. The theory was that this would be finished before office moves actually happened. The code turned out to be much more hairy and time-consuming than expected, dragging out for months. The presence of the "office access" role, without it actually causing access to get updated, also confused a number of users.
+
+It is worth noting that while the transition found *many* bugs, it's not clear that most of them would have been spotted if development had continued for several months --- having real users revealed many things (bugs and missing features) that my testing and developing would not have found.
+
+Suggestions for future transitions:
+* Do usability testing in advance --- find a friend (not on Exec) and ask them to update the DB
+* Provide extensive validation of any field you expect officers to update, including
+    * comparison to the previous database (if applicable/possible)
+    * checking against other systems (e.g., verify that Moira knows about mit.edu email addresses)
+* Make it *very* obvious who can update an entry --- even if you don't change this as part of the transition, there are probably groups that failed at their officers' transition, and neither updated the DB nor told the new officers the DB existed.
+* Wait until you're ready to transition
+    * If you get rushed by some convenient calendar alignment, *make sure* any critical features associated with that alignment are ready
+    * Don't include half-implemented features --- they're likely to confuse users
