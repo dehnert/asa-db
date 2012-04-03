@@ -147,6 +147,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             }),
             ('size', {
                 'legend':'Membership Numbers',
+                'description':'Count each person in your group exactly once. Count only MIT students as "undergrads" or "grads". "Community" should be MIT community members who are not students, such as alums and staff.',
                 'fields': ['num_undergrads', 'num_grads', 'num_community', 'num_other',],
             }),
             ('contact', {
