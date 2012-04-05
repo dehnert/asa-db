@@ -447,7 +447,7 @@ def recognize_nge(request, ):
         if form.is_valid(): # All validation rules pass
             group.set_updater(request.user)
             form.save()
-            officer_emails = create_group_officers(group, form.cleaned_data, )
+            officer_emails = create_group_officers(group, form.cleaned_data, save=True, )
 
             return redirect(reverse('groups:group-detail', args=[group.pk]))
         else:
