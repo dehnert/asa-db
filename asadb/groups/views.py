@@ -899,7 +899,7 @@ class ReportingForm(form_utils.forms.BetterForm):
         ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
         ('csv/download',    "Spreadsheet (CSV) --- download", ),
     ]
-    output_format = forms.fields.ChoiceField(choices=_format_choices, widget=forms.RadioSelect, initial='html')
+    output_format = forms.fields.ChoiceField(choices=_format_choices, widget=forms.RadioSelect, initial='html/inline')
 
     class Meta:
         fieldsets = [
