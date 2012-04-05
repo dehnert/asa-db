@@ -1,12 +1,14 @@
 from django.conf.urls.defaults import *
 
 import groups.views
+import space.views
 
 group_patterns = patterns('',
     url(r'^$', groups.views.GroupDetailView.as_view(), name='group-detail', ),
     url(r'^edit/main$', groups.views.manage_main, name='group-manage-main', ),
     url(r'^edit/officers$', groups.views.manage_officers, name='group-manage-officers', ),
     url(r'^history/$', groups.views.GroupHistoryView.as_view(), name='group-manage-history', ),
+    url(r'^space/$', space.views.manage_access, name='group-space-access', ),
 )
 
 groups_patterns = patterns('',

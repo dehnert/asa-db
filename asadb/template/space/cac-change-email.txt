@@ -1,0 +1,23 @@
+{% autoescape off %}
+Hi CAC,
+   The following groups need access updated.  Let us know if there are any issues with these changes. Please let us know when these changes have been made.
+
+Thanks,
+ASA Exec
+
+{% if locker_msgs %}Locker room access:
+{% for msg in locker_msgs %}
+{{msg}}
+{% endfor %}
+{% endif %}
+
+
+{% for group, cac_changes, group_office_changes, group_locker_changes in changed_groups %}
+Group: {{group.name}} (ID#{{group.pk}})
+Officer email: {{group.officer_email}}
+
+{% if cac_changes %}{{cac_changes}}
+
+{% endif %}
+{% endfor %}
+{% endautoescape %}

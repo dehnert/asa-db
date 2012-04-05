@@ -4,6 +4,7 @@
     <li><a href='{% url groups:group-detail group.pk %}'>View</a></li>
     <li><a href='{% url groups:group-manage-main group.pk %}'>Update main</a></li>
     <li><a href='{% url groups:group-manage-officers group.pk %}'>Update people</a></li>
+    <li><a href='{% url groups:group-space-access group.pk %}'>Space access</a></li>
     <li><a href='{% url groups:group-manage-history group.pk %}'>History</a></li>
     {% if group.pk < 1905 %}
     <li><a href='https://sisapp2.mit.edu/asa/student_group_detail.do?action=detail&amp;studentGroupId={{group.pk}}'>Old DB entry</a></li>

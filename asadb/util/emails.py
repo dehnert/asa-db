@@ -3,7 +3,7 @@ from django.template import Context, Template
 from django.template.loader import get_template
 
 def email_from_template(tmpl, context,
-        subject, to=[], cc=[], from_email='asa-db@mit.edu', ):
+        subject, to=[], cc=[], from_email=None, ):
     tmpl_obj = get_template(tmpl)
     ctx = Context(context)
     body = tmpl_obj.render(ctx)

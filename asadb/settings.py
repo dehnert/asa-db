@@ -17,6 +17,7 @@ ADMINS = (
     ('ASA Database Team', 'asa-db@mit.edu',),
 )
 SERVER_EMAIL = 'asa-db-auto@mit.edu'
+DEFAULT_FROM_EMAIL = 'asa-db@mit.edu'
 
 MANAGERS = ADMINS
 
@@ -131,6 +132,7 @@ INSTALLED_APPS = (
     'south',
     'groups',
     'forms',
+    'space',
 )
 
 from local_settings_after import *
