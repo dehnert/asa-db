@@ -10,7 +10,8 @@ group's complete information into the ASA Database:
 
       http://web.mit.edu/asa/www/asa-db.shtml
 
-Note that at this point only the President of the group ({{president}})
+Note that at this point only the President and Treasurer of the group
+({{officer_emails|join:", "}})
 can modify the information and that MIT personal certificates are
 required to access the group's account in the ASA Database.
 
@@ -22,7 +23,7 @@ as an ASA-recognized group. Please read carefully. Mail has been sent
 to accounts@mit.edu informing them that you have been approved by the
 ASA and they will create your locker and e-mail accounts as needed.
 
-The Athena locker for Spinning Arts Club, MIT will be :
+The Athena locker for {{group.name}} will be :
 
       {{group.athena_locker}}
 
