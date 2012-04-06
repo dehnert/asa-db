@@ -9,9 +9,9 @@ from util.misc import log_and_ignore_failures, mkdir_p
 import util.previews
 
 class FYSM(models.Model):
-    group = models.ForeignKey(groups.models.Group)
+    group = models.ForeignKey(groups.models.Group, db_index=True, )
     display_name = models.CharField(max_length=50)
-    year = models.IntegerField()
+    year = models.IntegerField(db_index=True, )
     website = models.URLField()
     join_url = models.URLField(verbose_name="recruiting URL", help_text="""<p>If you have a specific web page for recruiting new members of your group, you can link to it here. It will be used as the destination for most links about your group (join link on the main listing page and when clicking on the slide, but not the "website" link on the slide page). If you do not have such a page, use your main website's URL.</p>""")
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
@@ -38,7 +38,7 @@ class FYSM(models.Model):
 
 class FYSMCategory(models.Model):
     name = models.CharField(max_length=25)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True, )
     blurb = models.TextField()
 
     def __str__(self, ):
@@ -138,7 +138,7 @@ class PagePreview(models.Model):
 
 class GroupConfirmationCycle(models.Model):
     name = models.CharField(max_length=30)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True, )
     create_date = models.DateTimeField(default=datetime.datetime.now)
 
     def __unicode__(self, ):
@@ -154,7 +154,7 @@ class GroupMembershipUpdate(models.Model):
     updater_name = models.CharField(max_length=30)
     updater_title = models.CharField(max_length=30, help_text="You need not hold any particular title in the group, but we like to know who is completing the form.")
     
-    group = models.ForeignKey(groups.models.Group, help_text="If your group does not appear in the list above, then please email asa-exec@mit.edu.")
+    group = models.ForeignKey(groups.models.Group, help_text="If your group does not appear in the list above, then please email asa-exec@mit.edu.", db_index=True, )
     group_email = models.EmailField(help_text="The text of the law will be automatically distributed to your members via this list, in order to comply with the law.")
     officer_email = models.EmailField()
 
@@ -195,7 +195,7 @@ VALID_CHOICES = (
 class PersonMembershipUpdate(models.Model):
     update_time = models.DateTimeField(default=datetime.datetime.utcfromtimestamp(0))
     username = models.CharField(max_length=30)
-    cycle = models.ForeignKey(GroupConfirmationCycle)
+    cycle = models.ForeignKey(GroupConfirmationCycle, db_index=True, )
     deleted = models.DateTimeField(default=None, null=True, blank=True, )
     valid = models.IntegerField(choices=VALID_CHOICES, default=VALID_UNSET)
     groups = models.ManyToManyField(groups.models.Group, help_text="By selecting a group here, you indicate that you are an active member of the group in question.<br>If your group does not appear in the list above, then please email asa-exec@mit.edu.<br>")

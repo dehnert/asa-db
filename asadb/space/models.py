@@ -97,10 +97,10 @@ class CurrentAssignmentManager(models.Manager):
 class SpaceAssignment(models.Model):
     END_NEVER       = datetime.datetime.max
 
-    group = models.ForeignKey(groups.models.Group)
-    space = models.ForeignKey(Space)
-    start = models.DateField(default=datetime.datetime.now)
-    end = models.DateField(default=END_NEVER)
+    group = models.ForeignKey(groups.models.Group, db_index=True, )
+    space = models.ForeignKey(Space, db_index=True, )
+    start = models.DateField(default=datetime.datetime.now, db_index=True, )
+    end = models.DateField(default=END_NEVER, db_index=True, )
 
     notes = models.TextField(blank=True, )
     locker_num = models.CharField(max_length=10, blank=True, help_text='Locker number. If set, will use the "locker-access" OfficerRole to maintain access. If unset/blank, uses "office-access" and SpaceAccessListEntry for access.')
@@ -138,10 +138,10 @@ def now_offset():
 class SpaceAccessListEntry(models.Model):
     END_NEVER       = datetime.datetime.max
 
-    group = models.ForeignKey(groups.models.Group)
-    space = models.ForeignKey(Space)
-    start = models.DateTimeField(default=now_offset)
-    end = models.DateTimeField(default=END_NEVER)
+    group = models.ForeignKey(groups.models.Group, db_index=True, )
+    space = models.ForeignKey(Space, db_index=True, )
+    start = models.DateTimeField(default=now_offset, db_index=True, )
+    end = models.DateTimeField(default=END_NEVER, db_index=True, )
 
     name = models.CharField(max_length=50)
     card_number = models.CharField(max_length=20)

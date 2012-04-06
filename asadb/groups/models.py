@@ -22,13 +22,13 @@ class ActiveGroupManager(models.Manager):
         )
 
 class Group(models.Model):
-    name = models.CharField(max_length=100)
-    abbreviation = models.CharField(max_length=10, blank=True)
+    name = models.CharField(max_length=100, db_index=True, )
+    abbreviation = models.CharField(max_length=10, blank=True, db_index=True, )
     description = models.TextField()
-    activity_category = models.ForeignKey('ActivityCategory', null=True, blank=True, )
-    group_class = models.ForeignKey('GroupClass')
-    group_status = models.ForeignKey('GroupStatus')
-    group_funding = models.ForeignKey('GroupFunding', null=True, blank=True, )
+    activity_category = models.ForeignKey('ActivityCategory', null=True, blank=True, db_index=True, )
+    group_class = models.ForeignKey('GroupClass', db_index=True, )
+    group_status = models.ForeignKey('GroupStatus', db_index=True, )
+    group_funding = models.ForeignKey('GroupFunding', null=True, blank=True, db_index=True, )
     website_url = models.URLField()
     constitution_url = models.CharField(max_length=200, blank=True)
     meeting_times = models.TextField(blank=True)
@@ -224,7 +224,7 @@ GROUP_STARTUP_STAGE = (
 
 
 class GroupStartup(models.Model):
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, unique=True, )
     stage = models.IntegerField(choices=GROUP_STARTUP_STAGE)
     submitter = models.CharField(max_length=30, editable=False, )
     create_officer_list = models.BooleanField()
@@ -238,12 +238,12 @@ reversion.register(GroupStartup)
 
 
 class GroupNote(models.Model):
-    author = models.CharField(max_length=30, ) # match Django username field
+    author = models.CharField(max_length=30, db_index=True, ) # match Django username field
     timestamp = models.DateTimeField(default=datetime.datetime.now, editable=False, )
     body = models.TextField()
     acl_read_group = models.BooleanField(default=True, help_text='Can the group read this note')
     acl_read_offices = models.BooleanField(default=True, help_text='Can "offices" that interact with groups (SAO, CAC, and funding boards) read this note')
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, db_index=True, )
 
     def __str__(self, ):
         return "Note by %s on %s" % (self.author, self.timestamp, )
@@ -273,7 +273,7 @@ class OfficerRole(models.Model):
     UNLIMITED = 10000
 
     display_name = models.CharField(max_length=50)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True, )
     description = models.TextField()
     max_count = models.IntegerField(default=UNLIMITED, help_text='Maximum number of holders of this role. Use %d for no limit.' % UNLIMITED)
     require_student = models.BooleanField(default=False)
@@ -313,11 +313,11 @@ class OfficeHolder(models.Model):
     EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
     END_NEVER       = datetime.datetime.max
 
-    person = models.CharField(max_length=30)
-    role = models.ForeignKey('OfficerRole')
-    group = models.ForeignKey('Group')
-    start_time = models.DateTimeField(default=datetime.datetime.now)
-    end_time = models.DateTimeField(default=datetime.datetime.max)
+    person = models.CharField(max_length=30, db_index=True, )
+    role = models.ForeignKey('OfficerRole', db_index=True, )
+    group = models.ForeignKey('Group', db_index=True, )
+    start_time = models.DateTimeField(default=datetime.datetime.now, db_index=True, )
+    end_time = models.DateTimeField(default=datetime.datetime.max, db_index=True, )
 
     objects = models.Manager()
     current_holders = OfficeHolder_CurrentManager()
@@ -432,7 +432,7 @@ class AthenaMoiraAccount_ActiveManager(models.Manager):
         return super(AthenaMoiraAccount_ActiveManager, self).get_query_set().filter(del_date=None)
 
 class AthenaMoiraAccount(models.Model):
-    username = models.CharField(max_length=8)
+    username = models.CharField(max_length=8, unique=True, )
     mit_id = models.CharField(max_length=15)
     first_name      = models.CharField(max_length=45)
     last_name       = models.CharField(max_length=45)
