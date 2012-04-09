@@ -53,7 +53,9 @@ def gather_users():
 
     holders = groups.models.OfficerRole.current_holders.filter(role__slug='office-access')
 
-def print_info():
+def print_info(stream=None, ):
+    if not stream: stream=sys.stdout
+
     people_map = people_lookup()
     space_map = space_lookup()
     group_map = group_lookup()
@@ -66,7 +68,7 @@ def print_info():
     # Load room-specific stuff
     space_aces = gather_users()
 
-    writer = csv.writer(sys.stdout)
+    writer = csv.writer(stream)
     writer.writerow(("space", "group", "last_name", "first_name", "username", "mit_id", ))
     for space_id, space_groups in space_aces.items():
         space_obj = space_map[space_id]

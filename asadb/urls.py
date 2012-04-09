@@ -10,6 +10,7 @@ import settings
 
 import groups.urls
 import forms.views
+import space.views
 
 about_patterns = patterns('',
     url(
@@ -57,6 +58,10 @@ urlpatterns = patterns('',
 
     # Group list
     (r'^groups/', include(groups.urls.urls(), ), ),
+
+    # Space
+    url(r'^space/dump/locker-access.csv$', space.views.dump_locker_access, name='space-dump-locker-access', ),
+    url(r'^space/dump/office-access.csv$', space.views.dump_office_access, name='space-dump-office-access', ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

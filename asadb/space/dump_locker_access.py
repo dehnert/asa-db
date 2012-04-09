@@ -30,8 +30,9 @@ def gather_users():
         space_users[space_id] = users
     return space_users
 
-def print_info(space_users):
-    writer = csv.writer(sys.stdout)
+def print_info(space_users, stream=None, ):
+    if not stream: stream = sys.stdout
+    writer = csv.writer(stream)
     writer.writerow(("space", "last_name", "first_name", "username", "mit_id", ))
     for space_id, users in space_users.items():
         writer.writerow(())

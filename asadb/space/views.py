@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext, Context, Template
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
 from django import forms
@@ -15,6 +15,8 @@ import django_filters
 
 import groups.models
 import space.models
+import space.dump_locker_access
+import space.dump_office_access
 
 # Note: Not a view.
 def process_access_changes(request, group, assignment, entries, changes, extras_indices, ):
@@ -81,3 +83,16 @@ def manage_access(request, pk, ):
         'pagename':'group',
     }
     return render_to_response('space/manage-access.html', context, context_instance=RequestContext(request), )
+
+@permission_required('groups.view_group_private_info')
+def dump_locker_access(request, ):
+    response = HttpResponse(mimetype='text/csv')
+    space_users = space.dump_locker_access.gather_users()
+    space.dump_locker_access.print_info(space_users, response)
+    return response
+
+@permission_required('groups.view_group_private_info')
+def dump_office_access(request, ):
+    response = HttpResponse(mimetype='text/csv')
+    space.dump_office_access.print_info(response)
+    return response

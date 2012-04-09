@@ -53,6 +53,10 @@
         {%if perms.groups.add_group %}<li><a href='{% url groups:startup-list %}'>Review startup applications</a></li>{%endif%}
         {%if perms.groups.recognize_nge %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
     </ul></li>
+    {% if perms.groups.view_group_private_info %}<li>Space access<ul>
+        <li><a href='{% url space-dump-locker-access %}'>Locker access (CSV)</a></li>
+        <li><a href='{% url space-dump-office-access %}'>Office access (CSV)</a></li>
+    </ul></li>{% endif %}
     <li><a href='{% url about %}'>About the ASA Database</a><ul>
         <li><a href='{% url about-data %}'>Use of Data</a></li>
     </ul></li>
