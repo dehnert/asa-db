@@ -7,7 +7,9 @@
 
 {% include "groups/group_tools.part.html" %}
 
-<p>Please adjust your signatories below. The following roles are available:</p>
+<p>Please adjust your signatories below.</p>
+
+<h2>Available roles</h2>
 
 <table class='pretty-table'>
 <tr>
@@ -27,6 +29,7 @@
 </table>
 
 {% if msgs %}
+<h2>Messages</h2>
 <ul>
 {% for msg in msgs %}
 <li>{{msg}}</li>
@@ -35,6 +38,7 @@
 {%endif%}
 
 {% if changes %}
+<h2>Changes made</h2>
 <table class='pretty-table'>
 <tr>
     <th>Action</th>
@@ -47,11 +51,9 @@
 </table>
 {% endif %}
 
-{%if edited %}
-<p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
-{% endif %}
+<h2>Update</h2>
 
-<p>Add or update people. Please note:</p>
+<p>Please note:</p>
 <ul>
     <li>We don't track "group membership" &mdash; people will show up in the list below only if they have one of the roles listed</li>
     <li>Type only the <em>Athena username</em> to add people &mdash; do not type full names or names plus username</li>
@@ -89,5 +91,9 @@
 
 <input type='submit' value='Update' />
 </form>
+
+{%if edited %}
+<p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
+{% endif %}
 
 {% endblock %}
