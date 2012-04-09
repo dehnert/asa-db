@@ -209,7 +209,8 @@ def manage_main(request, pk, ):
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
-def load_officers(group, ):
+# Helper for manage_officers view
+def manage_officers_load_officers(group, ):
     officers = group.officers()
     people = list(set([ officer.person for officer in officers ]))
     roles  = groups.models.OfficerRole.objects.all()
@@ -224,6 +225,93 @@ def load_officers(group, ):
 
     return people, roles, name_map, officers_map
 
+# Helper for manager_officers view
+def manage_officers_load_accounts(max_new, people, request, msgs, ):
+    new_people = {}
+    moira_accounts = {}
+
+    for i in range(max_new):
+        key = "extra.%d" % (i, )
+        if key in request.POST and request.POST[key] != "":
+            username = request.POST[key]
+            try:
+                moira_accounts[username] = groups.models.AthenaMoiraAccount.active_accounts.get(username=username)
+                new_people[i] = username
+            except groups.models.AthenaMoiraAccount.DoesNotExist:
+                msgs.append('Athena account "%s" appears not to exist. Changes involving them have been ignored.' % (username, ))
+    for person in people:
+        try:
+            moira_accounts[person] = groups.models.AthenaMoiraAccount.active_accounts.get(username=person)
+        except groups.models.AthenaMoiraAccount.DoesNotExist:
+            msgs.append('Athena account "%s" appears not to exist. They can not be added to new roles. You should remove them from any roles they hold, if you have not already.' % (person, ))
+
+    return new_people, moira_accounts
+
+# Helper for manager_officers view
+def manage_officers_sync_role_people(
+    group, role, new_holders,
+    msgs, changes,
+    officers_map, people, moira_accounts, new_people, max_new, ):
+    """
+    Sync a set of new holders of a role with the database.
+
+    Arguments:
+    Function-specific:
+        role: the role object the changes center around
+        new_holders: The desired final set of people who should have the role
+    Output arguments --- information messages
+        msgs: warning message list. Output argument.
+        changes: list of changes made. [(verb, color, person, role)]
+    Background info arguments:
+        officers_map: (username, role) -> OfficeHolder
+        people: list of all potentially-affected people (who were previously involved)
+        moira_accounts: username -> AthenaMoiraAccount
+        new_people: potentially-affected people (who are newly involved) --- key -> username
+        max_new: highest index to use in keys for new_people
+    """
+
+    kept = 0
+    kept_not = 0
+
+    for person in people:
+        if person in new_holders:
+            if (person, role) in officers_map:
+                if person not in moira_accounts:
+                    pass # already errored above
+                elif role.require_student and not moira_accounts[person].is_student():
+                    msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.) You should replace this person ASAP.' % (role, person, ))
+                #changes.append(("Kept", "yellow", person, role))
+                kept += 1
+            else:
+                if person not in moira_accounts:
+                    pass # already errored above
+                elif role.require_student and not moira_accounts[person].is_student():
+                    msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.)' % (role, person, ))
+                else:
+                    holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
+                    holder.save()
+                    changes.append(("Added", "green", person, role))
+        else:
+            if (person, role) in officers_map:
+                officers_map[(person, role)].expire()
+                changes.append(("Removed", "red", person, role))
+            else:
+                kept_not += 1
+                pass
+    for i in range(max_new):
+        if "extra.%d" % (i, ) in new_holders:
+            if i in new_people:
+                person = new_people[i]
+                assert person in moira_accounts
+                if role.require_student and not moira_accounts[person].is_student():
+                    msgs.append('Only students can have the %s role, and %s does not appear to be a student.' % (role, person, ))
+                else:
+                    holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
+                    holder.save()
+                    changes.append(("Added", "green", person, role))
+
+    return kept, kept_not
+
 @login_required
 def manage_officers(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
@@ -233,7 +321,7 @@ def manage_officers(request, pk, ):
 
     max_new = 4
 
-    people, roles, name_map, officers_map = load_officers(group)
+    people, roles, name_map, officers_map = manage_officers_load_officers(group)
 
     msgs = []
     changes = []
@@ -243,22 +331,10 @@ def manage_officers(request, pk, ):
     if request.method == 'POST': # If the form has been submitted
         edited = True
 
-        new_people = {}
-        moira_accounts = {}
-        for i in range(max_new):
-            key = "extra.%d" % (i, )
-            if key in request.POST and request.POST[key] != "":
-                username = request.POST[key]
-                try:
-                    moira_accounts[username] = groups.models.AthenaMoiraAccount.active_accounts.get(username=username)
-                    new_people[i] = username
-                except groups.models.AthenaMoiraAccount.DoesNotExist:
-                    msgs.append('Athena account "%s" appears not to exist. Changes involving them have been ignored.' % (username, ))
-        for person in people:
-            try:
-                moira_accounts[person] = groups.models.AthenaMoiraAccount.active_accounts.get(username=person)
-            except groups.models.AthenaMoiraAccount.DoesNotExist:
-                msgs.append('Athena account "%s" appears not to exist. They can not be added to new roles. You should remove them from any roles they hold, if you have not already.' % (person, ))
+        # Fill out moira_accounts with AthenaMoiraAccount objects for relevant people
+        new_people, moira_accounts = manage_officers_load_accounts(max_new, people, request, msgs)
+
+        # Process changes
         for role in roles:
             key = "holders.%s" % (role.slug, )
             new_holders = set()
@@ -269,48 +345,20 @@ def manage_officers(request, pk, ):
                     (len(new_holders), role.display_name, role.max_count, role.display_name, )
                 )
             else:
-                for person in people:
-                    if person in new_holders:
-                        if (person, role) in officers_map:
-                            if person not in moira_accounts:
-                                pass # already errored above
-                            elif role.require_student and not moira_accounts[person].is_student():
-                                msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.) You should replace this person ASAP.' % (role, person, ))
-                            #changes.append(("Kept", "yellow", person, role))
-                            kept += 1
-                        else:
-                            if person not in moira_accounts:
-                                pass # already errored above
-                            elif role.require_student and not moira_accounts[person].is_student():
-                                msgs.append('Only students can have the %s role, and %s does not appear to be a student. (If this is not the case, please contact us.)' % (role, person, ))
-                            else:
-                                holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
-                                holder.save()
-                                changes.append(("Added", "green", person, role))
-                    else:
-                        if (person, role) in officers_map:
-                            officers_map[(person, role)].expire()
-                            changes.append(("Removed", "red", person, role))
-                        else:
-                            kept_not += 1
-                            pass
-                for i in range(max_new):
-                    if "extra.%d" % (i, ) in new_holders:
-                        if i in new_people:
-                            person = new_people[i]
-                            assert person in moira_accounts
-                            if role.require_student and not moira_accounts[person].is_student():
-                                msgs.append('Only students can have the %s role, and %s does not appear to be a student.' % (role, person, ))
-                            else:
-                                holder = groups.models.OfficeHolder(person=person, role=role, group=group,)
-                                holder.save()
-                                changes.append(("Added", "green", person, role))
+                kept_delta, kept_not_delta = manage_officers_sync_role_people(
+                    group, role, new_holders,   # input arguments
+                    msgs, changes,              # output arguments
+                    officers_map, people, moira_accounts,   # ~background data
+                    new_people, max_new,                    # new people data
+                )
+                kept += kept_delta
+                kept_not += kept_not_delta
 
         # mark as changed and reload the data
         if changes:
             group.set_updater(request.user)
             group.save()
-        people, roles, name_map, officers_map = load_officers(group)
+        people, roles, name_map, officers_map = manage_officers_load_officers(group)
 
     officers_data = []
     for person in people:
