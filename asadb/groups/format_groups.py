@@ -10,13 +10,21 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from django.db import connection
 from django.db.models import Q
 from django.utils import html
 
 import groups.models
+import space.models
 
+def space_Q(merged_acl=None, building=None, ):
+    Qspace = Q()
+    if merged_acl is not None: Qspace = Q(space__merged_acl=merged_acl)
+    if building: Qspace = Qspace & Q(space__number__startswith=building+'-')
+    return Q(spaceassignment__in=space.models.SpaceAssignment.current.filter(Qspace))
 
 Qsa = Q(group_status__slug__in=('active', 'suspended', ))
+
 functions = {
     'finboard' : {
         'format' : "%(name)s;%(officer_email)s",
@@ -42,13 +50,29 @@ functions = {
         'format' : '<option value="%(html_name)s">%(html_name)s</option>',
         'predicate' : Q(group_status__slug__in=['active', 'suspended', 'applying', 'nge'], group_class__gets_publicity=True, ),
     },
+    'w20-locker' : {
+        'format' : '%(officer_email)s;%(name)s',
+        'predicate' : Qsa & space_Q(merged_acl=True, building='W20'),
+    },
+    'w20-office' : {
+        'format' : '%(officer_email)s;%(name)s',
+        'predicate' : Qsa & space_Q(merged_acl=False, building='W20'),
+    },
+    'all-office' : {
+        'format' : '%(officer_email)s;%(name)s',
+        'predicate' : Qsa & space_Q(merged_acl=False),
+    },
+    'all-space' : {
+        'format' : '%(officer_email)s;%(name)s',
+        'predicate' : Qsa & space_Q(),
+    },
 }
 
 def do_output(mode):
     spec = functions[mode]
     format = spec['format']
     predicate = spec['predicate']
-    gs = groups.models.Group.objects.filter(predicate)
+    gs = groups.models.Group.objects.filter(predicate).distinct()
     static_args = {'script': 'groups/format_groups.py', 'mode':mode, }
     if 'prefix' in spec:
         print spec['prefix'] % static_args
@@ -60,6 +84,7 @@ def do_output(mode):
         }
     if 'suffix' in spec:
         print spec['suffix'] % static_args
+    #for q in connection.queries: print q
 
 if __name__ == "__main__":
     do_output(sys.argv[1])
