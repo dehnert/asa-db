@@ -349,9 +349,10 @@ class OfficersBulkManageForm(forms.Form):
     mode_choices = [
         ('add', 'Add new people', ),
         ('remove', 'Remove old people', ),
-        ('sync', 'Set people (adding and removing as required)', ),
+        ('sync', 'Set people to list provided', ),
     ]
-    mode = forms.ChoiceField(choices=mode_choices)
+    mode_help = '"Set people to list provided" will add people not listed in the grid above, and remove people not listed in the textbox below. You must always specify at least one username, and thus cannot use "Set people" to remove all people.'
+    mode = forms.ChoiceField(choices=mode_choices, help_text=mode_help, )
     role = forms.ChoiceField(initial='office-access', )
     people = forms.CharField(
         help_text='Usernames of people, one per line.',
