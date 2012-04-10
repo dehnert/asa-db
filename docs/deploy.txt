@@ -8,7 +8,7 @@ Deploying a new version of the ASA database:
     Summarize any interesting changes
 * run locally:
     git checkout stable; git merge master; git checkout master
-    git push
+    git push origin master stable
 * run on server
     git pull --ff-only
     ./manage.py migrate
