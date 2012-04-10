@@ -312,6 +312,112 @@ def manage_officers_sync_role_people(
 
     return kept, kept_not
 
+# Helper for manager_officers view
+def manage_officers_table_update(
+    group,
+    request, context, msgs, changes,
+    people, roles, officers_map, max_new, ):
+
+    context['kept'] = 0
+    context['kept_not'] = 0
+
+    # Fill out moira_accounts with AthenaMoiraAccount objects for relevant people
+    new_people, moira_accounts = manage_officers_load_accounts(max_new, people, request, msgs)
+
+    # Process changes
+    for role in roles:
+        key = "holders.%s" % (role.slug, )
+        new_holders = set()
+        if key in request.POST:
+            new_holders = set(request.POST.getlist(key, ))
+        if len(new_holders) > role.max_count:
+            msgs.append("You selected %d people for %s; only %d are allowed. No changes to %s have been carried out in this update." %
+                (len(new_holders), role.display_name, role.max_count, role.display_name, )
+            )
+        else:
+            kept_delta, kept_not_delta = manage_officers_sync_role_people(
+                group, role, new_holders,   # input arguments
+                msgs, changes,              # output arguments
+                officers_map, people, moira_accounts,   # ~background data
+                new_people, max_new,                    # new people data
+            )
+            context['kept'] += kept_delta
+            context['kept_not'] += kept_not_delta
+
+
+class OfficersBulkManageForm(forms.Form):
+    mode_choices = [
+        ('add', 'Add new people', ),
+        ('remove', 'Remove old people', ),
+        ('sync', 'Set people (adding and removing as required)', ),
+    ]
+    mode = forms.ChoiceField(choices=mode_choices)
+    role = forms.ChoiceField(initial='office-access', )
+    people = forms.CharField(
+        help_text='Usernames of people, one per line.',
+        widget=forms.Textarea,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self._roles = kwargs['roles']
+        del kwargs['roles']
+        super(OfficersBulkManageForm, self).__init__(*args, **kwargs)
+        role_choices = [ (role.slug, role.display_name) for role in self._roles ]
+        self.fields['role'].choices = role_choices
+
+    def get_role(self, ):
+        role_slug = self.cleaned_data['role']
+        for role in self._roles:
+            if role.slug == role_slug:
+                return role
+        raise groups.OfficerRole.DoesNotExist
+
+def manage_officers_bulk_update(
+        group, bulk_form,
+        msgs, changes,
+        officers_map, ):
+
+    # Load parameters
+    mode = bulk_form.cleaned_data['mode']
+    role = bulk_form.get_role()
+    people_lst = bulk_form.cleaned_data['people'].split('\n')
+    people_set = set([p.strip() for p in people_lst])
+    if '' in people_set: people_set.remove('')
+
+    # Fill out moira_accounts
+    moira_accounts = {}
+    for username in people_set:
+        try:
+            moira_accounts[username] = groups.models.AthenaMoiraAccount.active_accounts.get(username=username)
+        except groups.models.AthenaMoiraAccount.DoesNotExist:
+            msgs.append('Athena account "%s" appears not to exist. Changes involving them have been ignored.' % (username, ))
+
+    # Find our target sets
+    cur_holders = [user for user, map_role in officers_map if role == map_role]
+    people = people_set.union(cur_holders)
+    if mode == 'add':
+        new_holders = people
+    elif mode == 'remove':
+        new_holders = people-people_set
+    elif mode == 'sync':
+        new_holders = people_set
+    else:
+        raise NotImplementedError("Unknown operation '%s'" % (mode, ))
+
+    # Make changes
+    if len(new_holders) <= role.max_count:
+        new_people = dict()
+        max_new = 0
+        manage_officers_sync_role_people(
+            group, role, new_holders,
+            msgs, changes,
+            officers_map, people, moira_accounts, new_people, max_new,
+        )
+    else:
+        too_many_tmpl = "You selected %d people for %s; only %d are allowed. No changes have been made in this update."
+        error = too_many_tmpl % (len(new_holders), role.display_name, role.max_count, )
+        msgs.append(error)
+
 @login_required
 def manage_officers(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
@@ -319,46 +425,49 @@ def manage_officers(request, pk, ):
     if not request.user.has_perm('groups.admin_group', group):
         raise PermissionDenied
 
-    max_new = 4
-
     people, roles, name_map, officers_map = manage_officers_load_officers(group)
 
+    max_new = 4
     msgs = []
     changes = []
-    edited = False
-    kept = 0
-    kept_not = 0
-    if request.method == 'POST': # If the form has been submitted
+
+    context = {
+        'group': group,
+        'roles': roles,
+        'people': people,
+        'changes':   changes,
+        'msgs': msgs,
+    }
+
+    if request.method == 'POST' and 'opt-mode' in request.POST: # If the form has been submitted
         edited = True
 
-        # Fill out moira_accounts with AthenaMoiraAccount objects for relevant people
-        new_people, moira_accounts = manage_officers_load_accounts(max_new, people, request, msgs)
-
-        # Process changes
-        for role in roles:
-            key = "holders.%s" % (role.slug, )
-            new_holders = set()
-            if key in request.POST:
-                new_holders = set(request.POST.getlist(key, ))
-            if len(new_holders) > role.max_count:
-                msgs.append("You selected %d people for %s; only %d are allowed. No changes to %s have been carried out in this update." %
-                    (len(new_holders), role.display_name, role.max_count, role.display_name, )
-                )
-            else:
-                kept_delta, kept_not_delta = manage_officers_sync_role_people(
-                    group, role, new_holders,   # input arguments
-                    msgs, changes,              # output arguments
-                    officers_map, people, moira_accounts,   # ~background data
-                    new_people, max_new,                    # new people data
-                )
-                kept += kept_delta
-                kept_not += kept_not_delta
+        # Do the changes
+        if request.POST['opt-mode'] == 'table':
+            context['bulk_form'] = OfficersBulkManageForm(roles=roles, )
+            manage_officers_table_update(
+                group,
+                request, context, msgs, changes,
+                people, roles, officers_map, max_new,
+            )
+        elif request.POST['opt-mode'] == 'bulk':
+            bulk_form = OfficersBulkManageForm(request.POST, roles=roles, )
+            context['bulk_form'] = bulk_form
+            if bulk_form.is_valid():
+                manage_officers_bulk_update(
+                    group, bulk_form,
+                    msgs, changes,
+                    officers_map, )
+        else:
+            raise NotImplementedError("Update mode must be table or bulk, was '%s'" % (request.POST['opt-mode'], ))
 
         # mark as changed and reload the data
         if changes:
             group.set_updater(request.user)
             group.save()
         people, roles, name_map, officers_map = manage_officers_load_officers(group)
+    else:
+        context['bulk_form'] = OfficersBulkManageForm(roles=roles, )
 
     officers_data = []
     for person in people:
@@ -372,18 +481,8 @@ def manage_officers(request, pk, ):
     null_role_list = [(role, False) for role in roles]
     for i in range(max_new):
         officers_data.append((True, "extra.%d" % (i, ), "", null_role_list))
+    context['officers'] = officers_data
 
-    context = {
-        'group': group,
-        'roles': roles,
-        'people': people,
-        'officers': officers_data,
-        'edited': edited,
-        'changes':   changes,
-        'kept': kept,
-        'kept_not': kept_not,
-        'msgs': msgs,
-    }
     return render_to_response('groups/group_change_officers.html', context, context_instance=RequestContext(request), )
 
 

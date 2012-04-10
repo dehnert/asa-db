@@ -51,7 +51,7 @@
 </table>
 {% endif %}
 
-<h2>Update</h2>
+<h2>Option 1: View and update signatories one at a time</h2>
 
 <p>Please note:</p>
 <ul>
@@ -61,6 +61,7 @@
 </ul>
 
 <form enctype="multipart/form-data" method="post" action="">
+<input type='hidden' name='opt-mode' value='table' />
 {% csrf_token %}
 <table class='pretty-table group-change-officers-change'>
 <thead>
@@ -95,5 +96,16 @@
 {%if edited %}
 <p>Untouched were {{kept}} filled people/role combinations and {{kept_not}} unfilled combinations.</p>
 {% endif %}
+
+<h2>Option 2: Bulk update</h2>
+
+<form enctype="multipart/form-data" method="post" action="">
+<input type='hidden' name='opt-mode' value='bulk' />
+{% csrf_token %}
+<table class='pretty-table'>
+{{ bulk_form }}
+<tr><th colspan='2'><input type='submit' value='Update' /></th></tr>
+</table>
+</form>
 
 {% endblock %}
