@@ -103,7 +103,7 @@
 <input type='hidden' name='opt-mode' value='bulk' />
 {% csrf_token %}
 <table class='pretty-table'>
-{{ bulk_form }}
+{{ bulk_form.as_table }}
 <tr><th colspan='2'><input type='submit' value='Update' /></th></tr>
 </table>
 </form>
