@@ -117,6 +117,9 @@ class OfficeHolderAdmin(VersionAdmin):
         'group__name', 'group__abbreviation',
         'start_time', 'end_time',
     )
+    list_filter = [
+        'role',
+    ]
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
 
 
