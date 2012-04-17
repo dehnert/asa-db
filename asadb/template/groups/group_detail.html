@@ -12,6 +12,7 @@
 {% if user.is_authenticated %}
 <p>You are not an admin of this group.</p>
 <p><a href='http://web.mit.edu/asa/database/faq.html#perm'>See FAQ</a> for more info.</p>
+{% if viewpriv %}<p>See also <a href='{% url groups:group-space-access group.pk %}'>space access</a>.</p>{% endif %}
 {% else %}
 <p>No tools available without <a href='{% url login %}?next={% firstof request.path '/' %}'>logging in</a>.</p>
 {% endif %}
