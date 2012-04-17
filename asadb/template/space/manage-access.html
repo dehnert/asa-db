@@ -49,13 +49,13 @@
     <td>
         <table class='pretty-table'>
             <tr>
-                <th>Grant</th>
+                {%if allow_edit%}<th>Grant</th>{%endif%}
                 <th>Name</th>
                 <th>MIT ID</th>
             </tr>
         {% for entry in entries %}
             <tr>
-                <td><input type='checkbox' name='grant[{{assignment.pk}}][{{entry.pk}}]' checked='checked'></td>
+                {%if allow_edit%}<td><input type='checkbox' name='grant[{{assignment.pk}}][{{entry.pk}}]' checked='checked'></td>{% endif %}
                 <td>{{entry.name}}</td>
                 <td>{{entry.card_number}}</td>
             </tr>{% endfor %}
@@ -109,7 +109,7 @@
 <p>No storage lockers assigned.</p>
 {% endif %}
 
-{% if submit_button %}
+{% if allow_edit %}
 <input type='submit' name='submit' value='Update' />
 {% endif %}
 </form>

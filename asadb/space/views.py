@@ -43,16 +43,24 @@ def process_access_changes(request, group, assignment, entries, changes, extras_
 @login_required
 def manage_access(request, pk, ):
     group = get_object_or_404(groups.models.Group, pk=pk)
-    if not request.user.has_perm('groups.admin_group', group):
+
+    priv_view = request.user.has_perm('groups.view_group_private_info', group)
+    priv_admin = request.user.has_perm('groups.admin_group', group)
+    priv_rw = priv_admin
+    if not (priv_view or priv_admin):
         raise PermissionDenied
+
     office_access = group.officers(role='office-access')
     locker_access = group.officers(role='locker-access')
     assignments = space.models.SpaceAssignment.current.filter(group=group)
     office_pairs = []
     locker_pairs = []
     changes = []
-    extras_indices = range(6)
-    if request.method == 'POST':
+    if priv_rw:
+        extras_indices = range(6)
+    else:
+        extras_indices = []
+    if request.method == 'POST' and priv_rw:
         edited = True
     else:
         edited = False
@@ -70,7 +78,7 @@ def manage_access(request, pk, ):
             )
         pair = (assignment, entries)
         pairs.append(pair)
-    submit_button = (len(office_pairs) + len(locker_pairs)) > 0
+    allow_edit = priv_rw and ((len(office_pairs) + len(locker_pairs)) > 0)
     context = {
         'group': group,
         'office': office_access,
@@ -78,7 +86,7 @@ def manage_access(request, pk, ):
         'office_pairs': office_pairs,
         'locker_pairs': locker_pairs,
         'changes': changes,
-        'submit_button': submit_button,
+        'allow_edit': allow_edit,
         'extras_indices': extras_indices,
         'pagename':'group',
     }
