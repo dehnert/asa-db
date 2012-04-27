@@ -10,6 +10,11 @@ import groups.models
 
 EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
 
+class LockType(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField(unique=True, )
+
+
 class Space(models.Model):
     number = models.CharField(max_length=20, unique=True, )
     asa_owned = models.BooleanField(default=True, )
