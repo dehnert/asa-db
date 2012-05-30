@@ -1,5 +1,6 @@
 # Create your views here.
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext, Context, Template
 from django.http import Http404, HttpResponseRedirect, HttpResponse
