@@ -1,5 +1,4 @@
-{% autoescape off %}
-On behalf of the Association of Student Activities (ASA) we welcome:
+{% autoescape off %}On behalf of the Association of Student Activities (ASA) we welcome:
 
    {{group.name}}
 

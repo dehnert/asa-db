@@ -1,5 +1,4 @@
-{% autoescape off %}
-Thank you for submitting the startup form for {{group.name}}. Somebody from the ASA will be in touch to follow up shortly.
+{% autoescape off %}Thank you for submitting the startup form for {{group.name}}. Somebody from the ASA will be in touch to follow up shortly.
 
 Make sure you have five MIT students testify that they will be active members (https://asa.scripts.mit.edu:444/applications/startup/confirm-membership.py) and fill out the anti-hazing form (https://asa.scripts.mit.edu:444/applications/hazing/saynotohazing.py).
 {% endautoescape %}

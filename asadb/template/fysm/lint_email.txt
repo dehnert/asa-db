@@ -1,5 +1,4 @@
-{% autoescape off %}
-Hi officers of {{obj.display_name}},
+{% autoescape off %}Hi officers of {{obj.display_name}},
    Somebody recently submitted a FYSM entry on behalf of your group. We'd like to encourage you to review your entry as it appears on the FYSM website main page (http://asa.scripts.mit.edu/forms/fysm/, any relevant category pages, and in the slide view (http://asa.scripts.mit.edu/forms/{% url fysm-view obj.year obj.pk %}). You can return to http://asa.scripts.mit.edu/forms{% url fysm-manage obj.pk %} to make any changes you wish to make; please do so by the end of Thursday.
 {% if results %}
 We performed an automated scan of your entry to try to detect common problems.

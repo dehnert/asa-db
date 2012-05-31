@@ -1,5 +1,4 @@
-{% autoescape off %}
-Hi SAO,
+{% autoescape off %}Hi SAO,
    The following {{care_about}} signatory updates (of types you care about) have occurred. In addition, since we're sending mail anyway, the following {{num_groups}} groups have updated their information recently.
 
 In total, the following signatory updates by type have occurred:

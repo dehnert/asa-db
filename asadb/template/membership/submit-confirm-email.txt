@@ -1,5 +1,4 @@
-{% autoescape off %}
-{{submitter.first_name}} {{submitter.last_name}} submitted the following membership information for {{group.name}}.
+{% autoescape off %}{{submitter.first_name}} {{submitter.last_name}} submitted the following membership information for {{group.name}}.
 
 Please note, if you are still in the midst of or leading up to your major recruitment period, we encourage you to submit current numbers and a list 
 soon to ensure you have something submitted before the deadline. Then you can submit an updated form later, either before or after the deadline. You don't need 

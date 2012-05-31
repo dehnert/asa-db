@@ -1,5 +1,4 @@
-{% autoescape off %}
-Hi {{group.name}},
+{% autoescape off %}Hi {{group.name}},
     Thank you for updating space access on the ASA database today. We've forwarded the following changes on to CAC:
 
 {% if office_msg %}

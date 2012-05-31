@@ -1,5 +1,4 @@
-{% autoescape off %}
-Hi officers of {{group.name}},
+{% autoescape off %}Hi officers of {{group.name}},
    The user {{submitter.first_name}} {{submitter.last_name}} ({{submitter.username}}) has updated your entry in the ASA's First Year Summer Mailing.
    
 The new information is:

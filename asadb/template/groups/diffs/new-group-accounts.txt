@@ -1,5 +1,4 @@
-{% autoescape off %}
-Dear Athena Accounts,
+{% autoescape off %}Dear Athena Accounts,
 
 A new student activity has been formed.
 

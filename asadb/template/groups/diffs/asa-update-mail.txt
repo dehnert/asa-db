@@ -1,5 +1,4 @@
-{% autoescape off %}
-Hi ASA Exec,
+{% autoescape off %}Hi ASA Exec,
    The following {{num_groups}} groups have updated their information recently. In addition, {{care_about}} signatory updates (of types you care about) have occurred.
 
 In total, the following signatory updates by type have occurred:
