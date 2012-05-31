@@ -35,7 +35,7 @@ class Admin_SpaceAccessListEntry(admin.ModelAdmin):
     )
     list_display_links = list_display
     search_fields = (
-        'group__name', 'group__officers_email',
+        'group__name', 'group__officer_email',
         'space__number',
         'name',
     )
