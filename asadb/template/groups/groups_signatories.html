@@ -32,6 +32,10 @@
         <a href='{% url groups:group-detail group.pk %}'>{{group}}</a> ({{group.group_status}})
         {% if group.abbreviation %}<br>Abbreviation: {{group.abbreviation}}{% endif %}
         {% if user.is_authenticated and group.officer_email %}<br>Officer list: {{group.officer_email}}{% endif %}
+        {% if perms.groups.view_group_private_info %}
+            {% if group.main_account_id %}<br>Main account: {{group.main_account_id}}{% endif %}
+            {% if group.funding_account_id %}<br>Funding account: {{group.funding_account_id}}{% endif %}
+        {% endif %}
     </th>
     {%for holders in role_list%}
     <td>{% if holders %}<ul>{% for person in holders %}<li>{{person}}</li>{%endfor%}</ul>{% endif %}</td>
