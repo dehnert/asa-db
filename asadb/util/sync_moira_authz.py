@@ -15,6 +15,7 @@ if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 import django.contrib.auth.models
+from django.db import transaction
 
 import mit
 import settings
@@ -76,6 +77,7 @@ class DjangoConnector(object):
         remover = lambda user: user.groups.remove(dj_group)
         return self.sync_helper(sys_name, dj_members, adder, remover, )
 
+    @transaction.commit_on_success
     def sync_many(con, what, force_print=False, ):
         changed = False
         results = {}

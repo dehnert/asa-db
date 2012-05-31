@@ -11,10 +11,13 @@ if __name__ == '__main__':
     sys.path.append(proj_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from django.db import transaction
+
 import forms.models
 import groups.models
 
 
+@transaction.commit_on_success
 def revalidate_confirmations():
     confirmations = forms.models.PersonMembershipUpdate.objects.filter(deleted__isnull=True, valid=forms.models.VALID_UNSET)
     accounts = groups.models.AthenaMoiraAccount

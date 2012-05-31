@@ -10,6 +10,8 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from django.db import transaction
+
 import groups.models
 import space.models
 
@@ -39,6 +41,7 @@ def process_row(line):
         )
     assignment.save()
 
+@transaction.commit_on_success
 def process_spaces(reader):
     space.models.SpaceAssignment.objects.filter(end=max_date).update(end=today)
     for line in reader:
