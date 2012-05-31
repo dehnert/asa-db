@@ -297,7 +297,7 @@ def space_access_diffs():
                 'office_msg':group_office_msg,
                 'locker_msgs':group_locker_msgs,
             },
-            subject="[ASA DB] Space access updates",
+            subject="[ASA DB] Space access updates for %s" % (group.name, ),
             to=[group.officer_email],
             cc=group_email_cc,
         ).send()
