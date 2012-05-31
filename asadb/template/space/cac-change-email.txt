@@ -15,6 +15,8 @@ ASA Exec
 {% for group, cac_changes, group_office_changes, group_locker_changes in changed_groups %}
 Group: {{group.name}} (ID#{{group.pk}})
 Officer email: {{group.officer_email}}
+DB entry: https://asa.mit.edu/groups/{{group.pk}}/
+Space access: https://asa.mit.edu/groups/{{group.pk}}/space/
 
 {% if cac_changes %}{{cac_changes}}
 

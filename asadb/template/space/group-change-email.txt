@@ -12,6 +12,8 @@ Locker (shared storage) access:
 {{msg}}{% endfor %}
 {% endif %}
 
+Current access summary: https://asa.mit.edu/groups/{{group.pk}}/space/
+
 If you believe these changes are incorrect in any way, please let us know --- beyond just notifying CAC, we also want to find out why the errors happened.
 
 Thanks,
