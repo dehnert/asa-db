@@ -1,6 +1,6 @@
 {% autoescape off %}
 Hi CAC,
-   The following groups need access updated.  Let us know if there are any issues with these changes. Please let us know when these changes have been made.
+   The following groups need access updated.  Let us know if there are any issues with these changes. You should have been CC'd on emails to each group, notifying them that their changes have been forwarded to you folks. Please reply-all to each of these emails (including both the ASA and the group) as you make the changes or run into difficulties.
 
 Thanks,
 ASA Exec

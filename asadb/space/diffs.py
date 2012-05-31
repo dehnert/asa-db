@@ -288,6 +288,7 @@ def space_access_diffs():
             to=['caclocks@mit.edu'],
             cc=asa_rcpts,
         ).send()
+    group_email_cc = asa_rcpts + ['caclocks@mit.edu']
     for group, cac_msg, group_office_msg, group_locker_msgs in changed_groups:
         util.emails.email_from_template(
             tmpl='space/group-change-email.txt',
@@ -298,7 +299,7 @@ def space_access_diffs():
             },
             subject="[ASA DB] Space access updates",
             to=[group.officer_email],
-            cc=asa_rcpts,
+            cc=group_email_cc,
         ).send()
 
 
