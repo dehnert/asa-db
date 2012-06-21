@@ -6,5 +6,6 @@
     <li><a href='{% url groups:group-manage-officers group.pk %}'>Update people</a></li>
     <li><a href='{% url groups:group-space-access group.pk %}'>Space access</a></li>
     <li><a href='{% url groups:group-manage-history group.pk %}'>History</a></li>
+    {% if user.is_staff %}<li><a href='{% url admin:groups_group_change group.pk %}'>Admin</a></li>{% endif %}
 </ul>
 </div>
