@@ -28,9 +28,9 @@ def select_groups(select, src):
         raise NotImplementedError, "Selecting by %s not supported" % (select, )
     gs = groups.models.Group.objects
     if select == 'id':
-        gs = gs.filter(id__in=vals)
+        gs = gs.filter(id__in=vals).order_by('id')
     else:
-        gs = gs.filter(name__in=vals)
+        gs = gs.filter(name__in=vals).order_by('name')
     return gs
 
 def setup_revision(user, status):
