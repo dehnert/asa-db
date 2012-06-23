@@ -16,9 +16,11 @@ from django.template.loader import get_template
 import groups.models
 
 def get_roles():
+    require_any_role = False
+    require_any_role = True
     roles = [
-        ['president', True, 'No president listed', ],
-        ['treasurer', True, 'No treasurer listed', ],
+        ['president', require_any_role, 'No president listed', ],
+        ['treasurer', require_any_role, 'No treasurer listed', ],
         ['financial', False, 'No financial signatories listed. At minimum, this should generally be your president and treasurer.', ],
         ['reservation', False, 'No reservation signatories listed. Members reserving space for the group should be reservation signatories.', ],
     ]
