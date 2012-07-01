@@ -10,14 +10,24 @@ import groups.models
 
 EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
 
+LOCK_DB_UPDATE_NONE = None
+LOCK_DB_UPDATE_CAC_CARD = 'cac-card'
+lock_db_update_choices = (
+    (LOCK_DB_UPDATE_NONE, "No database management"),
+    (LOCK_DB_UPDATE_CAC_CARD, "CAC-managed card-based access"),
+)
+
 class LockType(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, )
-
+    description = models.TextField()
+    info_addr = models.EmailField(default='asa-exec@mit.edu')
+    db_update = models.CharField(null=True, max_length=20, default=None, choices=lock_db_update_choices)
 
 class Space(models.Model):
     number = models.CharField(max_length=20, unique=True, )
     asa_owned = models.BooleanField(default=True, )
+    lock_type = models.ForeignKey(LockType)
     merged_acl = models.BooleanField(default=False, help_text="Does this room have a single merged ACL, that combines all groups together, or CAC maintain a separate ACL per-group? Generally, the shared storage offices get a merged ACL and everything else doesn't.")
     notes = models.TextField(blank=True, )
 

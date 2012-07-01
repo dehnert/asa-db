@@ -2,14 +2,28 @@ import space.models
 from django.contrib import admin
 from reversion.admin import VersionAdmin
 
+class Admin_LockType(VersionAdmin):
+    list_display = (
+        'id',
+        'name',
+        'slug',
+        'info_addr',
+        'db_update',
+    )
+    list_display_links = ( 'id', 'name', 'slug', )
+    search_fields = ('name', 'slug', 'info_addr', 'db_update', )
+admin.site.register(space.models.LockType, Admin_LockType)
+
 class Admin_Space(VersionAdmin):
     list_display = (
         'id',
         'number',
         'asa_owned',
+        'lock_type',
         'merged_acl',
     )
     list_display_links = ( 'id', 'number', )
+    list_filter = ('lock_type', )
     search_fields = ('number', )
 admin.site.register(space.models.Space, Admin_Space)
 
