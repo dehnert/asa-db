@@ -84,6 +84,7 @@ TEMPLATE_LOADERS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.messages.context_processors.messages",
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
@@ -98,6 +99,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.transaction.TransactionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'reversion.middleware.RevisionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -124,6 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
     'form_utils',
