@@ -155,6 +155,13 @@ class FYSMRequestForm(ModelForm):
             raise ValidationError("""In general, commas in a display name are a mistake and will look bad (group names like "Punctuation Society, MIT" should probably be "Punctuation Society"). If you do want a comma, contact asa-fysm@mit.edu and we'll put it in for you.""")
         return name
 
+    def clean_description(self, ):
+        description = self.cleaned_data['description']
+        length = len(description)
+        if length > 400:
+            raise ValidationError("Descriptions are capped at 400 characters, and this one is %d characters." % (length, ))
+        return description
+
 @login_required
 def fysm_manage(request, group, ):
     year = datetime.date.today().year
