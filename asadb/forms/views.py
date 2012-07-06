@@ -2,6 +2,7 @@ import forms.models
 import groups.models
 import groups.views
 import settings
+import util.emails
 
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.views.generic import list_detail, ListView, DetailView
@@ -177,26 +178,24 @@ def fysm_manage(request, group, ):
                  request.get_host(), view_path)
 
             # Send email
-            tmpl = get_template('fysm/update_email.txt')
-            ctx = Context({
-                'group': group_obj,
-                'fysm': fysm_obj,
-                'view_uri': view_uri,
-                'submitter': request.user,
-                'request': request,
-                'sender': "ASA FYSM team",
-            })
-            body = tmpl.render(ctx)
-            email = EmailMessage(
+            email = util.emails.email_from_template(
+                tmpl='fysm/update_email.txt',
+                context = Context({
+                    'group': group_obj,
+                    'fysm': fysm_obj,
+                    'view_uri': view_uri,
+                    'submitter': request.user,
+                    'request': request,
+                    'sender': "ASA FYSM team",
+                }),
                 subject='FYSM entry for "%s" updated by "%s"' % (
                     group_obj.name,
                     request.user,
                 ),
-                body=body,
-                from_email='asa-fysm@mit.edu',
                 to=[group_obj.officer_email, request.user.email, ],
-                bcc=['asa-fysm-submissions@mit.edu', ]
+                from_email='asa-fysm@mit.edu',
             )
+            email.bcc = ['asa-fysm-submissions@mit.edu']
             email.send()
             return HttpResponseRedirect(reverse('fysm-thanks', args=[fysm_obj.pk],)) # Redirect after POST
 
