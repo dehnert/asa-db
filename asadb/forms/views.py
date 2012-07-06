@@ -16,6 +16,7 @@ from django.core.mail import EmailMessage, mail_admins
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q, Count
 
@@ -147,6 +148,12 @@ class FYSMRequestForm(ModelForm):
             'tags',
             'categories',
         )
+
+    def clean_display_name(self, ):
+        name = self.cleaned_data['display_name']
+        if ',' in name:
+            raise ValidationError("""In general, commas in a display name are a mistake and will look bad (group names like "Punctuation Society, MIT" should probably be "Punctuation Society"). If you do want a comma, contact asa-fysm@mit.edu and we'll put it in for you.""")
+        return name
 
 @login_required
 def fysm_manage(request, group, ):

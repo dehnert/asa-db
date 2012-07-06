@@ -10,7 +10,7 @@ import util.previews
 
 class FYSM(models.Model):
     group = models.ForeignKey(groups.models.Group, db_index=True, )
-    display_name = models.CharField(max_length=50)
+    display_name = models.CharField(max_length=50, help_text="""Form of your name suitable for display (for example, don't end your name with ", MIT")""")
     year = models.IntegerField(db_index=True, )
     website = models.URLField()
     join_url = models.URLField(verbose_name="recruiting URL", help_text="""<p>If you have a specific web page for recruiting new members of your group, you can link to it here. It will be used as the destination for most links about your group (join link on the main listing page and when clicking on the slide, but not the "website" link on the slide page). If you do not have such a page, use your main website's URL.</p>""")
