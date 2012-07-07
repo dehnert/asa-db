@@ -15,7 +15,7 @@ class FYSM(models.Model):
     website = models.URLField()
     join_url = models.URLField(verbose_name="recruiting URL", help_text="""<p>If you have a specific web page for recruiting new members of your group, you can link to it here. It will be used as the destination for most links about your group (join link on the main listing page and when clicking on the slide, but not the "website" link on the slide page). If you do not have such a page, use your main website's URL.</p>""")
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
-    description = models.TextField(help_text="Explain in about three or four sentences what your group does and why incoming freshmen should get involved. Do not use more than 400 characters.")
+    description = models.TextField(help_text="Explain, in no more than 400 characters, what your group does and why incoming students should get involved.")
     logo = models.ImageField(upload_to='fysm/logos', blank=True, )
     slide = models.ImageField(upload_to='fysm/slides', default="", help_text="Upload a slide to display on the group detail page. This will be scaled to be at most 600x600 pixels. We recommend making it exactly that size.")
     tags = models.CharField(max_length=100, blank=True, help_text="Specify some free-form, comma-delimited tags for your group", )
