@@ -1,0 +1,25 @@
+If you have a problem with the database, we want to hear about it. However, we
+get lots of reports like "The database doesn't work for me." or "I get an error
+when I search for a group.". While the latter is certainly better, we're
+probably still going to have more questions for you. Even when *you* think the
+breakage is totally obvious, often we have trouble seeing it. (Sometimes it's
+related to the user account, browser, randomness, or time in weird ways that
+aren't obvious.)
+
+There's some standard follow-up questions that we'll ask, so if you can include
+them in the first place, the reporting process can be much easier.
+
+1) What were you trying to do? (Please include a URL.) If you were filling out
+a form and got an error, tell us what you put in and how you submitted the form.
+
+2) What happened? If you got an error message, copy the *exact text* of the
+error. Also, did the page look like a normal database page, or was it unthemed?
+
+3) What browser (IE, Firefox, Chrome, etc.) and operating system (Windows, Mac,
+etc.) are you using?
+
+4) Were you logged-in when you had the problem? If so, as what username? (Check
+the black box in the top-right corner of the database if you don't know.) If
+not, what does https://web.mit.edu/certificates/test/ tell you?
+
+5) If applicable, for which group were you trying to use the database?
