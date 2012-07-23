@@ -82,6 +82,12 @@ class GroupDetailView(DetailView):
         context = super(GroupDetailView, self).get_context_data(**kwargs)
         group = context['group']
 
+        const_link = None
+        const_url = group.constitution_url
+        if const_url.startswith("http://") or const_url.startswith("https://"):
+            const_link = const_url
+        context['constitution_link'] = const_link
+
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
         context['adminpriv'] = self.request.user.has_perm('groups.admin_group', group)

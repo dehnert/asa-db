@@ -69,7 +69,10 @@
 {% if viewpriv %}
 <tr class='private-info'>
     <th>Constitution</th>
-    <td>{% if group.constitution_url %}<a href='{{group.constitution_url}}'>{{group.constitution_url}}</a>{%else%}<i>not provided</i>{%endif%}</td>
+    <td>{% if group.constitution_url %}
+        {% if constitution_link %}<a href='{{group.constitution_url}}'>{{group.constitution_url}}</a>
+        {%else%}{{group.constitution_url}}{%endif%}
+    {%else%}<i>not provided</i>{%endif%}</td>
 </tr>
 {% endif %}
 <tr>
