@@ -59,7 +59,7 @@ class Admin_PersonMembershipUpdate(admin.ModelAdmin):
         'deleted',
         'valid',
     )
-    list_filter = ('valid', 'groups', )
+    list_filter = ('valid', 'cycle', 'groups', )
     list_display_links = ('pk', 'username', 'cycle', )
     search_fields = ('username', 'groups__officer_email', 'groups__name', 'groups__abbreviation', )
 admin.site.register(forms.models.PersonMembershipUpdate, Admin_PersonMembershipUpdate)
