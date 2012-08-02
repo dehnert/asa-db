@@ -68,11 +68,11 @@ class StaticMailCallback(DiffCallback):
     def handle_group(self, before, after, before_fields, after_fields, ):
         after_revision = after.revision
         update = "Group: %s (ID #%d)\n" % (after_fields['name'], after_fields['id'], )
-        update += "At %s by %s (and possibly other people or times)\n" % (
+        update += "  At %s by %s (and possibly other people or times)\n" % (
             after_revision.date_created, after_revision.user, )
         for field in self.fields:
             if before_fields[field] != after_fields[field]:
-                update += "%s: '%s' -> '%s'\n" % (
+                update += '  %18s: %12s -> %12s\n' % (
                     field, before_fields[field], after_fields[field], )
         self.updates.append(update)
 
