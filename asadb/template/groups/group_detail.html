@@ -3,7 +3,9 @@
 {% block title %}{{group.name}}{% endblock %}
 {% block content %}
 
+<div class='group-detail-page group-status-{{group.group_status.slug}}'>
 <h1>{{group.name}}{% if group.abbreviation %} ({{group.abbreviation}}){%endif%}</h1>
+{% if group.group_status.slug != "active" %}<p class='group-status'><em>{{group.group_status.name}}</em></p>{%endif%}
 
 {% if adminpriv %}{% include "groups/group_tools.part.html" %}
 {% else %}
@@ -149,5 +151,6 @@
 <p><a href='{% url admin:groups_groupnote_add %}?author={{user.username|urlencode}}&amp;group={{group.pk}}'>Add note</a></p>
 {% endif %}
 
+</div>
 {% endblock %}
 

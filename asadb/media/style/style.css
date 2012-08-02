@@ -225,17 +225,25 @@ tr.private-info th:before
     content: "\2020  ";
 }
 
-tr.group-status-active.group-active-True td.group-status
+.group-detail-page h1 + p.group-status { margin-top: -1em; margin-bottom: 2em; }
+.group-detail-page.group-status-active h1          { color: black; }
+.group-detail-page.group-status-applying h1        { color: red; }
+.group-detail-page.group-status-nge h1             { color: yellow; }
+.group-detail-page.group-status-provisional h1     { color: yellow; }
+.group-detail-page.group-status-derecognized h1    { color: red; }
+.group-detail-page.group-status-suspended h1       { color: yellow; }
+
+.group-list-page tr.group-status-active.group-active-True td.group-status
 {
     background-color: green;
     color: black;
 }
-tr.group-active-True td.group-status
+.group-list-page tr.group-active-True td.group-status
 {
     background-color: yellow;
     color: black;
 }
-tr.group-active-False td.group-status
+.group-list-page tr.group-active-False td.group-status
 {
     background-color: red;
     color: black;
