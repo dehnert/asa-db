@@ -213,6 +213,8 @@ class UpdateOfficerListCallback(DiffCallback):
         self.add.append(after_fields['officer_email'])
 
 
+# Note: this isn't actually used (but might have some utility in telling what
+# should be diffed)
 diff_fields = {
     'name' :            [ update_asa_exec, ],
     'abbreviation' :    [ update_asa_exec, ],
@@ -220,10 +222,19 @@ diff_fields = {
     'constitution_url': [ update_asa_exec, update_constitution_archive ],
 }
 
+# This is used, OTOH
 def build_callbacks():
     callbacks = []
     callbacks.append(StaticMailCallback(
-        fields=['name', 'abbreviation', 'officer_email', 'constitution_url', ],
+        fields=[
+            'name', 'abbreviation',
+            'officer_email', 'group_email', 'athena_locker',
+            'website_url', 'constitution_url',
+            'activity_category', 'group_class', 'group_status', 'group_funding',
+            'advisor_name',
+            'num_undergrads', 'num_grads', 'num_community', 'num_other',
+            'main_account_id', 'funding_account_id',
+        ],
         address='asa-admin@mit.edu',
         template='groups/diffs/asa-update-mail.txt',
         signatories=['president', 'treasurer', 'financial', 'group-admin', 'temp-admin', ]
