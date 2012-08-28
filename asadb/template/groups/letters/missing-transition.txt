@@ -1,12 +1,27 @@
 {% autoescape off %}
-Hello again,
-   As a reminder, you have only a couple of days (until Wed 3/21) to update
-the ASA group database before we suspend your group for delinquency. Please
-be sure to visit https://asa.mit.edu:444/groups/{{group.pk}}/. If your
-president is not available to make this update, please email us
-(asa-exec@mit.edu) ASAP, CC'ing your officers' list of record (check the To
-line of this email). If you have other questions/difficulties, please don't
-hesitate to contact asa-exec@mit.edu.
+Hello again {{group.name}},
+    We contacted you several months ago (see below) informing you that we
+would be suspending you if you did not complete your ASA Database entry
+(https://asa.mit.edu/groups/{{group.pk}}). Since your entry has not yet been
+updated, we have done so.
+
+In particular, the following problems apply:
+{% for prob in problems %}* {{prob}}
+{% endfor %}
+
+In order to get your group unsuspended, you should first update your database
+entry (again, at https://asa.mit.edu/groups/{{group.pk}}). Once that is
+complete, you should contact us at asa-exec@mit.edu to request un-suspension.
+If you have not done so within a month (that is, by August 31) we may move on
+to derecognition.
+
+Note that, at the moment, only your President (and, if set,
+Treasurer and Group Admins) can update the database. If they are not
+available, please contact asa-exec@mit.edu promptly, copying your president
+and officers' list, and we can give additional people permission.
+
+If you have other questions/difficulties, please don't hesitate to contact
+asa-exec@mit.edu.
 
 Thanks,
 ASA Executive Board
@@ -34,10 +49,8 @@ fields need to be updated is posted at: http://web.mit.edu/asa/database/.
 
 Your group's page can be found at https://asa.mit.edu/groups/{{group.pk}}/.
 
-
 In particular, we believe that your group's entry has the following issues:
-{% for prob in problems %}* {{prob}}
-{% endfor %}
+[...]
 
 We appreciate your cooperation in fixing these quickly. If you believe
 this message to be in error, please be sure to contact us at

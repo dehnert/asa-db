@@ -76,7 +76,7 @@ def check_groups(old_groups_data):
             })
             body = tmpl.render(ctx)
             email = mail.EmailMessage(
-                subject="[ASA] Missing information for %s" % (group.name, ),
+                subject="[ASA] [Action Required] Missing information for %s" % (group.name, ),
                 body=body,
                 from_email='asa-exec@mit.edu',
                 to=to,
