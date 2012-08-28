@@ -31,7 +31,7 @@ def get_roles():
 
 def check_group(group, roles, ):
     problems = []
-    fail = False
+    fail = True
     if group.officer_email or group.description:
         pass
     else:
@@ -41,6 +41,7 @@ def check_group(group, roles, ):
         if len(group.officers(role=role)) == 0:
             problems.append(msg)
             if cause_fail: fail = True
+    problems.append("You have not contacted us about being unsuspended (or should do so again)")
     return fail, problems
 
 def canonicalize_email(email):
@@ -61,7 +62,7 @@ def check_groups(old_groups_data):
     officers = officers_lists(open(old_groups_data, 'r'))
     tmpl = get_template('groups/letters/missing-transition.txt')
     emails = []
-    for group in groups.models.Group.active_groups.all():
+    for group in groups.models.Group.objects.filter(group_status__slug='suspended'):
         fail, problems = check_group(group, roles, )
         if fail:
             try:

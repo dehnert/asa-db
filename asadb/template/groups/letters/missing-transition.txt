@@ -1,4 +1,33 @@
 {% autoescape off %}
+Hello {{group.name}},
+
+    We're following up on our email from July 31st (see below). You still
+appear to be suspended, and are consequently currently scheduled for
+derecognition *this Friday*.
+
+The following problems (at least) exist with your database entry:
+{% for prob in problems %}* {{prob}}
+{% endfor %}
+
+Please contact us (asa-exec@mit.edu) by this Friday (August 31st) if you wish
+to remain active.  We prefer that you fix the listed problems first, but can
+give you some extra time if needed.
+
+You can view your ASA Database entry at
+https://asa.mit.edu/groups/{{group.pk}}, and the listed president, treasurer,
+and group admin can update it. If they are not available, please contact
+asa-exec@mit.edu promptly, copying your president and officers' list.
+
+If you have any questions or concerns, please contact us at asa-exec@mit.edu.
+Make sure to include your group and database URL (just replying to this email
+is fine).
+
+Thanks,
+Alex Dehnert
+ASA Executive Board
+
+===
+
 Hello again {{group.name}},
     We contacted you several months ago (see below) informing you that we
 would be suspending you if you did not complete your ASA Database entry
@@ -6,8 +35,7 @@ would be suspending you if you did not complete your ASA Database entry
 updated, we have done so.
 
 In particular, the following problems apply:
-{% for prob in problems %}* {{prob}}
-{% endfor %}
+[...]
 
 In order to get your group unsuspended, you should first update your database
 entry (again, at https://asa.mit.edu/groups/{{group.pk}}). Once that is
