@@ -70,11 +70,18 @@ def webstat():
     for code, gs in codes.items():
         print "%4d\t%s" % (len(gs), code, )
 
+def list_constitutions():
+    constitutions = groups.models.GroupConstitution.objects.all()
+    for const in constitutions:
+        if const.dest_file: print const.dest_file
+
 if __name__ == '__main__':
     if len(sys.argv) == 1 or sys.argv[1] == "gather":
         additions, changed = gather_constitutions()
         update_repo(additions, changed)
     elif sys.argv[1] == "webstat":
         webstat()
+    elif sys.argv[1] == "list":
+        list_constitutions()
     else:
         raise NotImplementedError
