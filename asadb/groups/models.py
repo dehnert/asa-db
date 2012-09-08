@@ -182,18 +182,44 @@ class GroupConstitution(models.Model):
 
     def compute_filename(self, tmp_path, headers, ):
         slug = self.group.slug()
+        known_ext = set([
+            '.pdf',
+            '.ps',
+            '.doc',
+            '.rtf',
+            '.html',
+            '.tex',
+            '.txt'
+        ])
         basename, fileext = os.path.splitext(tmp_path)
         if fileext:
             ext = fileext
         else:
             if headers.getheader('Content-Type'):
-                mimeext = mimetypes.guess_extension(headers.gettype())
-                if mimeext:
-                    ext = mimeext
+                extensions = mimetypes.guess_all_extensions(headers.gettype())
+                for extension in extensions:
+                    if extension in known_ext:
+                        ext = extension
+                        break
                 else:
-                    ext = ''
+                    if len(extensions) > 0:
+                        ext = extensions[0]
+                    else:
+                        ext = ''
             else:
                 ext = ''
+
+        extmap = {
+            '.htm': '.html',
+            '.php': '.html',
+            '.PS':  '.ps',
+            '.shtml':   '.html',
+            '.text':    '.txt',
+        }
+        # we have no real handling of no extension, .old, and .ksh
+        if ext in extmap: ext = extmap[ext]
+        if ext not in known_ext: ext = ext + '.unknown'
+
         return "%04d-%s%s" % (self.group.pk, slug, ext, )
 
     def path_from_filename(self, filename):
