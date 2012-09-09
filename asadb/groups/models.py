@@ -144,10 +144,10 @@ class GroupConstitution(models.Model):
                 tmp_path, headers = url_opener.retrieve(url)
             except IOError:
                 self.failure_date = now
-                self.save()
-                success = False
                 self.status_msg = "retrieval failed"
                 self.failure_reason = self.status_msg
+                self.save()
+                success = False
                 return (success, self.status_msg, old_success, )
             if tmp_path == url:
                 mover = shutil.copyfile
@@ -178,6 +178,7 @@ class GroupConstitution(models.Model):
             success = False
             self.status_msg = "no url"
             self.failure_reason = self.status_msg
+            self.save()
         return (success, self.status_msg, old_success, )
 
     def compute_filename(self, tmp_path, headers, ):
@@ -232,7 +233,7 @@ class GroupConstitution(models.Model):
             try:
                 stream = urllib.urlopen(self.source_url)
                 return stream.getcode()
-            except:
+            except IOError:
                 return "IOError"
         else:
             return "no-url"
