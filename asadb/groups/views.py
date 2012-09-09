@@ -1026,7 +1026,7 @@ class GroupHistoryView(ListView):
 
 def downloaded_constitutions(request, ):
     constitutions = groups.models.GroupConstitution.objects
-    constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group')
+    constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group', 'group__group_status', )
     failures = collections.defaultdict(list)
     successes = collections.defaultdict(list)
     for const in constitutions:
