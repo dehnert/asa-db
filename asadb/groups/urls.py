@@ -22,6 +22,7 @@ groups_patterns = patterns('',
     url(r'^reporting/$', groups.views.reporting, name='reporting', ),
     url(r'^recent_changes/$', groups.views.GroupHistoryView.as_view(), name='manage-history', ),
     url(r'^signatories/$', groups.views.view_signatories, name='signatories', ),
+    url(r'^constitutions/$', groups.views.downloaded_constitutions, name='constitutions', ),
     url(r'^account_lookup/$', groups.views.account_lookup, name='account-lookup', ),
 )
 

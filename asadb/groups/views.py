@@ -1024,6 +1024,23 @@ class GroupHistoryView(ListView):
         return context
 
 
+def downloaded_constitutions(request, ):
+    constitutions = groups.models.GroupConstitution.objects
+    constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group')
+    failures = collections.defaultdict(list)
+    successes = collections.defaultdict(list)
+    for const in constitutions:
+        if const.failure_reason:
+            failures[const.failure_reason].append(const)
+        else:
+            successes[const.status_msg].append(const)
+    context = {}
+    context['failures'] = failures.items()
+    context['successes'] = successes.items()
+    context['pagename'] = 'groups'
+    return render_to_response('groups/groups_constitutions.html', context, context_instance=RequestContext(request), )
+
+
 
 #######################
 # REPORTING COMPONENT #

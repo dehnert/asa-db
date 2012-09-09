@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Constitutions{% endblock %}
+{% block content %}
+
+<h1>Constitutions</h1>
+
+<h2>Failures</h2>
+{% for reason, consts in failures %}
+{% include "groups/groups_constitutions.reason.html" %}
+{% endfor %}
+
+<h2>Successes</h2>
+{% for reason, consts in successes %}
+{% include "groups/groups_constitutions.reason.html" %}
+{% endfor %}
+
+{% endblock %}
