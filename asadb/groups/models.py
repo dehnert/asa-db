@@ -133,6 +133,23 @@ class GroupConstitution(models.Model):
     status_msg = models.CharField(max_length=20)
     failure_reason = models.CharField(max_length=100, blank=True, default="")
 
+    def record_failure(self, msg):
+        now = datetime.datetime.now()
+        self.failure_date = now
+        self.status_msg = msg
+        self.failure_reason = self.status_msg
+        self.save()
+
+    def record_success(self, msg, updated):
+        now = datetime.datetime.now()
+        if updated:
+            self.last_update = now
+        self.status_msg = msg
+        self.last_download = now
+        self.failure_date = None
+        self.failure_reason = ""
+        self.save()
+
     def update(self, ):
         url = self.source_url
         success = None
@@ -140,45 +157,46 @@ class GroupConstitution(models.Model):
         if url:
             url_opener = urllib.FancyURLopener()
             now = datetime.datetime.now()
+
+            # Fetch the file
             try:
                 tmp_path, headers = url_opener.retrieve(url)
             except IOError:
-                self.failure_date = now
-                self.status_msg = "retrieval failed"
-                self.failure_reason = self.status_msg
-                self.save()
+                self.record_failure("retrieval failed (IOError)")
                 success = False
                 return (success, self.status_msg, old_success, )
+
+            # At this point, failures are our fault's, not the group's.
+            # We can let any errors bubble all the way up, rather than
+            # trying to catch and neatly record them
+            success = True
+
+            # Find a destination, and how to put it there
+            save_filename = self.compute_filename(tmp_path, headers, )
+            dest_path = self.path_from_filename(self.dest_file)
             if tmp_path == url:
                 mover = shutil.copyfile
             else:
                 mover = shutil.move
-            save_filename = self.compute_filename(tmp_path, headers, )
-            dest_path = self.path_from_filename(self.dest_file)
+
+            # Process the update
             if save_filename != self.dest_file:
                 if self.dest_file: os.remove(dest_path)
                 mover(tmp_path, self.path_from_filename(save_filename))
                 self.dest_file = save_filename
-                self.last_update = now
-                self.status_msg = "new path"
+                self.record_success("new path", updated=True)
             else:
                 if filecmp.cmp(tmp_path, dest_path, shallow=False, ):
-                    self.status_msg = "no change"
+                    self.record_success("no change", updated=False)
                 else:
                     # changed
                     mover(tmp_path, dest_path)
-                    self.last_update = now
-                    self.status_msg = "updated in place"
-            self.last_download = now
-            self.failure_date = None
-            self.failure_reason = ""
-            self.save()
-            success = True
+                    self.record_success("updated in place", updated=True)
+
         else:
+            self.record_failure("no url")
             success = False
-            self.status_msg = "no url"
-            self.failure_reason = self.status_msg
-            self.save()
+
         return (success, self.status_msg, old_success, )
 
     def compute_filename(self, tmp_path, headers, ):
