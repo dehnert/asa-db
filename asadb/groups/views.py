@@ -1035,8 +1035,8 @@ def downloaded_constitutions(request, ):
         else:
             successes[const.status_msg].append(const)
     context = {}
-    context['failures'] = failures.items()
-    context['successes'] = successes.items()
+    context['failures']  = sorted(failures.items(),  key=lambda x: x[0])
+    context['successes'] = sorted(successes.items(), key=lambda x: x[0])
     context['pagename'] = 'groups'
     return render_to_response('groups/groups_constitutions.html', context, context_instance=RequestContext(request), )
 
