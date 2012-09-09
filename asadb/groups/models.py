@@ -9,7 +9,9 @@ import mimetypes
 import os
 import re
 import shutil
+import urlparse
 import urllib
+import urllib2
 
 import settings
 
@@ -135,7 +137,8 @@ class GroupConstitution(models.Model):
 
     def record_failure(self, msg):
         now = datetime.datetime.now()
-        self.failure_date = now
+        if not self.failure_date:
+            self.failure_date = now
         self.status_msg = msg
         self.failure_reason = self.status_msg
         self.save()
@@ -155,42 +158,63 @@ class GroupConstitution(models.Model):
         success = None
         old_success = (self.failure_date is None)
         if url:
-            url_opener = urllib.FancyURLopener()
-            now = datetime.datetime.now()
-
             # Fetch the file
+            error_msg = None
             try:
-                tmp_path, headers = url_opener.retrieve(url)
-            except IOError:
-                self.record_failure("retrieval failed (IOError)")
-                success = False
-                return (success, self.status_msg, old_success, )
+                new_mimetype = None
+                if url.startswith('/afs/') or url.startswith('/mit/'):
+                    new_fp = open(url, 'rb')
+                else:
+                    new_fp = urllib2.urlopen(url)
+                    if new_fp.info().getheader('Content-Type'):
+                        new_mimetype = new_fp.info().gettype()
 
-            # At this point, failures are our fault's, not the group's.
+                new_data = new_fp.read()
+                new_fp.close()
+            except urllib2.HTTPError, e:
+                error_msg = "HTTPError: %s %s" % (e.code, e.msg)
+            except urllib2.URLError, e:
+                error_msg = "URLError: %s" % (e.reason)
+            except IOError:
+                error_msg = "IOError"
+            except ValueError, e:
+                if e.args[0].startswith('unknown url type'):
+                    error_msg = "unknown url type"
+                else:
+                    raise
+            if error_msg:
+                self.record_failure(error_msg)
+                return (False, self.status_msg, old_success, )
+
+            # At this point, failures are our fault, not the group's.
             # We can let any errors bubble all the way up, rather than
             # trying to catch and neatly record them
             success = True
 
             # Find a destination, and how to put it there
-            save_filename = self.compute_filename(tmp_path, headers, )
-            dest_path = self.path_from_filename(self.dest_file)
-            if tmp_path == url:
-                mover = shutil.copyfile
-            else:
-                mover = shutil.move
+            old_path = self.path_from_filename(self.dest_file)
+            new_filename = self.compute_filename(url, new_mimetype, )
 
             # Process the update
-            if save_filename != self.dest_file:
-                if self.dest_file: os.remove(dest_path)
-                mover(tmp_path, self.path_from_filename(save_filename))
-                self.dest_file = save_filename
+            if new_filename != self.dest_file: # new filename
+                if self.dest_file:
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                    else:
+                        print "Warning: %s doesn't exist, but is referenced by dest_file" % (old_path, )
+                self.dest_file = new_filename
+                new_path = self.path_from_filename(new_filename)
+                with open(new_path, 'wb') as fp:
+                    fp.write(new_data)
                 self.record_success("new path", updated=True)
-            else:
-                if filecmp.cmp(tmp_path, dest_path, shallow=False, ):
+            else: # old filename
+                with open(old_path, 'rb') as old_fp:
+                    old_data = old_fp.read()
+                if old_data == new_data: # unchanged
                     self.record_success("no change", updated=False)
-                else:
-                    # changed
-                    mover(tmp_path, dest_path)
+                else: # changed
+                    with open(old_path, 'wb') as fp:
+                        fp.write(new_data)
                     self.record_success("updated in place", updated=True)
 
         else:
@@ -199,7 +223,7 @@ class GroupConstitution(models.Model):
 
         return (success, self.status_msg, old_success, )
 
-    def compute_filename(self, tmp_path, headers, ):
+    def compute_filename(self, url, mimetype):
         slug = self.group.slug()
         known_ext = set([
             '.pdf',
@@ -210,12 +234,17 @@ class GroupConstitution(models.Model):
             '.tex',
             '.txt'
         ])
-        basename, fileext = os.path.splitext(tmp_path)
+
+        # This probably breaks on Windows. But that's probably true of
+        # everything...
+        path = urlparse.urlparse(url).path
+        basename, fileext = os.path.splitext(path)
+
         if fileext:
             ext = fileext
         else:
-            if headers.getheader('Content-Type'):
-                extensions = mimetypes.guess_all_extensions(headers.gettype())
+            if mimetype:
+                extensions = mimetypes.guess_all_extensions(mimetype)
                 for extension in extensions:
                     if extension in known_ext:
                         ext = extension

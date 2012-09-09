@@ -12,6 +12,7 @@ import collections
 import datetime
 import subprocess
 
+import django.contrib.auth.models
 import reversion
 
 import groups.models
