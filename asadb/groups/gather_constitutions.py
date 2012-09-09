@@ -12,6 +12,8 @@ import collections
 import datetime
 import subprocess
 
+import reversion
+
 import groups.models
 
 def gather_constitutions():
@@ -77,7 +79,12 @@ def list_constitutions():
 
 if __name__ == '__main__':
     if len(sys.argv) == 1 or sys.argv[1] == "gather":
-        additions, changed = gather_constitutions()
+        with reversion.create_revision():
+            additions, changed = gather_constitutions()
+            importer = django.contrib.auth.models.User.objects.get(username='gather-constitutions@SYSTEM', )
+            reversion.set_user(importer)
+            reversion.set_comment("gather constitutions")
+
         update_repo(additions, changed)
     elif sys.argv[1] == "webstat":
         webstat()
