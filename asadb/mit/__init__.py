@@ -9,6 +9,8 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import URLValidator, ValidationError
+
 import settings
 
 def zephyr(msg, clas='message', instance='log', rcpt='nobody',):
@@ -17,6 +19,15 @@ def zephyr(msg, clas='message', instance='log', rcpt='nobody',):
         stdin=subprocess.PIPE, stdout=subprocess.PIPE
     )
     proc.communicate(msg)
+
+def UrlOrAfsValidator(value):
+    if value.startswith('/mit/') or value.startswith('/afs/'):
+        return
+    else:
+        try:
+            URLValidator()(value)
+        except ValidationError:
+            raise ValidationError('Provide a valid URL or AFS path')
 
 class ScriptsRemoteUserMiddleware(RemoteUserMiddleware):
     header = 'SSL_CLIENT_S_DN_Email'

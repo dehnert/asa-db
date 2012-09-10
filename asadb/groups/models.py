@@ -15,6 +15,8 @@ import urllib2
 
 import settings
 
+import mit
+
 # Create your models here.
 
 class ActiveGroupManager(models.Manager):
@@ -32,7 +34,7 @@ class Group(models.Model):
     group_status = models.ForeignKey('GroupStatus', db_index=True, )
     group_funding = models.ForeignKey('GroupFunding', null=True, blank=True, db_index=True, )
     website_url = models.URLField()
-    constitution_url = models.CharField(max_length=200, blank=True)
+    constitution_url = models.CharField(max_length=200, blank=True, validators=[mit.UrlOrAfsValidator])
     meeting_times = models.TextField(blank=True)
     advisor_name = models.CharField(max_length=100, blank=True)
     num_undergrads = models.IntegerField(null=True, blank=True, )
