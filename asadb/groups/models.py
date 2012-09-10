@@ -10,9 +10,13 @@ import mimetypes
 import os
 import re
 import shutil
+import urlparse
 import urllib
+import urllib2
 
 import settings
+
+import mit
 
 # Create your models here.
 
@@ -33,7 +37,7 @@ class Group(models.Model):
     group_status = models.ForeignKey('GroupStatus', db_index=True, )
     group_funding = models.ForeignKey('GroupFunding', null=True, blank=True, db_index=True, )
     website_url = models.URLField()
-    constitution_url = models.CharField(max_length=200, blank=True)
+    constitution_url = models.CharField(max_length=200, blank=True, validators=[mit.UrlOrAfsValidator])
     meeting_times = models.TextField(blank=True)
     advisor_name = models.CharField(max_length=100, blank=True)
     num_undergrads = models.IntegerField(null=True, blank=True, )
@@ -136,67 +140,139 @@ class GroupConstitution(models.Model):
     status_msg = models.CharField(max_length=20)
     failure_reason = models.CharField(max_length=100, blank=True, default="")
 
+    def record_failure(self, msg):
+        now = datetime.datetime.now()
+        if not self.failure_date:
+            self.failure_date = now
+        self.status_msg = msg
+        self.failure_reason = self.status_msg
+        self.save()
+
+    def record_success(self, msg, updated):
+        now = datetime.datetime.now()
+        if updated:
+            self.last_update = now
+        self.status_msg = msg
+        self.last_download = now
+        self.failure_date = None
+        self.failure_reason = ""
+        self.save()
+
     def update(self, ):
         url = self.source_url
         success = None
         old_success = (self.failure_date is None)
         if url:
-            url_opener = urllib.FancyURLopener()
-            now = datetime.datetime.now()
+            # Fetch the file
+            error_msg = None
             try:
-                tmp_path, headers = url_opener.retrieve(url)
-            except IOError:
-                self.failure_date = now
-                self.save()
-                success = False
-                self.status_msg = "retrieval failed"
-                self.failure_reason = self.status_msg
-                return (success, self.status_msg, old_success, )
-            if tmp_path == url:
-                mover = shutil.copyfile
-            else:
-                mover = shutil.move
-            save_filename = self.compute_filename(tmp_path, headers, )
-            dest_path = self.path_from_filename(self.dest_file)
-            if save_filename != self.dest_file:
-                if self.dest_file: os.remove(dest_path)
-                mover(tmp_path, self.path_from_filename(save_filename))
-                self.dest_file = save_filename
-                self.last_update = now
-                self.status_msg = "new path"
-            else:
-                if filecmp.cmp(tmp_path, dest_path, shallow=False, ):
-                    self.status_msg = "no change"
+                new_mimetype = None
+                if url.startswith('/afs/') or url.startswith('/mit/'):
+                    new_fp = open(url, 'rb')
                 else:
-                    # changed
-                    mover(tmp_path, dest_path)
-                    self.last_update = now
-                    self.status_msg = "updated in place"
-            self.last_download = now
-            self.failure_date = None
-            self.failure_reason = ""
-            self.save()
+                    new_fp = urllib2.urlopen(url)
+                    if new_fp.info().getheader('Content-Type'):
+                        new_mimetype = new_fp.info().gettype()
+
+                new_data = new_fp.read()
+                new_fp.close()
+            except urllib2.HTTPError, e:
+                error_msg = "HTTPError: %s %s" % (e.code, e.msg)
+            except urllib2.URLError, e:
+                error_msg = "URLError: %s" % (e.reason)
+            except IOError:
+                error_msg = "IOError"
+            except ValueError, e:
+                if e.args[0].startswith('unknown url type'):
+                    error_msg = "unknown url type"
+                else:
+                    raise
+            if error_msg:
+                self.record_failure(error_msg)
+                return (False, self.status_msg, old_success, )
+
+            # At this point, failures are our fault, not the group's.
+            # We can let any errors bubble all the way up, rather than
+            # trying to catch and neatly record them
             success = True
+
+            # Find a destination, and how to put it there
+            old_path = self.path_from_filename(self.dest_file)
+            new_filename = self.compute_filename(url, new_mimetype, )
+
+            # Process the update
+            if new_filename != self.dest_file: # new filename
+                if self.dest_file:
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                    else:
+                        print "Warning: %s doesn't exist, but is referenced by dest_file" % (old_path, )
+                self.dest_file = new_filename
+                new_path = self.path_from_filename(new_filename)
+                with open(new_path, 'wb') as fp:
+                    fp.write(new_data)
+                self.record_success("new path", updated=True)
+            else: # old filename
+                with open(old_path, 'rb') as old_fp:
+                    old_data = old_fp.read()
+                if old_data == new_data: # unchanged
+                    self.record_success("no change", updated=False)
+                else: # changed
+                    with open(old_path, 'wb') as fp:
+                        fp.write(new_data)
+                    self.record_success("updated in place", updated=True)
+
         else:
+            self.record_failure("no url")
             success = False
-            self.status_msg = "no url"
-            self.failure_reason = self.status_msg
+
         return (success, self.status_msg, old_success, )
 
-    def compute_filename(self, tmp_path, headers, ):
+    def compute_filename(self, url, mimetype):
         slug = self.group.slug()
-        basename, fileext = os.path.splitext(tmp_path)
+        known_ext = set([
+            '.pdf',
+            '.ps',
+            '.doc',
+            '.rtf',
+            '.html',
+            '.tex',
+            '.txt'
+        ])
+
+        # This probably breaks on Windows. But that's probably true of
+        # everything...
+        path = urlparse.urlparse(url).path
+        basename, fileext = os.path.splitext(path)
+
         if fileext:
             ext = fileext
         else:
-            if headers.getheader('Content-Type'):
-                mimeext = mimetypes.guess_extension(headers.gettype())
-                if mimeext:
-                    ext = mimeext
+            if mimetype:
+                extensions = mimetypes.guess_all_extensions(mimetype)
+                for extension in extensions:
+                    if extension in known_ext:
+                        ext = extension
+                        break
                 else:
-                    ext = ''
+                    if len(extensions) > 0:
+                        ext = extensions[0]
+                    else:
+                        ext = ''
             else:
                 ext = ''
+
+        extmap = {
+            '.htm': '.html',
+            '.php': '.html',
+            '.PS':  '.ps',
+            '.shtml':   '.html',
+            '.text':    '.txt',
+        }
+        # we have no real handling of no extension, .old, and .ksh
+        if ext in extmap: ext = extmap[ext]
+        if ext not in known_ext: ext = ext + '.unknown'
+
         return "%04d-%s%s" % (self.group.pk, slug, ext, )
 
     def path_from_filename(self, filename):
@@ -209,7 +285,7 @@ class GroupConstitution(models.Model):
             try:
                 stream = urllib.urlopen(self.source_url)
                 return stream.getcode()
-            except:
+            except IOError:
                 return "IOError"
         else:
             return "no-url"

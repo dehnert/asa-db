@@ -1,0 +1,23 @@
+<h3>{{reason}} (total: {{consts|length}})</h3>
+<table class='pretty-table'>
+<thead>
+<tr>
+    <th>ID</th>
+    <th>Group Name</th>
+    <th>ID</th>
+    <th>Constitution URL</th>
+    <th>Failure Date</th>
+</tr>
+</thead>
+<tbody>
+{% for const in consts %}
+<tr>
+    <th>{{const.group.pk}}</th>
+    <td><a href='{% url groups:group-detail const.group.pk %}'>{{const.group.name}}</a>{% if const.group.group_status.slug != "active" %} ({{const.group.group_status}}){%endif%}</td>
+    <td>{{const.pk}}</td>
+    <td>{{const.source_url}}</td>
+    <td>{{const.failure_date}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>

@@ -127,7 +127,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             StaticWidget.replace_widget(formfield, value)
         for field in self.force_required:
             self.fields[field].required = True
-        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitution URL, if you have one.<br>If your constitution is currently an AFS path, you can either use the corresponding web.mit.edu (e.g., http://web.mit.edu/locker/path/to/const.html) or stuff.mit.edu path, or just use http://asa.mit.edu/const/afs/your-afs-path.<br>If you don't currently know where your constitution is, put http://mit.edu/asa/start/constitution-req.html.<br>(In either of these last two cases, we'll get in touch with you later about putting something better in.)")
+        self.fields['constitution_url'].help_text = mark_safe("""Please put your current constitution URL or AFS path.<br>If you don't currently know where your constitution is, put "http://mit.edu/asa/start/constitution-req.html" and draft a constitution soon.""")
 
     exec_only_fields = [
         'name', 'abbreviation',
@@ -1022,6 +1022,23 @@ class GroupHistoryView(ListView):
         else:
             context['title'] = "Recent Changes"
         return context
+
+
+def downloaded_constitutions(request, ):
+    constitutions = groups.models.GroupConstitution.objects
+    constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group', 'group__group_status', )
+    failures = collections.defaultdict(list)
+    successes = collections.defaultdict(list)
+    for const in constitutions:
+        if const.failure_reason:
+            failures[const.failure_reason].append(const)
+        else:
+            successes[const.status_msg].append(const)
+    context = {}
+    context['failures']  = sorted(failures.items(),  key=lambda x: x[0])
+    context['successes'] = sorted(successes.items(), key=lambda x: x[0])
+    context['pagename'] = 'groups'
+    return render_to_response('groups/groups_constitutions.html', context, context_instance=RequestContext(request), )
 
 
 

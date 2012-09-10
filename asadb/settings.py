@@ -67,6 +67,8 @@ MEDIA_ROOT = SITE_ROOT + '/media/'
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = SITE_WEB_PATH + '/media/'
 
+STATIC_URL = SITE_WEB_PATH + '/static/'
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
