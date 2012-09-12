@@ -137,7 +137,7 @@ class GroupConstitution(models.Model):
     last_update = models.DateTimeField(help_text='Last time when this constitution actually changed.')
     last_download = models.DateTimeField(help_text='Last time we downloaded this constitution to see if it had changed.')
     failure_date = models.DateTimeField(null=True, blank=True, default=None, help_text='Time this URL started failing to download. (Null if currently working.)')
-    status_msg = models.CharField(max_length=20)
+    status_msg = models.CharField(max_length=100)
     failure_reason = models.CharField(max_length=100, blank=True, default="")
 
     def record_failure(self, msg):
