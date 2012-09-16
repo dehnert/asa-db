@@ -5,6 +5,30 @@
 
 <h1>Constitutions</h1>
 
+<h2>Summary</h2>
+
+<table class='pretty-table'>
+<tr>
+    <th>Type</th>
+    <th>Message</th>
+    <th>Count</th>
+</tr>
+{% for reason, consts in failures %}
+<tr>
+    <th>Failure</th>
+    <td><a href='#{{reason|slugify}}'>{{reason}}</a></td>
+    <td>{{consts|length}}</td>
+</tr>
+{% endfor %}
+{% for reason, consts in successes %}
+<tr>
+    <th>Successes</th>
+    <td><a href='#{{reason|slugify}}'>{{reason}}</a></td>
+    <td>{{consts|length}}</td>
+</tr>
+{% endfor %}
+</table>
+
 <h2>Failures</h2>
 {% for reason, consts in failures %}
 {% include "groups/groups_constitutions.reason.html" %}
