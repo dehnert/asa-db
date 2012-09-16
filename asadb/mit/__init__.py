@@ -1,3 +1,4 @@
+import os
 import subprocess
 import ldap
 import ldap.filter
@@ -28,6 +29,32 @@ def UrlOrAfsValidator(value):
             URLValidator()(value)
         except ValidationError:
             raise ValidationError('Provide a valid URL or AFS path')
+
+def pag_check_helper(fn, args, aklog=False, ccname=None, **kwargs):
+    if 'executable' in kwargs:
+        raise ValueError('"executable" not supported with pag_check_*')
+
+    env = None
+    if 'env' in kwargs:
+        env = kwargs['env']
+        del kwargs['env']
+    if ccname:
+        if env is not None:
+            env = dict(env)
+        else:
+            env = dict(os.environ)
+        env['KRB5CCNAME'] = ccname
+
+    pagsh_cmd = 'exec "$@"'
+    if aklog: pagsh_cmd = "aklog && " + pagsh_cmd
+    args = ['pagsh', '-c', pagsh_cmd, 'exec', ] + args
+
+    return fn(args, env=env, **kwargs)
+
+def pag_check_call(args, **kwargs):
+    return pag_check_helper(subprocess.check_call, args, **kwargs)
+def pag_check_output(args, **kwargs):
+    return pag_check_helper(subprocess.check_output, args, **kwargs)
 
 class ScriptsRemoteUserMiddleware(RemoteUserMiddleware):
     header = 'SSL_CLIENT_S_DN_Email'
