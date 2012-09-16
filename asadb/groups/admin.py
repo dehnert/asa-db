@@ -3,6 +3,7 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 
 class GroupAdmin(VersionAdmin):
+    list_max_show_all = 1000
     list_display = (
         'id',
         'name',

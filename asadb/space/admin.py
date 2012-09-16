@@ -14,6 +14,7 @@ class Admin_Space(VersionAdmin):
 admin.site.register(space.models.Space, Admin_Space)
 
 class Admin_SpaceAssignment(admin.ModelAdmin):
+    list_max_show_all = 500
     list_display = (
         'group',
         'space',
