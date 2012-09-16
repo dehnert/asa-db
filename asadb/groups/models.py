@@ -10,6 +10,7 @@ import mimetypes
 import os
 import re
 import shutil
+import subprocess
 import urlparse
 import urllib
 import urllib2
@@ -168,18 +169,24 @@ class GroupConstitution(models.Model):
             try:
                 new_mimetype = None
                 if url.startswith('/afs/') or url.startswith('/mit/'):
-                    new_fp = open(url, 'rb')
+                    new_data = mit.pag_check_output(['/bin/cat', url], aklog=False, stderr=subprocess.STDOUT)
                 else:
                     new_fp = urllib2.urlopen(url)
                     if new_fp.info().getheader('Content-Type'):
                         new_mimetype = new_fp.info().gettype()
-
-                new_data = new_fp.read()
-                new_fp.close()
+                    new_data = new_fp.read()
+                    new_fp.close()
             except urllib2.HTTPError, e:
                 error_msg = "HTTPError: %s %s" % (e.code, e.msg)
             except urllib2.URLError, e:
                 error_msg = "URLError: %s" % (e.reason)
+            except subprocess.CalledProcessError, e:
+                results = e.output.split(": ")
+                if len(results) == 3 and results[0] == '/bin/cat' and results[1] == url:
+                    cat_err = results[2]
+                else:
+                    cat_err = e.output
+                error_msg = "CalledProcessError %d: %s" % (e.returncode, cat_err)
             except IOError:
                 error_msg = "IOError"
             except ValueError, e:
