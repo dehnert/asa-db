@@ -24,10 +24,6 @@ import settings
 import util.emails
 import util.mailman
 
-update_asa_exec = 'asa-exec@mit.edu'
-update_funding_board = 'asa-db@mit.edu'
-update_constitution_archive = 'asa-db@mit.edu'
-
 if settings.PRODUCTION_DEPLOYMENT:
     asa_all_groups_list = util.mailman.MailmanList('asa-official')
 else:
@@ -213,8 +209,12 @@ class UpdateOfficerListCallback(DiffCallback):
         self.add.append(after_fields['officer_email'])
 
 
-# Note: this isn't actually used (but might have some utility in telling what
+# Note: these aren't actually used (but might have some utility in telling what
 # should be diffed)
+update_asa_exec = 'asa-exec@mit.edu'
+update_funding_board = 'asa-db@mit.edu'
+update_constitution_archive = 'asa-db@mit.edu'
+
 diff_fields = {
     'name' :            [ update_asa_exec, ],
     'abbreviation' :    [ update_asa_exec, ],
