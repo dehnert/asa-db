@@ -206,7 +206,10 @@ class UpdateOfficerListCallback(DiffCallback):
                 self.notes.append("%s: Not removing '%s' (to add '%s') because at least one is blank." % (name, before_addr, after_addr, ))
 
     def new_group(self, after, after_fields, ):
-        self.add.append(after_fields['officer_email'])
+        name = after_fields['name']
+        email = after_fields['officer_email']
+        self.add.append(email)
+        self.notes.append("%s: New group (email %s)" % (name, email, ))
 
 
 # Note: these aren't actually used (but might have some utility in telling what
@@ -267,6 +270,7 @@ def diff_objects(objs, since, callbacks, stats, ):
         # This object being passed in means that some version changed it.
         after_versions = all_versions.filter(revision__in=new_revs).select_related('revision__user')
         after = after_versions[0]
+        after_fields = after.field_dict
 
         if len(before_versions) > 0 or len(after_versions) > 1:
             if len(before_versions) > 0:
@@ -284,7 +288,6 @@ def diff_objects(objs, since, callbacks, stats, ):
             #    after.type, after.field_dict,
             #)
             before_fields = before.field_dict
-            after_fields = after.field_dict
             for callback in callbacks:
                 callback.handle_group(before, after, before_fields, after_fields)
         else:
@@ -294,6 +297,7 @@ def diff_objects(objs, since, callbacks, stats, ):
             # more changes, so this is group startups + NGEs, not actually
             # normal new groups)
             stats['new_group'] += 1
+            callback.new_group(after, after_fields)
 
 def diff_signatories(since, now, callbacks):
     # First: still around; then added recently
