@@ -235,7 +235,7 @@ def build_callbacks():
             'num_undergrads', 'num_grads', 'num_community', 'num_other',
             'main_account_id', 'funding_account_id',
         ],
-        address='asa-admin@mit.edu',
+        address='asa-internal@mit.edu',     # some of these fields aren't public
         template='groups/diffs/asa-update-mail.txt',
         signatories=['president', 'treasurer', 'financial', 'group-admin', 'temp-admin', ]
     ))
