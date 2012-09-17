@@ -22,12 +22,14 @@ import reversion.models
 import groups.models
 import settings
 import util.emails
-import util.mailman
+import util.mailinglist
 
 if settings.PRODUCTION_DEPLOYMENT:
-    asa_all_groups_list = util.mailman.MailmanList('asa-official')
+    asa_all_groups_list = util.mailinglist.MailmanList('asa-official')
+    finboard_groups_list = util.mailinglist.MoiraList('finboard-groups-only')
 else:
-    asa_all_groups_list = util.mailman.MailmanList('asa-test-mailman')
+    asa_all_groups_list = util.mailinglist.MailmanList('asa-test-mailman')
+    finboard_groups_list = util.mailinglist.MoiraList('asa-test-moira')
 
 class DiffCallback(object):
     def start_run(self, since, now, ):
@@ -166,6 +168,12 @@ class StaticMailCallback(DiffCallback):
 
 
 class UpdateOfficerListCallback(DiffCallback):
+    def __init__(self, listobj, include_pred=None):
+        self.listobj = listobj
+        if not include_pred:
+            include_pred = lambda version, fields: True
+        self.include_pred = include_pred
+
     def start_run(self, since, now, ):
         self.add = []
         self.delete = []
@@ -173,12 +181,13 @@ class UpdateOfficerListCallback(DiffCallback):
 
     def end_run(self, ):
         if self.add or self.delete:
-            errors = asa_all_groups_list.change_members(self.add, self.delete)
-            subject = "asa-official updater"
+            errors = self.listobj.change_members(self.add, self.delete)
+            listname = self.listobj.name
+            subject = "[ASA DB] %s updater" % (listname, )
             if errors:
                 subject = "ERROR: " + subject
             context = {
-                'listname': asa_all_groups_list.name,
+                'listname': listname,
                 'add': self.add,
                 'delete': self.delete,
                 'errors': errors,
@@ -190,26 +199,56 @@ class UpdateOfficerListCallback(DiffCallback):
                 to=['asa-db@mit.edu'],
             ).send()
 
+    def update_changes(self, change_list, phase_name, name, addr, include, force_note=False, ):
+        """
+        Given an address and whether to process this item, update a list as appropriate and supply appropriate diagnostic notes.
+        """
+
+        note = None
+        if addr and include:
+            change_list.append((name, addr, ))
+            if force_note:
+                note = "email address is %s" % (addr, )
+        elif not include:
+            note = "doesn't pass predicate"
+        elif not addr:
+            note = "address is blank"
+        else:
+            note = "Something weird happened while adding (addr='%s', include=%s)" % (addr, include)
+        if note:
+            self.notes.append("%8s: %s: %s" % (phase_name, name, note, ))
+
     def handle_group(self, before, after, before_fields, after_fields, ):
+        before_include = self.include_pred(before, before_fields)
+        after_include = self.include_pred(after, after_fields)
         before_addr = before_fields['officer_email']
         after_addr  = after_fields['officer_email']
-        if before_addr != after_addr:
+
+        # check if a change is appropriate
+        effective_before_addr = before_addr if before_include else None
+        effective_after_addr = after_addr if after_include else None
+
+        if effective_before_addr != effective_after_addr:
             name = after_fields['name']
-            if after_addr:
-                self.add.append((name, after_addr, ))
-            else:
-                self.notes.append("%s: Not adding because address is blank." % (name, ))
-            if before_addr and after_addr:
-                # Don't remove an address unless there's a replacement
-                self.delete.append(before_fields['officer_email'])
-            else:
-                self.notes.append("%s: Not removing '%s' (to add '%s') because at least one is blank." % (name, before_addr, after_addr, ))
+            self.update_changes(self.delete, "Delete", name, before_addr, before_include)
+            self.update_changes(self.add, "Add", name, after_addr, after_include)
 
     def new_group(self, after, after_fields, ):
         name = after_fields['name']
         email = after_fields['officer_email']
-        self.add.append(email)
-        self.notes.append("%s: New group (email %s)" % (name, email, ))
+        include = self.include_pred(after, after_fields)
+        self.update_changes(self.add, "New", name, email, include, force_note=True)
+
+
+def funded_pred(funding_slug):
+    classes = groups.models.GroupClass.objects
+    class_pk = classes.get(slug='mit-funded').pk
+    fundings = groups.models.GroupFunding.objects
+    fund_pk = fundings.get(slug=funding_slug).pk
+    print "funded_pred: %s %s" % (class_pk, fund_pk)
+    def pred(version, fields):
+        return fields['group_class'] == class_pk and fields['group_funding'] == fund_pk
+    return pred
 
 
 # Note: these aren't actually used (but might have some utility in telling what
@@ -250,7 +289,11 @@ def build_callbacks():
     )
     sao_callback.care_about_groups = False
     callbacks.append(sao_callback)
-    callbacks.append(UpdateOfficerListCallback())
+    callbacks.append(UpdateOfficerListCallback(asa_all_groups_list))
+    callbacks.append(UpdateOfficerListCallback(
+        listobj=finboard_groups_list,
+        include_pred=funded_pred('undergrad'),
+    ))
     return callbacks
 
 def recent_groups(since):
