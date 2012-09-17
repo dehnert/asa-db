@@ -1,5 +1,7 @@
 import subprocess
 
+import mit
+
 
 class MailingList(object):
     def __init__(self, name, ):
@@ -14,6 +16,10 @@ class MailingList(object):
 
 BLANCHE_PATH="/usr/bin/blanche"
 class MoiraList(MailingList):
+    def __init__(self, *args, **kwargs):
+        super(MoiraList, self).__init__(*args, **kwargs)
+        self.ccache = mit.kinit()
+
     def list_members(self, ):
         raise NotImplementedError
         res = subprocess.Popen(
@@ -54,6 +60,7 @@ class MoiraList(MailingList):
         # If that becomes an issue, it should probably check the number of
         # changes, and use -al / -dl with a tempfile as appropriate.
 
+        env = dict(KRB5CCNAME=self.ccache.name)
         cmdline = [BLANCHE_PATH, self.name, ]
 
         for member in add_members:
@@ -71,6 +78,7 @@ class MoiraList(MailingList):
             cmdline,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
+            env=env,
         )
         stdout, stderr = res.communicate()
         return stdout

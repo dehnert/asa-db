@@ -1,5 +1,6 @@
 import os
 import subprocess
+import tempfile
 import ldap
 import ldap.filter
 
@@ -12,7 +13,7 @@ from django.contrib import auth
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import URLValidator, ValidationError
 
-import settings
+from django.conf import settings
 
 def zephyr(msg, clas='message', instance='log', rcpt='nobody',):
     proc = subprocess.Popen(
@@ -55,6 +56,18 @@ def pag_check_call(args, **kwargs):
     return pag_check_helper(subprocess.check_call, args, **kwargs)
 def pag_check_output(args, **kwargs):
     return pag_check_helper(subprocess.check_output, args, **kwargs)
+
+def kinit(keytab=None, principal=None, autodelete=True, ):
+    if not keytab:
+        keytab = settings.KRB_KEYTAB
+    if not principal:
+        principal = settings.KRB_PRINCIPAL
+    assert keytab and principal
+    fd = tempfile.NamedTemporaryFile(mode='rb', prefix="krb5cc_djmit_", delete=autodelete, )
+    env = dict(KRB5CCNAME=fd.name)
+    kinit_cmd = ['kinit', '-k', '-t', keytab, principal, ]
+    subprocess.check_call(kinit_cmd, env=env)
+    return fd
 
 class ScriptsRemoteUserMiddleware(RemoteUserMiddleware):
     header = 'SSL_CLIENT_S_DN_Email'
