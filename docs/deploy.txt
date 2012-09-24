@@ -7,8 +7,11 @@ Deploying a new version of the ASA database:
     git log stable..master > /tmp/commits.txt       # attach
     Summarize any interesting changes
 * run locally:
-    git checkout stable; git merge master; git checkout master
-    git push origin master stable
+    * One of the below, depending on whether you've developed beyond what's approved for release:
+        git checkout stable && git merge master && git checkout master
+        git checkout stable && git merge --ff-only stage && git checkout stage && git merge --ff-only master && git checkout master
+    * Push to the server
+        git push origin master stage stable
 * run on server
     git pull --ff-only
     ./manage.py migrate
