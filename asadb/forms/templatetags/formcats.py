@@ -6,7 +6,6 @@ register = template.Library()
 
 @register.filter
 def format_categories(fysm, year):
-    print year
     snippets = ["<a href='%s'>%s</a>" % (
         reverse('fysm', args=[year, category.slug, ]),
         category,
