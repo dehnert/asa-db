@@ -1,3 +1,4 @@
+{% load groupdisplay %}
 <h3><a name='{{reason|slugify}}'></a>{{reason}} (total: {{consts|length}})</h3>
 <table class='pretty-table'>
 <thead>
@@ -15,7 +16,7 @@
     <th>{{const.group.pk}}</th>
     <td><a href='{% url groups:group-detail const.group.pk %}'>{{const.group.name}}</a>{% if const.group.group_status.slug != "active" %} ({{const.group.group_status}}){%endif%}</td>
     <td>{{const.pk}}</td>
-    <td>{{const.source_url}}</td>
+    <td>{{const.source_url|format_constitution_link}}</td>
     <td>{{const.failure_date}}</td>
 </tr>
 {% endfor %}
