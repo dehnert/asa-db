@@ -162,8 +162,8 @@ class GroupMembershipUpdate(models.Model):
     num_undergrads = models.IntegerField()
     num_grads = models.IntegerField()
     num_alum = models.IntegerField()
-    num_other_affiliate = models.IntegerField()
-    num_other = models.IntegerField()
+    num_other_affiliate = models.IntegerField(verbose_name="Num other MIT affiliates")
+    num_other = models.IntegerField(verbose_name="Num non-MIT")
 
     membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
 
