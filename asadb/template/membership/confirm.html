@@ -20,11 +20,27 @@ and have at least five members.
 
 <h3>Groups you currently say you're a member of:</h3>
 {% if member_groups %}
-<ul>
+<table class='pretty-table'>
+<thead>
+<tr>
+    <th>Group</th>
+    <th></th>
+</tr>
+</thead>
+<tbody>
 {% for group in member_groups %}
-    <li>{{group}}</li>
+<tr>
+    <th>{{group}}</th>
+    <td><form action="" method="post">
+        <input type="hidden" name="group" value="{{group.pk}}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="remove">
+        <input type="submit" name="add-remove" value="Remove">
+    </form></td>
+</tr>
 {% endfor %}
-</ul>
+</tbody>
+</table>
 {% else %}
 <p>You are not currently indicating membership in any groups.</p>
 {% endif %}
