@@ -398,17 +398,17 @@ def person_membership_update(request, ):
         if request.POST['action'] == 'remove':
             if group in update_obj.groups.all():
                 update_obj.groups.remove(group)
-                message = "You have been successfully removed from %s." % (group, )
+                message = "You have successfully unconfirmed membership in %s." % (group, )
             else:
-                message = "Sorry, but you're not in %s." % (group, )
+                message = "Removal failed because you had not confirmed membership in %s." % (group, )
                 message_type = "warn"
         elif request.POST['action'] == 'add':
             if group in update_obj.groups.all():
-                message = "Sorry, but you're already in %s." % (group, )
+                message = "Membership in %s already confirmed." % (group, )
                 message_type = "warn"
             else:
                 update_obj.groups.add(group)
-                message = "You have been successfully added to %s." % (group, )
+                message = "You have successfully confirmed membership in %s." % (group, )
         else:
             message = "Uh, somehow you tried to do something besides adding and removing..."
             message_type = "alert"
