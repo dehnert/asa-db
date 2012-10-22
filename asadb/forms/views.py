@@ -520,4 +520,4 @@ def group_confirmation_issues(request, ):
             ])
 
 
-    return HttpResponse(buf.getvalue(), mimetype='text/plain', )
+    return HttpResponse(buf.getvalue(), mimetype='text/csv', )
