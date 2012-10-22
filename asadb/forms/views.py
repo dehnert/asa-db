@@ -170,7 +170,6 @@ def fysm_manage(request, group, ):
     initial = {}
     try:
         fysm_obj = forms.models.FYSM.objects.get(group=group_obj, year=year, )
-        print "Successfully found", fysm_obj.__dict__
     except forms.models.FYSM.DoesNotExist:
         fysm_obj = forms.models.FYSM()
         fysm_obj.group = group_obj
@@ -367,7 +366,6 @@ def person_membership_update(request, ):
             cycle=cycle,
         )
         selected_groups = update_obj.groups.all()
-        print "Got update"
     except forms.models.PersonMembershipUpdate.DoesNotExist:
         update_obj = forms.models.PersonMembershipUpdate()
         update_obj.update_time  = datetime.datetime.now()
@@ -396,7 +394,6 @@ def person_membership_update(request, ):
         if office_holder.group.pk not in role_groups:
             role_groups[office_holder.group.pk] = (office_holder.group, set())
         role_groups[office_holder.group.pk][1].add(office_holder.role.display_name)
-    print role_groups
 
     # Find groups the user searched for
     filterset = groups.views.GroupFilter(request.GET, membership_update_qs)
