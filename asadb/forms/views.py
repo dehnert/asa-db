@@ -403,6 +403,10 @@ def person_membership_update(request, ):
     message = ""
     message_type = "info"
 
+    if update_obj.valid <= forms.models.VALID_UNSET:
+        message = "You are not listed as a student. While you're welcome to confirm your membership in groups anyway, you will not count towards the five student member requirement. If you are a student, please contact asa-exec so that we can correct our records."
+        message_type = "warn"
+
     # Handle the single group add/remove forms
     # * removing previously confirmed groups
     # * add/remove groups that list the user in a role
