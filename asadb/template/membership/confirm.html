@@ -45,7 +45,38 @@ and have at least five members.
 <p>You are not currently indicating membership in any groups.</p>
 {% endif %}
 
-<h3>Option 1: Add or remove groups one at a time</h3>
+<h3>Option 1: Add or remove groups that list a role for you</h3>
+
+<table class='pretty-table'>
+<thead>
+<tr>
+    <th>Group</th>
+    <th>Roles</th>
+    <th>Add/Remove</th>
+</tr>
+</thead>
+<tbody>
+{% for group, roles in role_groups.values %}
+<tr>
+    <th>{{group}}</th>
+    <td>{{roles|join:", "}}</td>
+    <td><form action="" method="post">
+        <input type="hidden" name="group" value="{{group.pk}}">
+        {% csrf_token %}
+        {% if group in member_groups %}
+        <input type="hidden" name="action" value="remove">
+        <input type="submit" name="add-remove" value="Remove">
+        {% else %}
+        <input type="hidden" name="action" value="add">
+        <input type="submit" name="add-remove" value="Add">
+        {% endif %}
+    </form></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<h3>Option 2: Add or remove groups by searching</h3>
 
 <form action="" method="get">
     <table class='pretty-table'>
@@ -95,7 +126,7 @@ and have at least five members.
 {% endif %}
 
 
-<h3>Option 2: Select all your groups at once</h3>
+<h3>Option 3: Select all your groups at once</h3>
 
 <p>Below is a list of all recognized groups. You can go through picking out the groups you are a member of. However, you should be careful not to deselect any groups (unless you aren't a member of them, of course).</p>
 

@@ -373,6 +373,7 @@ def person_membership_update(request, ):
         update_obj.cycle = cycle
         selected_groups = []
 
+    # Determine whether the submitter is a student or not
     accounts = groups.models.AthenaMoiraAccount
     try:
         person = accounts.active_accounts.get(username=request.user.username)
@@ -386,6 +387,16 @@ def person_membership_update(request, ):
 
     update_obj.save()
 
+    # Find groups that list a role for the user
+    office_holders = groups.models.OfficeHolder.current_holders.filter(person=request.user.username)
+    role_groups = {}
+    for office_holder in office_holders:
+        if office_holder.group.pk not in role_groups:
+            role_groups[office_holder.group.pk] = (office_holder.group, set())
+        role_groups[office_holder.group.pk][1].add(office_holder.role.display_name)
+    print role_groups
+
+    # Find groups the user searched for
     filterset = groups.views.GroupFilter(request.GET, membership_update_qs)
     filtered_groups = filterset.qs.all()
     show_filtered_groups = ('search' in request.GET)
@@ -424,6 +435,7 @@ def person_membership_update(request, ):
         form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, ) # An unbound form
 
     context = {
+        'role_groups':role_groups,
         'form':form,
         'filter':filterset,
         'show_filtered_groups':show_filtered_groups,
