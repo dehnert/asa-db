@@ -358,6 +358,8 @@ def person_membership_update(request, ):
     initial = {
     }
     cycle = forms.models.GroupConfirmationCycle.latest()
+
+    # Initialize/find the PersonMembershipUpdate for this user
     try:
         update_obj = forms.models.PersonMembershipUpdate.objects.get(
             username=request.user.username,
@@ -404,6 +406,10 @@ def person_membership_update(request, ):
     message = ""
     message_type = "info"
 
+    # Handle the single group add/remove forms
+    # * removing previously confirmed groups
+    # * add/remove groups that list the user in a role
+    # * add/remove groups the user searched for
     if request.method == 'POST' and 'add-remove' in request.POST:
         group = groups.models.Group.objects.get(id=request.POST['group'])
         if request.POST['action'] == 'remove':
@@ -424,16 +430,16 @@ def person_membership_update(request, ):
             message = "Uh, somehow you tried to do something besides adding and removing..."
             message_type = "alert"
 
-    if request.method == 'POST' and 'list' in request.POST: # If the form has been submitted...
-        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
-
-        if form.is_valid(): # All validation rules pass
+    # Handle the big list of groups
+    if request.method == 'POST' and 'list' in request.POST:
+        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj)
+        if form.is_valid():
             request_obj = form.save()
             message = "Update saved"
-
     else:
-        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, ) # An unbound form
+        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, )
 
+    # Render the page
     context = {
         'role_groups':role_groups,
         'form':form,
