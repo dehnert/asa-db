@@ -500,11 +500,21 @@ def group_confirmation_issues(request, ):
     for group_update in group_updates:
         group = group_update.group
         num_confirms = len(people_confirmations.filter(groups=group))
+        problems = []
+
         if num_confirms < 5:
+            problems.append("confirmations")
+
+        num_students = group_update.num_undergrads + group_update.num_grads
+        num_other = group_update.num_alum + group_update.num_other_affiliate + group_update.num_other
+        if num_students < num_other:
+            problems.append("50%")
+
+        for problem in problems:
             output.writerow([
                 group.id,
                 group.name,
-                'confirmations',
+                problem,
                 num_confirms,
                 group.officer_email,
             ])
