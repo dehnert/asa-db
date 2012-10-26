@@ -247,7 +247,6 @@ def funded_pred(funding_slug):
     class_pk = classes.get(slug='mit-funded').pk
     fundings = groups.models.GroupFunding.objects
     fund_pk = fundings.get(slug=funding_slug).pk
-    print "funded_pred: %s %s" % (class_pk, fund_pk)
     def pred(version, fields):
         return fields['group_class'] == class_pk and fields['group_funding'] == fund_pk
     return pred
