@@ -144,7 +144,7 @@ class SpaceAccessListEntry(models.Model):
     end = models.DateTimeField(default=END_NEVER, db_index=True, )
 
     name = models.CharField(max_length=50)
-    card_number = models.CharField(max_length=20)
+    card_number = models.CharField(max_length=20, verbose_name="MIT ID", help_text="MIT ID number (as printed on, eg, the relevant ID card)")
 
     objects = models.Manager()
     current = CurrentACLEntryManager()
