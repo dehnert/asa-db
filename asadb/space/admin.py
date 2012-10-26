@@ -18,6 +18,7 @@ class Admin_SpaceAssignment(admin.ModelAdmin):
     list_display = (
         'group',
         'space',
+        'locker_num',
         'start',
         'end',
     )
