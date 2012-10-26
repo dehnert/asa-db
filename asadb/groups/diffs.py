@@ -26,9 +26,11 @@ import util.mailinglist
 
 if settings.PRODUCTION_DEPLOYMENT:
     asa_all_groups_list = util.mailinglist.MailmanList('asa-official')
+    gsc_fb_list = util.mailinglist.MailmanList('gsc-fb-')
     finboard_groups_list = util.mailinglist.MoiraList('finboard-groups-only')
 else:
     asa_all_groups_list = util.mailinglist.MailmanList('asa-test-mailman')
+    gsc_fb_list = util.mailinglist.MailmanList('asa-test-mailman')
     finboard_groups_list = util.mailinglist.MoiraList('asa-test-moira')
 
 class DiffCallback(object):
@@ -293,6 +295,10 @@ def build_callbacks():
     callbacks.append(UpdateOfficerListCallback(
         listobj=finboard_groups_list,
         include_pred=funded_pred('undergrad'),
+    ))
+    callbacks.append(UpdateOfficerListCallback(
+        listobj=gsc_fb_list,
+        include_pred=funded_pred('grad'),
     ))
     return callbacks
 
