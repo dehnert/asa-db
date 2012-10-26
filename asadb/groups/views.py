@@ -620,6 +620,7 @@ class GroupCreateStartupForm(GroupCreateForm):
         self.fields['activity_category'].required = True
         self.fields['constitution_url'].required = True
         self.fields['constitution_url'].help_text = "Please put a copy of your finalized constitution on a publicly-accessible website (e.g. your group's, or your own, Public folder), and link to it in the box above."
+        self.fields['athena_locker'].required = True
 
     class Meta(GroupCreateForm.Meta):
         fieldsets = filter(
