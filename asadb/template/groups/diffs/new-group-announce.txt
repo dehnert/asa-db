@@ -4,10 +4,25 @@
 
 to the MIT community!
 
-The last step to finalize the group recognition is for you to enter the
+The last step to finalize the group recognition is for you to finish entering the
 group's complete information into the ASA Database:
 
       http://web.mit.edu/asa/www/asa-db.shtml
+
+Your group's entry is at:
+
+      http://asa.mit.edu/{% url groups:group-detail group.pk %}
+
+You should make sure to do the following:
+* add membership numbers
+* put your constitution somewhere permanent (preferably in your group's Athena
+  locker, {{group.athena_locker}}) and list the new location in the DB
+
+You may also want to:
+* add your website and meeting times so potential members can find
+  you more easily
+* add any group officers who should be able to reserve rooms, update your DB
+  entry, etc.
 
 Note that at this point only the President and Treasurer of the group
 ({{officer_emails|join:", "}})
