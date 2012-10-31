@@ -14,7 +14,9 @@ class Migration(DataMigration):
         groupadmin_user, created = user_manager.get_or_create(username='importer@SYSTEM', defaults={
             'password':'SYSTEM',
         })
-        call_command('createinitialrevisions', 'groups', )
+        reversion_models = ['Group', 'GroupStartup', 'GroupNote', 'OfficerRole', 'OfficeHolder', ]
+        reversion_model_specs = [ 'groups.%s' % (model, ) for model in reversion_models ]
+        call_command('createinitialrevisions', *reversion_model_specs)
 
 
     def backwards(self, orm):
