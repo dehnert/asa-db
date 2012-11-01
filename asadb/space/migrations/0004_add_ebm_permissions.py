@@ -36,6 +36,10 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+
+        # See https://groups.google.com/forum/?fromgroups=#!topic/south-users/ZmmUyrrRoYU or groups:0006_add_group_perms
+        db.send_pending_create_signals()
+
         self.modify_perms(orm, lambda perms, perm: perms.add(perm))
 
 
