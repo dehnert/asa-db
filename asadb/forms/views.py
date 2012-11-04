@@ -270,8 +270,6 @@ class Form_GroupMembershipUpdate(ModelForm):
 
 @login_required
 def group_membership_update(request, ):
-    year = datetime.date.today().year
-
     initial = {
     }
     update_obj = forms.models.GroupMembershipUpdate()
@@ -352,8 +350,6 @@ class Form_PersonMembershipUpdate(ModelForm):
 
 @login_required
 def person_membership_update(request, ):
-    year = datetime.date.today().year
-
     initial = {
     }
     cycle = forms.models.GroupConfirmationCycle.latest()
