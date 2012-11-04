@@ -105,6 +105,12 @@ class Group(models.Model):
     def __str__(self, ):
         return self.name
 
+    @staticmethod
+    def involved_groups(username):
+        current_officers = OfficeHolder.current_holders.filter(person=username)
+        users_groups = Group.objects.filter(officeholder__in=current_officers).distinct()
+        return users_groups
+
     @classmethod
     def reporting_prefetch(cls, ):
         return set(['activity_category', 'group_class', 'group_status', 'group_funding'])

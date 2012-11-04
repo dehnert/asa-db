@@ -45,7 +45,12 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
-    url(r'^membership/update/$', forms.views.group_membership_update, name='membership-update', ),
+    url(
+        regex=r'^membership/update/$',
+        view=forms.views.group_membership_update_select_group,
+        name='membership-update-cycle',
+    ),
+    url(r'^membership/update/(?P<cycle_slug>[\w-]+)/(?P<pk>\d+)/$', forms.views.group_membership_update, name='membership-update-group', ),
     url(r'^membership/confirm/$', forms.views.person_membership_update, name='membership-confirm', ),
     url(
         r'^membership/thanks/$',

@@ -37,6 +37,7 @@ class Admin_GroupMembershipUpdate(admin.ModelAdmin):
     list_display = (
         'pk',
         'group',
+        'cycle',
         'update_time',
         'updater_name',
         'updater_title',
@@ -46,6 +47,7 @@ class Admin_GroupMembershipUpdate(admin.ModelAdmin):
         'num_other_affiliate',
         'num_other',
     )
+    list_filter = ('cycle', )
     list_display_links = ('pk', 'group', )
     search_fields = ('group__name', 'group__abbreviation', 'updater_name', )
 admin.site.register(forms.models.GroupMembershipUpdate, Admin_GroupMembershipUpdate)

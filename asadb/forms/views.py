@@ -5,6 +5,7 @@ import settings
 import util.emails
 
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.views.generic import list_detail, ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -39,18 +40,21 @@ class SelectGroupForm(Form):
         if queryset is not None:
             self.fields["group"].queryset = queryset
 
-def select_group(request, url_name_after, pagename='homepage', queryset=None, ):
+def select_group(request, url_name_after, url_args=[], pagename='homepage', queryset=None, title="", msg=""):
     if request.method == 'POST': # If the form has been submitted...
         # A form bound to the POST data
         form = SelectGroupForm(request.POST, queryset=queryset, )
         if form.is_valid(): # All validation rules pass
             group = form.cleaned_data['group'].id
-            return HttpResponseRedirect(reverse(url_name_after, args=[group],)) # Redirect after POST
+            return HttpResponseRedirect(reverse(url_name_after, args=url_args+[group],)) # Redirect after POST
     else:
         form = SelectGroupForm(queryset=queryset, ) # An unbound form
 
+    if not title: title = "Select group"
     context = {
         'form':form,
+        'title':title,
+        'msg':msg,
         'pagename':pagename,
     }
     return render_to_response('forms/select.html', context, context_instance=RequestContext(request), )
@@ -170,7 +174,6 @@ def fysm_manage(request, group, ):
     initial = {}
     try:
         fysm_obj = forms.models.FYSM.objects.get(group=group_obj, year=year, )
-        print "Successfully found", fysm_obj.__dict__
     except forms.models.FYSM.DoesNotExist:
         fysm_obj = forms.models.FYSM()
         fysm_obj.group = group_obj
@@ -243,9 +246,23 @@ def fysm_thanks(request, fysm, ):
 
 membership_update_qs = groups.models.Group.objects.filter(group_status__slug__in=['active', 'suspended', ])
 
-class Form_GroupMembershipUpdate(ModelForm):
-    group = ModelChoiceField(queryset=membership_update_qs)
+@login_required
+def group_membership_update_select_group(request, ):
+    cycle = forms.models.GroupConfirmationCycle.latest()
 
+    users_groups = groups.models.Group.involved_groups(request.user.username)
+    qs = membership_update_qs.filter(pk__in=users_groups)
+
+    return select_group(request=request,
+        url_name_after='membership-update-group',
+        url_args=[cycle.slug],
+        pagename='groups',
+        queryset=qs,
+        title="Submit membership update for...",
+        msg="The list below contains only groups that list you as being involved. You must be an administrator of a group to submit an update.",
+    )
+
+class Form_GroupMembershipUpdate(ModelForm):
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
         self.fields['no_hazing'].required = True
@@ -253,7 +270,6 @@ class Form_GroupMembershipUpdate(ModelForm):
     class Meta:
         model = forms.models.GroupMembershipUpdate
         fields = [
-            'group',
             'updater_title',
             'group_email',
             'officer_email',
@@ -270,26 +286,31 @@ class Form_GroupMembershipUpdate(ModelForm):
         ]
 
 @login_required
-def group_membership_update(request, ):
-    year = datetime.date.today().year
+def group_membership_update(request, cycle_slug, pk, ):
+    cycle = get_object_or_404(forms.models.GroupConfirmationCycle, slug=cycle_slug)
+    group_obj = get_object_or_404(groups.models.Group, pk=pk)
+    if not request.user.has_perm('groups.admin_group', group_obj):
+        raise PermissionDenied
 
-    initial = {
-    }
-    update_obj = forms.models.GroupMembershipUpdate()
-    update_obj.update_time  = datetime.datetime.now()
-    update_obj.updater_name = request.user.username
+    try:
+        update_obj = forms.models.GroupMembershipUpdate.objects.get(group=group_obj, cycle=cycle, )
+    except forms.models.GroupMembershipUpdate.DoesNotExist:
+        update_obj = None
 
     confirm_path = reverse('membership-confirm', )
     confirm_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
          request.get_host(), confirm_path)
 
-    if request.method == 'POST': # If the form has been submitted...
+    if request.method == 'POST':
         form = Form_GroupMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
 
         if form.is_valid(): # All validation rules pass
+            # Update the updater info
+            form.instance.group = group_obj
+            form.instance.cycle = cycle
+            form.instance.update_time  = datetime.datetime.now()
+            form.instance.updater_name = request.user.username
             request_obj = form.save()
-            group_obj = request_obj.group
-
 
             # Send email
             tmpl = get_template('membership/anti-hazing.txt')
@@ -334,10 +355,11 @@ def group_membership_update(request, ):
             return HttpResponseRedirect(reverse('membership-thanks', )) # Redirect after POST
 
     else:
-        form = Form_GroupMembershipUpdate(initial=initial, ) # An unbound form
+        form = Form_GroupMembershipUpdate(instance=update_obj)
 
     context = {
         'form':form,
+        'group':group_obj,
         'confirm_uri': confirm_uri,
         'pagename':'groups',
     }
@@ -353,11 +375,11 @@ class Form_PersonMembershipUpdate(ModelForm):
 
 @login_required
 def person_membership_update(request, ):
-    year = datetime.date.today().year
-
     initial = {
     }
     cycle = forms.models.GroupConfirmationCycle.latest()
+
+    # Initialize/find the PersonMembershipUpdate for this user
     try:
         update_obj = forms.models.PersonMembershipUpdate.objects.get(
             username=request.user.username,
@@ -365,7 +387,6 @@ def person_membership_update(request, ):
             cycle=cycle,
         )
         selected_groups = update_obj.groups.all()
-        print "Got update"
     except forms.models.PersonMembershipUpdate.DoesNotExist:
         update_obj = forms.models.PersonMembershipUpdate()
         update_obj.update_time  = datetime.datetime.now()
@@ -373,6 +394,7 @@ def person_membership_update(request, ):
         update_obj.cycle = cycle
         selected_groups = []
 
+    # Determine whether the submitter is a student or not
     accounts = groups.models.AthenaMoiraAccount
     try:
         person = accounts.active_accounts.get(username=request.user.username)
@@ -386,6 +408,15 @@ def person_membership_update(request, ):
 
     update_obj.save()
 
+    # Find groups that list a role for the user
+    office_holders = groups.models.OfficeHolder.current_holders.filter(person=request.user.username)
+    role_groups = {}
+    for office_holder in office_holders:
+        if office_holder.group.pk not in role_groups:
+            role_groups[office_holder.group.pk] = (office_holder.group, set())
+        role_groups[office_holder.group.pk][1].add(office_holder.role.display_name)
+
+    # Find groups the user searched for
     filterset = groups.views.GroupFilter(request.GET, membership_update_qs)
     filtered_groups = filterset.qs.all()
     show_filtered_groups = ('search' in request.GET)
@@ -393,37 +424,46 @@ def person_membership_update(request, ):
     message = ""
     message_type = "info"
 
+    if update_obj.valid <= forms.models.VALID_UNSET:
+        message = "You are not listed as a student. While you're welcome to confirm your membership in groups anyway, you will not count towards the five student member requirement. If you are a student, please contact asa-exec so that we can correct our records."
+        message_type = "warn"
+
+    # Handle the single group add/remove forms
+    # * removing previously confirmed groups
+    # * add/remove groups that list the user in a role
+    # * add/remove groups the user searched for
     if request.method == 'POST' and 'add-remove' in request.POST:
         group = groups.models.Group.objects.get(id=request.POST['group'])
         if request.POST['action'] == 'remove':
             if group in update_obj.groups.all():
                 update_obj.groups.remove(group)
-                message = "You have been successfully removed from %s." % (group, )
+                message = "You have successfully unconfirmed membership in %s." % (group, )
             else:
-                message = "Sorry, but you're not in %s." % (group, )
+                message = "Removal failed because you had not confirmed membership in %s." % (group, )
                 message_type = "warn"
         elif request.POST['action'] == 'add':
             if group in update_obj.groups.all():
-                message = "Sorry, but you're already in %s." % (group, )
+                message = "Membership in %s already confirmed." % (group, )
                 message_type = "warn"
             else:
                 update_obj.groups.add(group)
-                message = "You have been successfully added to %s." % (group, )
+                message = "You have successfully confirmed membership in %s." % (group, )
         else:
             message = "Uh, somehow you tried to do something besides adding and removing..."
             message_type = "alert"
 
-    if request.method == 'POST' and 'list' in request.POST: # If the form has been submitted...
-        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
-
-        if form.is_valid(): # All validation rules pass
+    # Handle the big list of groups
+    if request.method == 'POST' and 'list' in request.POST:
+        form = Form_PersonMembershipUpdate(request.POST, request.FILES, instance=update_obj)
+        if form.is_valid():
             request_obj = form.save()
             message = "Update saved"
-
     else:
-        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, ) # An unbound form
+        form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, )
 
+    # Render the page
     context = {
+        'role_groups':role_groups,
         'form':form,
         'filter':filterset,
         'show_filtered_groups':show_filtered_groups,
@@ -441,8 +481,11 @@ class View_GroupMembershipList(ListView):
     template_name = "membership/submitted.html"
 
     def get_queryset(self):
+        cycle = forms.models.GroupConfirmationCycle.latest()
         group_updates = forms.models.GroupMembershipUpdate.objects.all()
         group_updates = group_updates.filter(
+            cycle=cycle,
+            group__personmembershipupdate__cycle=cycle,
             group__personmembershipupdate__deleted__isnull=True,
             group__personmembershipupdate__valid__gt=0,
         )
@@ -481,14 +524,24 @@ def group_confirmation_issues(request, ):
     for group_update in group_updates:
         group = group_update.group
         num_confirms = len(people_confirmations.filter(groups=group))
+        problems = []
+
         if num_confirms < 5:
+            problems.append("confirmations")
+
+        num_students = group_update.num_undergrads + group_update.num_grads
+        num_other = group_update.num_alum + group_update.num_other_affiliate + group_update.num_other
+        if num_students < num_other:
+            problems.append("50%")
+
+        for problem in problems:
             output.writerow([
                 group.id,
                 group.name,
-                'confirmations',
+                problem,
                 num_confirms,
                 group.officer_email,
             ])
 
 
-    return HttpResponse(buf.getvalue(), mimetype='text/plain', )
+    return HttpResponse(buf.getvalue(), mimetype='text/csv', )

@@ -56,6 +56,10 @@
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
 <table class='pretty-table'>
+<tr>
+    <th>Group</th>
+    <td>{{group}}</td>
+</tr>
 {{ form.as_table }}
 <tr><th colspan='2'><input type='submit' value='Submit membership update' /></th></tr>
 </table>

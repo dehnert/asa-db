@@ -154,6 +154,7 @@ class GroupMembershipUpdate(models.Model):
     updater_name = models.CharField(max_length=30)
     updater_title = models.CharField(max_length=30, help_text="You need not hold any particular title in the group, but we like to know who is completing the form.")
     
+    cycle = models.ForeignKey(GroupConfirmationCycle)
     group = models.ForeignKey(groups.models.Group, help_text="If your group does not appear in the list above, then please email asa-exec@mit.edu.", db_index=True, )
     group_email = models.EmailField(help_text="The text of the law will be automatically distributed to your members via this list, in order to comply with the law.")
     officer_email = models.EmailField()
