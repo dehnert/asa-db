@@ -68,7 +68,13 @@ def view_homepage(request, ):
     }
     return render_to_response('index.html', context, context_instance=RequestContext(request), )
 
-
+def view_roles_descriptions(request, ):
+    roles  = groups.models.OfficerRole.objects.all()
+    context = {
+        'pagename': 'about',
+        'roles': roles,
+    }
+    return render_to_response('about/roles_descriptions.html', context, context_instance=RequestContext(request), )
 
 ################
 # Single group #

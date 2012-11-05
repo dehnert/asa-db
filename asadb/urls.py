@@ -20,6 +20,11 @@ about_patterns = patterns('',
         name='about-data',
     ),
     url(
+        r'^roles/$',
+        'groups.views.view_roles_descriptions',
+        name='about-roles',
+    ),
+    url(
         r'^$',
         'django.views.generic.simple.direct_to_template',
         {'template': 'about/index.html', 'extra_context': { 'pagename':'about' }, },

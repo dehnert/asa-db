@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Roles tracked by the database{% endblock %}
+{% block content %}
+
+<h1>Roles tracked by the database</h1>
+
+<p>The ASA Group Database maintains the official list of individuals for the following roles:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Role</th>
+    <th>Description</th>
+    <th>Maximum allowed</th>
+    <th>Requires student?</th>
+</tr>
+{% for role in roles %}
+<tr>
+    <th>{{role.display_name}}</th>
+    <td>{{role.description}}</td>
+    <td>{{role.max_count_str}}</td>
+    <td>{% if role.require_student %}Yes{%else%}No{%endif%}</td>
+</tr>
+{% endfor %}
+</table>
+
+<p>Note: The ASA requires only a president and a treasurer. Other officers/members should be listed as applicable.</p>
+
+<p>In exceptional cases, we can add people beyond the normal limits. Contact us if that applies.</p>
+
+{% endblock %}
