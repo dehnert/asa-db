@@ -242,13 +242,21 @@ class UpdateOfficerListCallback(DiffCallback):
         self.update_changes(self.add, "New", name, email, include, force_note=True)
 
 
+def default_active_pred():
+    status_objs = groups.models.GroupStatus.objects.filter(slug__in=['active', 'suspended', 'nge'])
+    status_pks = [status.pk for status in status_objs]
+    def pred(version, fields):
+        return fields['group_status'] in status_pks
+    return pred
+
 def funded_pred(funding_slug):
     classes = groups.models.GroupClass.objects
     class_pk = classes.get(slug='mit-funded').pk
     fundings = groups.models.GroupFunding.objects
     fund_pk = fundings.get(slug=funding_slug).pk
+    active_pred = default_active_pred()
     def pred(version, fields):
-        return fields['group_class'] == class_pk and fields['group_funding'] == fund_pk
+        return active_pred(version, fields) and fields['group_class'] == class_pk and fields['group_funding'] == fund_pk
     return pred
 
 
@@ -290,7 +298,10 @@ def build_callbacks():
     )
     sao_callback.care_about_groups = False
     callbacks.append(sao_callback)
-    callbacks.append(UpdateOfficerListCallback(asa_all_groups_list))
+    callbacks.append(UpdateOfficerListCallback(
+        listobj=asa_all_groups_list,
+        include_pred=default_active_pred(),
+    ))
     callbacks.append(UpdateOfficerListCallback(
         listobj=finboard_groups_list,
         include_pred=funded_pred('undergrad'),
