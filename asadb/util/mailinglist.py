@@ -18,7 +18,13 @@ BLANCHE_PATH="/usr/bin/blanche"
 class MoiraList(MailingList):
     def __init__(self, *args, **kwargs):
         super(MoiraList, self).__init__(*args, **kwargs)
-        self.ccache = mit.kinit()
+        self._ccache = None
+
+    @property
+    def ccache(self, ):
+        if not self._ccache:
+            self._ccache = mit.kinit()
+        return self._ccache
 
     def list_members(self, ):
         raise NotImplementedError
