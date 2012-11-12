@@ -135,5 +135,5 @@ class MailmanList(MailingList):
             stderr=subprocess.PIPE,
         )
         stdout, stderr = res.communicate()
-        assert stderr==""
+        assert stderr=="", ("stderr unexpectedly non-empty: %s" % (stderr, ))
         return stdout
