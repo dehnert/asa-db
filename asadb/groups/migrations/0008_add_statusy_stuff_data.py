@@ -22,7 +22,7 @@ class Migration(DataMigration):
 
     funding = [
         ('undergraduate',   'undergrad',    'finboard@mit.edu', 'finboard-groups-only', ),
-        ('graduate',        'grad',         'gsc-funding@mit.edu', "", ),
+        ('graduate',        'grad',         'gsc-funding@mit.edu', "gsc-fb-", ),
         ('sports council',  'csc',          'csc-officers@mit.edu', "", ),
     ]
 
