@@ -9,6 +9,13 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'GroupConfirmationCycle.deadlines'
+
+        # In reality, MySQL doesn't appear to support default values for TEXT
+        # columns, so this doesn't actually matter. Fortunately, we don't
+        # actually care about the form for old cycles contain the correct form.
+        # We leave in the default text (from Fall 2011) anyway, because why
+        # not...
+
         initial_deadline = "This form is due by Friday October 7th at 11:59PM. This is very important for confirming that your group is active, so groups that don't submit this form by that date will be fined $50. Groups that still haven't submitted this by Friday October 21st will be fined an additional $50 and will be suspended. Finally, groups that haven't submitted this by November 4th will be derecognized."
         db.add_column('forms_groupconfirmationcycle', 'deadlines', self.gf('django.db.models.fields.TextField')(default=initial_deadline, blank=True), keep_default=False)
 
