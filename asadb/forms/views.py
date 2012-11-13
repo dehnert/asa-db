@@ -360,6 +360,7 @@ def group_membership_update(request, cycle_slug, pk, ):
     context = {
         'form':form,
         'group':group_obj,
+        'cycle':cycle,
         'confirm_uri': confirm_uri,
         'pagename':'groups',
     }

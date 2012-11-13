@@ -140,6 +140,7 @@ class GroupConfirmationCycle(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(unique=True, )
     create_date = models.DateTimeField(default=datetime.datetime.now)
+    deadlines = models.TextField(blank=True)
 
     def __unicode__(self, ):
         return u"GroupConfirmationCycle %d: %s" % (self.id, self.name, )

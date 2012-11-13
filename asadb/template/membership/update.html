@@ -17,9 +17,10 @@
 
 <p><a href='#components'>Details on each component</a> and the <a href='#form'>main form</a> are available below.</p>
 
+{% if cycle.deadlines %}
 <h2><a name='deadlines'></a>Deadlines and Enforcement</h2>
-
-<p>This form is due by Friday October 7th at 11:59PM. This is very important for confirming that your group is active, so groups that don't submit this form by that date will be fined $50. Groups that still haven't submitted this by Friday October 21st will be fined an additional $50 and will be suspended. Finally, groups that haven't submitted this by November 4th will be derecognized.</p>
+<p>{{cycle.deadlines}}</p>
+{% endif %}
 
 <h2><a name='components'></a>Components</h2>
 
