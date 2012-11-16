@@ -190,9 +190,7 @@ def fysm_manage(request, group, ):
         if form.is_valid(): # All validation rules pass
             request_obj = form.save()
 
-            view_path = reverse('fysm-view', args=[year, request_obj.pk, ])
-            view_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
-                 request.get_host(), view_path)
+            view_uri = request.build_absolute_uri(reverse('fysm-view', args=[year, request_obj.pk, ]))
 
             # Send email
             email = util.emails.email_from_template(
@@ -297,9 +295,7 @@ def group_membership_update(request, cycle_slug, pk, ):
     except forms.models.GroupMembershipUpdate.DoesNotExist:
         update_obj = None
 
-    confirm_path = reverse('membership-confirm', )
-    confirm_uri = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
-         request.get_host(), confirm_path)
+    confirm_uri = request.build_absolute_uri(reverse('membership-confirm'))
 
     if request.method == 'POST':
         form = Form_GroupMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
