@@ -461,6 +461,7 @@ def person_membership_update(request, ):
             message = "Update saved"
     else:
         form = Form_PersonMembershipUpdate(initial=initial, instance=update_obj, )
+    form.fields['groups'].widget.attrs['size'] = 20
 
     # Render the page
     context = {
