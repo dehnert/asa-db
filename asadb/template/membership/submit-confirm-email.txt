@@ -1,13 +1,13 @@
 {% autoescape off %}{{submitter.first_name}} {{submitter.last_name}} submitted the following membership information for {{group.name}}.
 
-Please note, if you are still in the midst of or leading up to your major recruitment period, we encourage you to submit current numbers and a list 
-soon to ensure you have something submitted before the deadline. Then you can submit an updated form later, either before or after the deadline. You don't need 
-to do this if your membership changes slightly, but we recommend you do so if your numbers change significantly.
+Please note, if you are still in the midst of or leading up to your major recruitment period, we encourage you to submit current numbers and a list soon to ensure you have something submitted before the deadline. Then you can submit an updated form later, either before or after the deadline. You don't need to do this if your membership changes slightly, but we recommend you do so if your numbers change significantly.
 
-In addition to the membership provided by you, please have at least five student members confirm membership using the link below. You do not need to 
-have everyone do this, we are simply looking five students' confirmation.  Here is the link to provide to members: 
+In addition to the membership provided by you, please have at least five student members confirm membership using the link below. You do not need to have everyone do this, we are simply looking five students' confirmation.
+
+Here is the link to provide to members:
 {{confirm_uri}}
 
+Visit {{submitted_uri}} to see how many people have already confirmed.
 
 If you have questions, please email asa-exec@mit.edu.
 Sincerely,

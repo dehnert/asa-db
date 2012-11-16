@@ -296,6 +296,7 @@ def group_membership_update(request, cycle_slug, pk, ):
         update_obj = None
 
     confirm_uri = request.build_absolute_uri(reverse('membership-confirm'))
+    submitted_uri = request.build_absolute_uri(reverse('membership-submitted'))
 
     if request.method == 'POST':
         form = Form_GroupMembershipUpdate(request.POST, request.FILES, instance=update_obj) # A form bound to the POST data
@@ -335,6 +336,7 @@ def group_membership_update(request, cycle_slug, pk, ):
                 'group': group_obj,
                 'submitter': request.user,
                 'confirm_uri': confirm_uri,
+                'submitted_uri': submitted_uri,
             })
             body = tmpl.render(ctx)
             email = EmailMessage(
