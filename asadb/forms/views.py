@@ -497,6 +497,8 @@ class View_GroupMembershipList(ListView):
 
 @permission_required('groups.view_group_private_info')
 def group_confirmation_issues(request, ):
+    account_numbers = ("accounts" in request.GET) and request.GET['accounts'] == "1"
+
     active_groups = groups.models.Group.active_groups
     group_updates = forms.models.GroupMembershipUpdate.objects.all()
     people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
@@ -506,20 +508,24 @@ def group_confirmation_issues(request, ):
 
     buf = StringIO.StringIO()
     output = csv.writer(buf)
-    output.writerow(['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ])
+    fields = ['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ]
+    if account_numbers: fields.append("main_account")
+    output.writerow(fields)
 
     q_present = Q(id__in=group_updates.values('group'))
     missing_groups = active_groups.filter(~q_present)
     #print len(list(group_updates))
     for group in missing_groups:
         num_confirms = len(people_confirmations.filter(groups=group))
-        output.writerow([
+        fields = [
             group.id,
             group.name,
             'unsubmitted',
             num_confirms,
             group.officer_email,
-        ])
+        ]
+        if account_numbers: fields.append(group.main_account_id)
+        output.writerow(fields)
 
     for group_update in group_updates:
         group = group_update.group
@@ -535,13 +541,15 @@ def group_confirmation_issues(request, ):
             problems.append("50%")
 
         for problem in problems:
-            output.writerow([
+            fields = [
                 group.id,
                 group.name,
                 problem,
                 num_confirms,
                 group.officer_email,
-            ])
+            ]
+            if account_numbers: fields.append(group.main_account_id)
+            output.writerow(fields)
 
 
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )

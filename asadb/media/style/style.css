@@ -32,6 +32,11 @@ table.group-list tbody th
     text-align: left;
 }
 
+dl dt
+{
+    font-weight: bold;
+}
+
 ul.errorlist
 {
     color: red;

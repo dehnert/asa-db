@@ -50,6 +50,7 @@ urlpatterns = patterns('',
     url(r'^fysm/(\d+)/(join|website)/(\d+)/$', forms.views.fysm_link, name='fysm-link', ),
     url(r'^fysm/(?:(\d+)/)?(?:([\w-]+)/)?$', forms.views.fysm_by_years, name='fysm', ),
 
+    # Membership confirmations
     url(
         regex=r'^membership/update/$',
         view=forms.views.group_membership_update_select_group,
@@ -64,6 +65,12 @@ urlpatterns = patterns('',
         name='membership-thanks',
     ),
     url(r'^membership/submitted/$', forms.views.View_GroupMembershipList.as_view(), name='membership-submitted', ),
+    url(
+        r'^membership/admin/$',
+        'django.views.generic.simple.direct_to_template',
+        {'template': 'membership/admin.html', 'extra_context': { 'pagename':'groups' }, },
+        name='membership-admin',
+    ),
     url(r'^membership/admin/issues.csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
 
     # Group list

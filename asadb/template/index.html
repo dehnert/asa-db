@@ -46,7 +46,7 @@
         <li><a href='{%url membership-update-cycle %}'>Group update</a></li>
         <li><a href='{%url membership-confirm%}'>Individual confirmations</a></li>
         <li><a href='{%url membership-submitted%}'>Groups with submitted updates</a></li>
-        {% if perms.groups.view_group_private_info %}<li><a href='{%url membership-issues%}'>Issues</a> (CSV)</li>{% endif %}
+        {% if perms.groups.view_group_private_info %}<li><a href='{%url membership-admin %}'>Issues with submissions</a></li>{% endif %}
     </ul></li>
     <li>Group recognition<ul>
         <li><a href='http://web.mit.edu/asa/start/new-group-app.html'>New Group Application</a></li>

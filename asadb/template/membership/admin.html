@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Membership confirmations &mdash; ASA Exec pages{% endblock %}
+{% block content %}
+
+<h2>Membership confirmations &mdash; ASA Exec pages</h2>
+
+<p>Exec members can check the <a href='{% url membership-issues %}'>list of groups with issues</a> (or a version <a href='{% url membership-issues %}?accounts=1'>with account numbers</a>)</p>
+
+<p>The list includes the following types of issues:</p>
+<dl>
+    <dt>unsubmitted</dt><dd>active groups ("group status" is "Active") who have not submitted an update (ever &mdash; see ASA-#191)</dd>
+    <dt>confirmations</dt><dd>groups that have submitted an update (ever) but had less than five members confirm membership (again, ever &mdash; ASA-#191)</dd>
+    <dt>50%</dt><dd>groups that (ever) submitted a confirmation with more non-students (alum, other affiliates, or other) than students (grad or undergrad)</dd>
+</dl>
+
+<p>The technically-inclined may wish to read <a href='http://asa.scripts.mit.edu/trac/browser/asadb/forms/views.py'>/asadb/forms/views.py</a> to verify these issue types.</p>
+
+{% endblock %}
