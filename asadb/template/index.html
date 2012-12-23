@@ -65,6 +65,9 @@
         <li><a href='http://web.mit.edu/asa/'>Association of Student Activities (ASA)</a></li>
         <li><a href='http://studentlife.mit.edu/sao'>Student Activities Office (SAO)</a></li>
         <li><a href='http://studentlife.mit.edu/cac'>Campus Activities Complex (CAC)</a></li>
+        {% if user.is_staff %}
+        <li><a href='https://web.mit.edu/asa/exec_files/Documents/resources.txt'>Resources for ASA Exec members</a></li>
+        {% endif %}
     </ul></li>
 </ul>
 
