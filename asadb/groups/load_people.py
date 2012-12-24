@@ -61,11 +61,18 @@ def load_people(dcm_people):
         if django_person.username in dcm_people:
             # great, they're still in the dump
             changed = False
+            changes = []
             dcm_person = dcm_people[django_person.username]
             del dcm_people[django_person.username]
+
+            # Check for changes: first fields, then deletions
             for key in fields:
                 if django_person.__dict__[key] != dcm_person[key]:
                     changed = True
+                    if key == 'mit_id':
+                        changes.append((key, '[redacted]', '[redacted]', ))
+                    else:
+                        changes.append((key, django_person.__dict__[key], dcm_person[key]))
                     if mutable:
                         django_person.__dict__[key] = dcm_person[key]
             if django_person.del_date is not None:
@@ -73,30 +80,43 @@ def load_people(dcm_people):
                 if mutable:
                     django_person.del_date = None
                     stat_undel += 1
-                    stat_people['undel'].append(django_person.username)
+                    changes.append(('[account]', '[deleted]', '[undeleted]', ))
+                    stat_people['undel'].append((django_person.username, changes))
+
             if changed:
+                stat_name = ''
                 if mutable:
                     django_person.mod_date = datetime.date.today()
                     django_person.save()
                     stat_changed += 1
-                    stat_people['changed'].append(django_person.username)
+                    stat_name = 'changed'
                 else:
                     stat_mut_ign += 1
-                    stat_people['mut_ign'].append(django_person.username)
+                    stat_name = 'mut_ign'
+                stat_people[stat_name].append((django_person.username, changes))
             else:
                 stat_unchanged += 1
+
         else:
+            # They're not in the dump
             if django_person.del_date is None:
+                stat_name = ''
                 if mutable:
                     django_person.del_date = datetime.date.today()
                     stat_del += 1
-                    stat_people['del'].append(django_person.username)
+                    stat_name = 'del'
                     django_person.save()
                 else:
                     stat_mut_ign += 1
-                    stat_people['mut_ign'].append(django_person.username)
+                    stat_name = 'mut_ign'
+                changes = [('account_class', django_person.account_class, '[deleted]')]
+                stat_people[stat_name].append((django_person.username, changes))
             else:
                 stat_pre_del += 1
+
+    transaction.commit()
+
+    # Import new people from the DCM
     for username, dcm_person in dcm_people.items():
         stat_loops += 1
         if stat_loops % 100 == 0:
@@ -107,9 +127,11 @@ def load_people(dcm_people):
             django_person.__dict__[key] = dcm_person[key]
         django_person.add_date = datetime.date.today()
         stat_add += 1
-        stat_people['add'].append(django_person.username)
+        changes = [('account_class', '[missing]', dcm_person['account_class'], )]
+        stat_people['add'].append((django_person.username, changes))
         django_person.save()
     transaction.commit()
+
     stats = {
         'loops': stat_loops,
         'django_people': stat_django_people,
@@ -146,6 +168,6 @@ Added:              %(add)6d
 """ % stats
 
     for change_type, people in stat_people.items():
-        for person in people:
-            print "%12s\t%s" % (change_type, person, )
+        for person, changes in people:
+            print "%12s\t%12s\t%s" % (change_type, person, changes, )
         print ""
