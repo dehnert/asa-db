@@ -4,8 +4,9 @@ import tempfile
 import ldap
 import ldap.filter
 
-from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib.auth.backends import RemoteUserBackend
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD
+from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib.auth.views import login
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import HttpResponseRedirect
@@ -82,7 +83,7 @@ class ScriptsRemoteUserBackend(RemoteUserBackend):
             return username
     def configure_user(self, user, ):
         username = user.username
-        user.password = "ScriptsSSLAuth"
+        user.password = UNUSABLE_PASSWORD
         con = ldap.open('ldap-too.mit.edu')
         con.simple_bind_s("", "")
         dn = "dc=mit,dc=edu"
