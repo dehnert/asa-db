@@ -196,7 +196,7 @@ class UpdateOfficerListCallback(DiffCallback):
                 'notes': self.notes,
             }
             util.emails.email_from_template(
-                tmpl='groups/diffs/asa-official-update.txt',
+                tmpl='groups/diffs/list-update.txt',
                 context=context, subject=subject,
                 to=['asa-db@mit.edu'],
             ).send()
