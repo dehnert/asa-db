@@ -169,7 +169,7 @@ class GroupConstitution(models.Model):
         url = self.source_url
         success = None
         old_success = (self.failure_date is None)
-        if url:
+        if url and '/asa/start/constitution-req.html' not in url:
             # Fetch the file
             error_msg = None
             try:
@@ -235,6 +235,9 @@ class GroupConstitution(models.Model):
                         fp.write(new_data)
                     self.record_success("updated in place", updated=True)
 
+        elif '/asa/start/constitution-req.html' in url:
+            self.record_failure("constitution-req used")
+            success = False
         else:
             self.record_failure("no url")
             success = False
