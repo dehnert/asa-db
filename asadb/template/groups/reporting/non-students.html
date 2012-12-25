@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Non-student group officers{% endblock %}
+{% block content %}
+
+<h1>Non-student group officers</h1>
+
+{% if msg_type %}
+<div class='messagebox {{msg_type}}box'>
+<p>{{msg}}</p>
+</div>
+{% endif %}
+
+<h2>Student-only roles</h2>
+
+<p>The ASA requires that the following roles be filled by students:</p>
+<table class='pretty-table'>
+<tr>
+    <th>Role</th>
+    <th>Description</th>
+</tr>
+{% for role in roles %}
+<tr>
+    <th>{{role.display_name}}</th>
+    <td>{{role.description}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Violations</h2>
+
+<p>The following non-students are officers of the following groups</p>
+
+<table class='pretty-table'>
+<tr>
+    <th><a href='?sort=group'>Group</a></th>
+    <th><a href='?sort=role'>Role</a></th>
+    <th><a href='?sort=person'>Person</a></th>
+</tr>
+{% for holder in holders %}
+<tr>
+    <td><a href='{% url groups:group-detail holder.group.pk %}'>{{holder.group.name}}</a></td>
+    <td>{{holder.role.display_name}}</td>
+    <td>{{holder.person}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+{% endblock %}

@@ -1207,3 +1207,40 @@ def reporting(request, ):
         'pagename': 'groups',
     }
     return render_to_response('groups/reporting.html', context, context_instance=RequestContext(request), )
+
+
+@permission_required('groups.view_group_private_info')
+def show_nonstudent_officers(request, ):
+    student_roles  = groups.models.OfficerRole.objects.filter(require_student=True, )
+    year = datetime.datetime.now().year
+    account_classes = ["G"] + [str(yr) for yr in range(year-5, year+10)]
+    students = groups.models.AthenaMoiraAccount.active_accounts.filter(account_class__in=account_classes)
+    office_holders = groups.models.OfficeHolder.current_holders.order_by('group__name', 'role', )
+    office_holders = office_holders.filter(role__in=student_roles)
+    office_holders = office_holders.exclude(person__in=students.values('username'))
+    office_holders = office_holders.select_related('group', 'role')
+
+    msg = None
+    msg_type = ""
+    if 'sort' in request.GET:
+        if request.GET['sort'] == 'group':
+            office_holders = office_holders.order_by('group__name', 'role', 'person', )
+        elif request.GET['sort'] == 'role':
+            office_holders = office_holders.order_by('role', 'group__name', 'person', )
+        elif request.GET['sort'] == 'person':
+            office_holders = office_holders.order_by('person', 'group__name', 'role', )
+        else:
+            msg = 'Unknown sort key "%s".' % (request.GET['sort'], )
+            msg_type = 'error'
+
+    context = {
+        'pagename': 'groups',
+        'roles': student_roles,
+        'holders': office_holders,
+        'msg': msg,
+        'msg_type': msg_type,
+    }
+
+    return render_to_response('groups/reporting/non-students.html', context, context_instance=RequestContext(request), )
+
+

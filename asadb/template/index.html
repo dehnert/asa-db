@@ -34,6 +34,7 @@
         {%if perms.groups.view_signatories %}<li><a href='{% url groups:signatories %}'>View Signatories</a></li>{%endif%}
         {%if perms.groups.view_group_private_info %}
         <li><a href='{%url groups:reporting%}'>Reporting</a></li>
+        <li><a href='{%url groups:reporting-nonstudents%}'>Non-student group officers</a></li>
         <li><a href='{%url groups:constitutions%}'>Constitutions</a></li>
         {%endif%}
         <li><a href='{%url groups:account-lookup%}'>Account lookup</a></li>
