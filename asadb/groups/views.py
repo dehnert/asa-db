@@ -1043,6 +1043,34 @@ def downloaded_constitutions(request, ):
     return render_to_response('groups/groups_constitutions.html', context, context_instance=RequestContext(request), )
 
 
+@permission_required('groups.view_group_private_info')
+def downloaded_constitutions_csv(request, ):
+    active_groups = groups.models.Group.active_groups.all()
+    constitutions = groups.models.GroupConstitution.objects.filter(group__in=active_groups)
+    constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group', 'group__group_status')
+
+    response = HttpResponse(mimetype='text/csv')
+    writer = csv.writer(response)
+
+    writer.writerow([
+        'failure_date',
+        'status_msg',
+        'name', 'id', 'group_status', 'officer_email',
+        'constitution_url',
+    ])
+    for const in constitutions:
+        writer.writerow([
+            const.failure_date,
+            const.status_msg,
+            const.group.name,
+            const.group.pk,
+            const.group.group_status.slug,
+            const.group.officer_email,
+            const.source_url,
+        ])
+    return response
+
+
 
 #######################
 # REPORTING COMPONENT #
