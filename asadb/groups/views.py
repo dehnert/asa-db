@@ -1061,7 +1061,7 @@ def downloaded_constitutions_csv(request, ):
     for const in constitutions:
         writer.writerow([
             const.failure_date,
-            const.status_msg,
+            const.status_msg.strip(),
             const.group.name,
             const.group.pk,
             const.group.group_status.slug,
