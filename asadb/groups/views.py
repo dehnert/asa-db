@@ -87,6 +87,7 @@ class GroupDetailView(DetailView):
         # Call the base implementation first to get a context
         context = super(GroupDetailView, self).get_context_data(**kwargs)
         group = context['group']
+        context['pagename'] = "groups"
 
         # Indicate whether this person should be able to see "private" info
         context['viewpriv'] = self.request.user.has_perm('groups.view_group_private_info', group)
@@ -212,6 +213,7 @@ def manage_main(request, pk, ):
         'group': group,
         'form':  form,
         'msg':   msg,
+        'pagename': "groups",
     }
     return render_to_response('groups/group_change_main.html', context, context_instance=RequestContext(request), )
 
@@ -489,6 +491,7 @@ def manage_officers(request, pk, ):
     for i in range(max_new):
         officers_data.append((True, "extra.%d" % (i, ), "", null_role_list))
     context['officers'] = officers_data
+    context['pagename'] = "groups"
 
     return render_to_response('groups/group_change_officers.html', context, context_instance=RequestContext(request), )
 
@@ -1022,6 +1025,7 @@ class GroupHistoryView(ListView):
             context['group'] = group
         else:
             context['title'] = "Recent Changes"
+        context['pagename'] = 'groups'
         return context
 
 
