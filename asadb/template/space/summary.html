@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Space assignments{% endblock %}
+{% block content %}
+
+<h1>Space assignments</h1>
+
+<div class='toolbox'>
+<h2>Locations</h2>
+<ul>
+<li><a href='#offices'>Offices</a></li>
+{% for room, occupants in lockers %}
+<li><a href='#{{room.number}}'>{{room.number}}</a></li>
+{%endfor%}
+</ul>
+</div>
+
+<p>This page displays the occupants of all ASA-assigned office and shared
+storage (locker) space. You can view more information about any group by
+following the links, and view and manage access by following the "Access" link
+for any group for which you have permission.</p>
+
+<h2><a name='offices'></a>Offices</h2>
+
+<table class='pretty-table'>
+<tr>
+    <th>Room</th>
+    <th>Group</th>
+    <th>Access</th>
+</tr>
+{% for office in offices %}
+<tr>
+    <td>{{office.space.number}}</td>
+    <td><a href='{% url groups:group-detail office.group.pk %}'>{{office.group}}</a></td>
+    <td><a href='{% url groups:group-space-access office.group.pk %}'>Access</a></td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Shared storage (locker rooms)</h2>
+{% for room, occupants in lockers %}
+
+<h3><a name='{{room.number}}'></a>{{room.number}}</h3>
+
+<table class='pretty-table'>
+<tr>
+    <th>Locker</th>
+    <th>Group</th>
+    <th>Access</th>
+</tr>
+{% for locker in occupants %}
+<tr>
+    <td>{{locker.locker_num}}</td>
+    <td><a href='{% url groups:group-detail locker.group.pk %}'>{{locker.group}}</a></td>
+    <td><a href='{% url groups:group-space-access locker.group.pk %}'>Access</a></td>
+</tr>
+{% endfor %}
+</table>
+
+{%endfor%}
+
+{% endblock %}

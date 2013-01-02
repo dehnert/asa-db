@@ -105,3 +105,27 @@ def dump_office_access(request, ):
     response = HttpResponse(mimetype='text/csv')
     space.dump_office_access.print_info(response)
     return response
+
+def summary(request, ):
+    assignments = space.models.SpaceAssignment.current.order_by(
+        'space__number',
+        'locker_num',
+        'group__name',
+    ).select_related('space', 'group')
+    office_assignments = assignments.filter(locker_num='')
+
+    locker_assignments = assignments.exclude(locker_num='')
+    locker_rooms = []
+    room = None
+    for assignment in locker_assignments:
+        if room != assignment.space:
+            room = assignment.space
+            locker_rooms.append((room, []))
+        locker_rooms[-1][1].append(assignment)
+
+    context = {
+        'offices': office_assignments,
+        'lockers': locker_rooms,
+        'pagename':'group',
+    }
+    return render_to_response('space/summary.html', context, context_instance=RequestContext(request), )
