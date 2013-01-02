@@ -69,8 +69,8 @@
 {% endif %}
 
 <tr><th colspan='2'>Additional Information</th></tr>
-{% if viewpriv %}
-<tr class='private-info'>
+{% if user.is_authenticated %}
+<tr>
     <th>Constitution</th>
     <td>{{group.constitution_url|format_constitution_link}}</td>
 </tr>
