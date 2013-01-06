@@ -1059,7 +1059,7 @@ def downloaded_constitutions_csv(request, ):
     writer.writerow([
         'failure_date',
         'status_msg',
-        'name', 'id', 'group_status', 'officer_email',
+        'name', 'id', 'group_status', 'email',
         'constitution_url',
     ])
     for const in constitutions:
