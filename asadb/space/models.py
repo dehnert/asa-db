@@ -21,7 +21,7 @@ class LockType(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, )
     description = models.TextField()
-    info_addr = models.EmailField(default='asa-exec@mit.edu')
+    info_addr = models.EmailField(default='asa-exec@mit.edu', help_text='Address groups should email to get more information about managing access through this lock type.')
     db_update = models.CharField(null=True, max_length=20, default=None, choices=lock_db_update_choices)
 
 class Space(models.Model):

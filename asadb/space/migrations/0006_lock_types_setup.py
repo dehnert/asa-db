@@ -5,7 +5,8 @@ from south.v2 import DataMigration
 from django.db import models
 
 lock_types = (
-    ('Inner', 'inner', ),
+    ('Inner', 'inner', 'Offices accessed through another office owned by the same group, which therefore does not having a separate lock.', 'asa-exec@mit.edu', None, ),
+    ('CAC Card Access', 'cac-card', 'Offices with the standard CAC-maintained card access system', ),
 )
 
 class Migration(DataMigration):
