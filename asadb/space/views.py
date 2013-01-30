@@ -111,7 +111,7 @@ def summary(request, ):
         'space__number',
         'locker_num',
         'group__name',
-    ).select_related('space', 'group')
+    ).select_related('space', 'space__lock_type', 'group')
     office_assignments = assignments.filter(locker_num='')
 
     locker_assignments = assignments.exclude(locker_num='')
@@ -129,3 +129,11 @@ def summary(request, ):
         'pagename':'groups',
     }
     return render_to_response('space/summary.html', context, context_instance=RequestContext(request), )
+
+def lock_types(request, ):
+    lock_types = space.models.LockType.objects.order_by('name')
+    context = {
+        'lock_types': lock_types,
+        'pagename': 'groups',
+    }
+    return render_to_response('space/lock_types.html', context, context_instance=RequestContext(request), )

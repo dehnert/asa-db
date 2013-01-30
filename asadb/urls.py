@@ -80,6 +80,7 @@ urlpatterns = patterns('',
     url(r'^space/dump/locker-access.csv$', space.views.dump_locker_access, name='space-dump-locker-access', ),
     url(r'^space/dump/office-access.csv$', space.views.dump_office_access, name='space-dump-office-access', ),
     url(r'^space/$', space.views.summary, name='space-summary', ),
+    url(r'^space/lock_types.html$', space.views.lock_types, name='space-lock-type', ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
