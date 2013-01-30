@@ -10,7 +10,7 @@ import groups.models
 
 EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
 
-LOCK_DB_UPDATE_NONE = None
+LOCK_DB_UPDATE_NONE = 'none'
 LOCK_DB_UPDATE_CAC_CARD = 'cac-card'
 lock_db_update_choices = (
     (LOCK_DB_UPDATE_NONE, "No database management"),
@@ -22,7 +22,11 @@ class LockType(models.Model):
     slug = models.SlugField(unique=True, )
     description = models.TextField()
     info_addr = models.EmailField(default='asa-exec@mit.edu', help_text='Address groups should email to get more information about managing access through this lock type.')
-    db_update = models.CharField(null=True, max_length=20, default=None, choices=lock_db_update_choices)
+    db_update = models.CharField(max_length=20, default='none', choices=lock_db_update_choices)
+
+    def __unicode__(self, ):
+        return self.name
+
 
 class Space(models.Model):
     number = models.CharField(max_length=20, unique=True, )

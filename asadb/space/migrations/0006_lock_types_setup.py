@@ -2,17 +2,38 @@
 import datetime
 from south.db import db
 from south.v2 import DataMigration
+from django.core.management import call_command
 from django.db import models
 
-lock_types = (
-    ('Inner', 'inner', 'Offices accessed through another office owned by the same group, which therefore does not having a separate lock.', 'asa-exec@mit.edu', None, ),
-    ('CAC Card Access', 'cac-card', 'Offices with the standard CAC-maintained card access system', ),
+
+room_lock_types = (
+    ('W20-454',     'cac-key', ),
+    ('W20-401D',    'cac-combo', ),
+    #('W20-415A',    'inner', ), # not in list?
+    ('W20-449',     'inner', ),
+    ('W20-451A',    'inner', ),
+    ('W20-459',     'inner', ),
+    ('W20-463',     'inner', ),
+    ('W20-481',     'inner', ),
+    ('W20-485/A',   'inner', ),
 )
+
+# Walker: keys and combos: discuss[menelaus asa-db 1320]
+# N52: SEMO
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+        call_command("loaddata", "LockTypes.xml")
+        lock_types = orm['space.LockType'].objects
+        spaces = orm['space.Space'].objects
+        spaces.filter(number__startswith='50-').update(lock_type=lock_types.get(slug='cac-combo'))
+        spaces.filter(number__startswith='N52-').update(lock_type=lock_types.get(slug='semo'))
+        for room, lock_type in room_lock_types:
+            room_obj = spaces.get(number=room)
+            room_obj.lock_type = lock_types.get(slug=lock_type)
+            room_obj.save()
 
 
     def backwards(self, orm):
