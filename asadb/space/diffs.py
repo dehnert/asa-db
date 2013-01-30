@@ -7,10 +7,13 @@ import sys
 if __name__ == '__main__':
     cur_file = os.path.abspath(__file__)
     django_dir = os.path.abspath(os.path.join(os.path.dirname(cur_file), '..'))
+    django_dir_parent = os.path.abspath(os.path.join(os.path.dirname(cur_file), '../..'))
     sys.path.append(django_dir)
+    sys.path.append(django_dir_parent)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.core.mail import EmailMessage
+from django.core.urlresolvers import reverse
 from django.db import connection
 from django.db.models import Q
 from django.template import Context, Template
@@ -99,15 +102,29 @@ class GroupInfo(object):
         self.add_office_signatories_per_time(1, new_time)
 
     def list_office_changes(self, ):
-        cac_lines = []
+        systems_lines = {
+            'cac-card': [],
+            'none': [],
+        }
         group_lines = []
-        def append_change(mit_id, verb, name):
-            cac_lines.append("%s:\t%s:\t%s" % (mit_id, verb, name))
-            group_lines.append("%s:\t%s" % (verb, name))
         for space_pk, space_data in self.offices.items():
+            lock_type = all_spaces[space_pk].lock_type
+            system_lines = systems_lines[lock_type.db_update]
+            def append_change(mit_id, verb, name):
+                system_lines.append("%s:\t%s:\t%s" % (mit_id, verb, name))
+                group_lines.append("%s:\t%s" % (verb, name))
+
             line = "Changes in %s:" % (all_spaces[space_pk].number, )
-            cac_lines.append(line)
+            system_lines.append(line)
             group_lines.append(line)
+
+            if lock_type.db_update == 'none':
+                tmpl =  'Warning: You submitted changes effecting this space, but this space is ' + \
+                        'a "%s" space, and is not managed through the ASA DB. See ' + \
+                        'https://asa.mit.edu/%s for details on how to update spaces of this type.'
+                line = tmpl % (lock_type.name, reverse('space-lock-type'), )
+                group_lines.append(line)
+
             for mit_id, (old_names, new_names) in space_data.items():
                 if mit_id is None: mit_id = "ID unknown"
                 if old_names == new_names:
@@ -124,12 +141,14 @@ class GroupInfo(object):
                             pass
                         else:
                             append_change(mit_id, "Add", name)
-            cac_lines.append("")
+            system_lines.append("")
             group_lines.append("")
 
-        cac_msg = "\n".join(cac_lines)
+        systems_msg = dict([
+            (system, '\n'.join(lines), ) for (system, lines) in systems_lines.items()
+        ])
         group_msg = "\n".join(group_lines)
-        return cac_msg, group_msg
+        return systems_msg, group_msg
 
     def add_locker_signatories(self, space_access, time):
         # space_access: ID -> (Name -> (Set Group.pk))
@@ -280,21 +299,23 @@ def space_access_diffs():
     group_data = {} # Group.pk -> GroupInfo
     cac_locker_msgs = []
 
-    process_spaces =  space.models.Space.objects.all()
+    process_spaces =  space.models.Space.objects.all().select_related('lock_type')
     for the_space in process_spaces:
         new_cac_msgs = space_specific_access(the_space, group_data, old_time, new_time)
         if new_cac_msgs:
             cac_locker_msgs.append("%s\n%s\n" % (the_space.number, "\n".join(new_cac_msgs)))
 
     changed_groups = []
+    cac_chars = 0
     for group_pk, group_info in group_data.items():
         group_info.add_office_signatories(old_time, new_time)
-        cac_changes, group_office_changes = group_info.list_office_changes()
+        systems_changes, group_office_changes = group_info.list_office_changes()
         if group_info.changes:
-            changed_groups.append((group_info.group, cac_changes, group_office_changes, group_info.locker_messages, ))
+            cac_chars += len(systems_changes['cac-card'])
+            changed_groups.append((group_info.group, systems_changes['cac-card'], group_office_changes, group_info.locker_messages, ))
 
     asa_rcpts = ['asa-space@mit.edu', 'asa-db@mit.edu', ]
-    if changed_groups:
+    if cac_chars > 0 or cac_locker_msgs:
         util.emails.email_from_template(
             tmpl='space/cac-change-email.txt',
             context={'changed_groups': changed_groups, 'locker_msgs':cac_locker_msgs, },
