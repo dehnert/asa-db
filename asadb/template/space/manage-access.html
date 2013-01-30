@@ -47,6 +47,14 @@
 <tr>
     <th>{{assignment.space}}</th>
     <td>
+        {% with assignment.space.lock_type as lock_type %}
+        {% if lock_type.db_update == "none" %}
+        <p><strong>Warning: Access to this office is not managed through the ASA DB.</strong></p>
+        <p><em><a href='{% url space-lock-type %}'>{{lock_type.name}}</a></em>: {{lock_type.description}}</p>
+        <p>Contact <a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a> for more information.</p>
+        {% endif %}
+        {% endwith %}
+
         <table class='pretty-table'>
             <tr>
                 {%if allow_edit%}<th>Grant</th>{%endif%}
