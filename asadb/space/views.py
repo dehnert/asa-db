@@ -89,7 +89,7 @@ def manage_access(request, pk, ):
         'changes': changes,
         'allow_edit': allow_edit,
         'extras_indices': extras_indices,
-        'pagename':'group',
+        'pagename':'groups',
     }
     return render_to_response('space/manage-access.html', context, context_instance=RequestContext(request), )
 
@@ -126,6 +126,6 @@ def summary(request, ):
     context = {
         'offices': office_assignments,
         'lockers': locker_rooms,
-        'pagename':'group',
+        'pagename':'groups',
     }
     return render_to_response('space/summary.html', context, context_instance=RequestContext(request), )
