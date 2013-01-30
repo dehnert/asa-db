@@ -176,6 +176,17 @@ class LockerAccessChangeEntry(object):
         return "%s\t%s\t%s" % (self.verb, self.name, self.group_msgs)
 
 def safe_add_change_real(change_by_name, change):
+    """Add a new change to our dict of pending changes.
+
+    If a different change has already been added for this person (eg, "Remove"
+    instead of "Keep", or with a different list of groups), error.  This should
+    always succeed; if it doesn't, the code is buggy. We worry about this
+    because we want to be really sure that the email that goes to just CAC is
+    compatible with the emails that go to each groups. Since we iterate over
+    the changes once per group, we want to be sure that for each group
+    iteration we're building compatible information.
+    """
+
     name = change.name
     if name in change_by_name:
         if change_by_name[name].verb != change.verb or change_by_name[name].groups != change.groups:
@@ -199,6 +210,9 @@ def locker_access_diff(the_space, group_data, old_access, new_access, ):
         if unchanged: continue
         print "ID=%s (%s):\n\t%s\t(%s)\n\t%s\t(%s)\n" % (mit_id, unchanged, old_by_names, old_by_group, new_by_names, new_by_group, ),
         for group_pk in joint_keys(old_by_group, new_by_group):
+            # TODO: Do we need to do an iteration for each group? This seems
+            # slightly questionable. Can we just loop over all known names?
+
             old_names = old_by_group[group_pk]
             new_names = new_by_group[group_pk]
             for name in old_names.union(new_names):
