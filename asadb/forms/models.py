@@ -1,9 +1,9 @@
+from django.conf import settings
 from django.db import models
 
 import datetime
 import os, errno
 
-import settings
 import groups.models
 from util.misc import log_and_ignore_failures, mkdir_p
 import util.previews

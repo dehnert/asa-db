@@ -10,6 +10,7 @@ if __name__ == '__main__':
     sys.path.append(django_dir)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import EmailMessage, mail_admins
 from django.db import connection
@@ -20,7 +21,6 @@ from django.template.loader import get_template
 import reversion.models
 
 import groups.models
-import settings
 import util.emails
 import util.mailinglist
 

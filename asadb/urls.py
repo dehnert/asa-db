@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
 from django.contrib.auth.views import login, logout
 from django.views.generic import list_detail
@@ -5,8 +6,6 @@ from django.views.generic import list_detail
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
-
-import settings
 
 import groups.urls
 import forms.views

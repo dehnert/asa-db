@@ -1,9 +1,9 @@
 import forms.models
 import groups.models
 import groups.views
-import settings
 import util.emails
 
+from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.views.generic import list_detail, ListView, DetailView
