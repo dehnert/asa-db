@@ -1096,6 +1096,15 @@ class ReportingForm(form_utils.forms.BetterForm):
         required=False,
     )
 
+    special_fields_choices = (
+        ('option_entry', '<option> entry', ),
+    )
+    special_fields = forms.fields.MultipleChoiceField(
+        choices=special_fields_choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
     _format_choices = [
         ('html/inline',     "Web (HTML)", ),
         ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
@@ -1111,7 +1120,7 @@ class ReportingForm(form_utils.forms.BetterForm):
             }),
             ('fields', {
                 'legend': 'Data to display',
-                'fields': ['basic_fields', 'people_fields', 'show_as_emails', ],
+                'fields': ['basic_fields', 'people_fields', 'show_as_emails', 'special_fields', ],
             }),
             ('final', {
                 'legend': 'Final options',
@@ -1151,6 +1160,10 @@ def format_email(email):
     else:
         escaped = html.escape(email)
         return mark_safe("<a href='mailto:%s'>%s</a>" % (escaped, escaped))
+
+def format_option_entry(group):
+    name = html.escape(group.name)
+    return '<option value="%s">%s</option>' % (name, name, )
 
 reporting_html_formatters = {
     'id': format_id,
@@ -1192,6 +1205,12 @@ def reporting(request, ):
         for field in people_fields:
             col_labels.append(field.display_name)
 
+        # Set up special fields
+        special_formatters = []
+        if 'option_entry' in form.cleaned_data['special_fields']:
+            col_labels.append('option_entry')
+            special_formatters.append(format_option_entry)
+
         # Assemble data
         if output_format == 'html':
             formatters = reporting_html_formatters
@@ -1203,12 +1222,16 @@ def reporting(request, ):
             if field in formatters:
                 val = formatters[field](val)
             return val
+
         for group in qs:
             group_data = [fetch_item(group, field) for field in basic_fields]
             for field in people_fields:
                 people = people_map[group.pk][field.pk]
                 if show_as_emails: people = ["%s@mit.edu" % p for p in people]
                 group_data.append(", ".join(people))
+
+            for formatter in special_formatters:
+                group_data.append(formatter(group))
 
             report_groups.append(group_data)
 
