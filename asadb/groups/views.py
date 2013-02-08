@@ -1247,7 +1247,9 @@ def reporting(request, ):
                 response['Content-Disposition'] = 'attachment; filename=asa-db-report.csv'
             writer = csv.writer(response)
             writer.writerow(col_labels)
-            for row in report_groups: writer.writerow(row)
+            for row in report_groups:
+                utf8_row = [unicode(cell).encode("utf-8") for cell in row]
+                writer.writerow(utf8_row)
             return response
 
     # Handle output as HTML
