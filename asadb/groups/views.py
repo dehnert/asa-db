@@ -941,18 +941,15 @@ class GroupListView(ListView):
 
 @permission_required('groups.view_signatories')
 def view_signatories(request, ):
-    # TODO:
-    # * limit which columns (roles) get displayed
-    # This might want to wait for the generic reporting infrastructure, since
-    # I'd imagine some of it can be reused.
-
     the_groups = groups.models.Group.objects.all()
     groups_filterset = GroupFilter(request.GET, the_groups)
     the_groups = groups_filterset.qs
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
     officers = officers.filter(group__in=the_groups)
     officers = officers.select_related(depth=1)
-    roles = groups.models.OfficerRole.objects.all()
+    role_slugs = ['president', 'treasurer', 'financial', 'reservation']
+    roles = groups.models.OfficerRole.objects.filter(slug__in=role_slugs)
+    roles = sorted(roles, key=lambda r: role_slugs.index(r.slug))
     officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
     for officer in officers:
         officers_map[officer.group][officer.role].add(officer.person)
