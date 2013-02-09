@@ -6,7 +6,15 @@
 
 <h1>Reporting</h1>
 
-<h2>Results</h2>
+<div class='toolbox'>
+<h2>Sections</h2>
+<ul>
+<li><a href='#results'>Results</a></li>
+<li><a href='#config'>Configuration</a></li>
+</ul>
+</div>
+
+<h2><a name='results'></a>Results</h2>
 {% if run_report %}
 <table class='pretty-table'>
 <thead>
@@ -26,7 +34,7 @@
 <p>No results yet. Configure your report below to get some.</p>
 {% endif %}
 
-<h2>Configuration</h2>
+<h2><a name='config'></a>Configuration</h2>
 <form action="" method="get">
     {{ form|render }}
     <input type="submit" name="go" value="Go" />
