@@ -1078,6 +1078,13 @@ def downloaded_constitutions_csv(request, ):
 #######################
 
 class ReportingForm(form_utils.forms.BetterForm):
+    special_filters = forms.fields.MultipleChoiceField(
+        choices=[],
+        widget=forms.SelectMultiple(attrs={'size': 10}),
+        validators=[groups.models.filter_registry.validate_filter_slug],
+        required=False,
+    )
+
     basic_fields_choices = groups.models.Group.reporting_fields()
     basic_fields_labels = dict(basic_fields_choices) # name -> verbose_name
     basic_fields = forms.fields.MultipleChoiceField(
@@ -1116,7 +1123,11 @@ class ReportingForm(form_utils.forms.BetterForm):
         fieldsets = [
             ('filter', {
                 'legend': 'Filter Groups',
-                'fields': ['name', 'abbreviation', 'activity_category', 'group_class', 'group_status', 'group_funding', ],
+                'fields': [
+                    'name', 'abbreviation',
+                    'activity_category', 'group_class', 'group_status', 'group_funding',
+                    'special_filters',
+                ],
             }),
             ('fields', {
                 'legend': 'Data to display',
@@ -1127,6 +1138,12 @@ class ReportingForm(form_utils.forms.BetterForm):
                 'fields': ['o', 'output_format', ],
             }),
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(ReportingForm, self).__init__(*args, **kwargs)
+
+        registry = groups.models.filter_registry
+        self.fields['special_filters'].choices = registry.get_choices()
 
 class GroupReportingFilter(GroupFilter):
     class Meta(GroupFilter.Meta):
@@ -1189,6 +1206,10 @@ def reporting(request, ):
 
         # Set up query
         qs = groups_filterset.qs
+        for fltr_slug in form.cleaned_data['special_filters']:
+            fltr = groups.models.filter_registry.get(fltr_slug)
+            qs = qs.filter(pk__in=fltr.queryset())
+
         # Prefetch foreign keys
         prefetch_fields = groups.models.Group.reporting_prefetch()
         prefetch_fields = prefetch_fields.intersection(basic_fields)

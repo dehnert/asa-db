@@ -1,5 +1,8 @@
+# -*- coding: utf8 -*-
+
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -569,3 +572,73 @@ class AthenaMoiraAccount(models.Model):
 
     class Meta:
         verbose_name = "Athena (Moira) account"
+
+
+
+class GroupFilter(object):
+    def __init__(self, **kwargs):
+        self.qs_thunk = kwargs['qs_thunk']
+        self.name = kwargs['name']
+        self.description = kwargs['desc']
+
+    def queryset(self, ):
+        return self.qs_thunk()
+
+
+class GroupFilterRegistry(object):
+    def __init__(self, ):
+        self.filters = {}
+        self.filter_groups = {}
+
+    def register_group(self, name, slug, ):
+        if slug in self.filter_groups:
+            raise ValueError, "Duplicate filter group %s" % (slug, )
+        if slug in self.filters:
+            raise ValueError, "Group %s matches filter" % (slug, )
+        self.filter_groups[slug] = dict(
+            name=name,
+            filters=[],
+        )
+        self.filters[slug] = GroupFilter(
+            qs_thunk=None,
+            name=name,
+            desc=None,
+        )
+
+    def register(self, **kwargs):
+        slug = kwargs.pop('slug')
+        group = kwargs.pop('group')
+        if group not in self.filter_groups:
+            raise KeyError, "Unknown filter group %s" % (group, )
+        fltr = GroupFilter(**kwargs)
+        if slug in self.filters:
+            raise ValueError, "Duplicate filter %s" % (slug, )
+        self.filters[slug] = fltr
+        self.filter_groups[group]['filters'].append(slug)
+
+    def get(self, slug):
+        return self.filters[slug]
+
+    def get_choices(self, ):
+        choices = []
+        for group_slug, grp in self.filter_groups.items():
+            choices.append((group_slug, "[%s]" % (grp['name'], )))
+            for filter_slug in grp['filters']:
+                choices.append((filter_slug, self.filters[filter_slug].name))
+            choices.append(("", ""))
+        return choices[:-1]
+
+    def validate_filter_slug(self, value, ):
+        for slug in value:
+            if slug == "":
+                raise ValidationError("Please select only filters")
+            if slug not in self.filters:
+                raise ValidationError("%s is an unknown filter" % (slug, ))
+            if slug in self.filter_groups:
+                raise ValidationError(u"%s is a filter group — please select only filters" % (self.filter_groups[slug]['name'], ))
+
+
+filter_registry = GroupFilterRegistry()
+filter_registry.register_group(name="People", slug='people', )
+filter_registry.register_group(name="Space", slug='space', )
+filter_registry.register_group(name="FYSM", slug='fysm', )

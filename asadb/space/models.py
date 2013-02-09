@@ -125,6 +125,38 @@ class SpaceAssignment(models.Model):
         )
 
 
+groups.models.filter_registry.register(
+    group='space',
+    slug='space:owners',
+    name='Space owners',
+    desc='Groups with space',
+    qs_thunk=lambda: SpaceAssignment.current.values('group'),
+)
+
+def building_filter(building):
+    building_assignments = SpaceAssignment.current.filter(
+        space__number__startswith="%s-" % (building, ),
+    )
+    owners = groups.models.Group.objects.filter(
+        pk__in=building_assignments.values('group'),
+    )
+    return owners
+
+groups.models.filter_registry.register(
+    group='space',
+    slug='space:w20',
+    name='W20 owners',
+    desc='Owners of W20 space',
+    qs_thunk=lambda: building_filter('W20'),
+)
+groups.models.filter_registry.register(
+    group='space',
+    slug='space:walker',
+    name='Walker owners',
+    desc='Owners of Walker space',
+    qs_thunk=lambda: building_filter('50'),
+)
+
 class CurrentACLEntryManager(models.Manager):
     def get_query_set(self, ):
         return super(CurrentACLEntryManager, self).get_query_set().filter(
