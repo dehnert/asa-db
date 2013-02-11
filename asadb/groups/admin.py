@@ -1,6 +1,9 @@
-import groups.models
 from django.contrib import admin
+
 from reversion.admin import VersionAdmin
+
+import groups.models
+import util.admin
 
 class GroupAdmin(VersionAdmin):
     list_max_show_all = 1000
@@ -97,6 +100,10 @@ admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 
 
 class OfficeHolderAdmin(VersionAdmin):
+    class OfficeHolderPeriodFilter(util.admin.TimePeriodFilter):
+        start_field = 'start_time'
+        end_field = 'end_time'
+
     list_display = (
         'id',
         'person',
@@ -120,6 +127,7 @@ class OfficeHolderAdmin(VersionAdmin):
     )
     list_filter = [
         'role',
+        OfficeHolderPeriodFilter,
     ]
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
 
