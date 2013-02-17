@@ -8,10 +8,11 @@ class Admin_LockType(VersionAdmin):
         'name',
         'slug',
         'info_addr',
+        'info_url',
         'db_update',
     )
     list_display_links = ( 'id', 'name', 'slug', )
-    search_fields = ('name', 'slug', 'info_addr', 'db_update', )
+    search_fields = ('name', 'slug', 'info_addr', 'info_url', 'db_update', )
 admin.site.register(space.models.LockType, Admin_LockType)
 
 class Admin_Space(VersionAdmin):
