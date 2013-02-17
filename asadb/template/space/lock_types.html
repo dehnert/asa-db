@@ -17,7 +17,7 @@
 {% for lock_type in lock_types %}
 <tr>
     <th>{{lock_type.name}}</th>
-    <td>{{lock_type.description}}</td>
+    <td>{{lock_type.description}}{% if lock_type.info_url %} <a href='{{lock_type.info_url}}'>Details.</a>{%endif%}</td>
     <td><a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a></td>
     <td>{% if lock_type.db_update != "none" %}Yes: {%endif%}{{lock_type.get_db_update_display}}</td>
 </tr>

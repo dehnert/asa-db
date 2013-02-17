@@ -22,6 +22,7 @@ class LockType(models.Model):
     slug = models.SlugField(unique=True, )
     description = models.TextField()
     info_addr = models.EmailField(default='asa-exec@mit.edu', help_text='Address groups should email to get more information about managing access through this lock type.')
+    info_url = models.URLField(blank=True, help_text='URL that groups can visit to get more information about this lock type.')
     db_update = models.CharField(max_length=20, default='none', choices=lock_db_update_choices)
 
     def __unicode__(self, ):

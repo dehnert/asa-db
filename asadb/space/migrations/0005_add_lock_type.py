@@ -15,6 +15,7 @@ class Migration(SchemaMigration):
             ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50, db_index=True)),
             ('description', self.gf('django.db.models.fields.TextField')()),
             ('info_addr', self.gf('django.db.models.fields.EmailField')(default='asa-exec@mit.edu', max_length=75)),
+            ('info_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
             ('db_update', self.gf('django.db.models.fields.CharField')(default='none', max_length=20)),
         ))
         db.send_create_signal('space', ['LockType'])
@@ -95,6 +96,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'info_addr': ('django.db.models.fields.EmailField', [], {'default': "'asa-exec@mit.edu'", 'max_length': '75'}),
+            'info_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50', 'db_index': 'True'})
         },
@@ -115,7 +117,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'space': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['space.Space']"}),
-            'start': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 27, 17, 53, 25, 630881)', 'db_index': 'True'})
+            'start': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 17, 2, 11, 27, 140773)', 'db_index': 'True'})
         },
         'space.spaceassignment': {
             'Meta': {'object_name': 'SpaceAssignment'},
