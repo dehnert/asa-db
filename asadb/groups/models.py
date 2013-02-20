@@ -588,14 +588,14 @@ class GroupFilter(object):
 class GroupFilterRegistry(object):
     def __init__(self, ):
         self.filters = {}
-        self.filter_groups = {}
+        self.filter_categories = {}
 
-    def register_group(self, name, slug, ):
-        if slug in self.filter_groups:
-            raise ValueError, "Duplicate filter group %s" % (slug, )
+    def register_category(self, name, slug, ):
+        if slug in self.filter_categories:
+            raise ValueError, "Duplicate filter category %s" % (slug, )
         if slug in self.filters:
-            raise ValueError, "Group %s matches filter" % (slug, )
-        self.filter_groups[slug] = dict(
+            raise ValueError, "Category %s matches filter" % (slug, )
+        self.filter_categories[slug] = dict(
             name=name,
             filters=[],
         )
@@ -607,23 +607,23 @@ class GroupFilterRegistry(object):
 
     def register(self, **kwargs):
         slug = kwargs.pop('slug')
-        group = kwargs.pop('group')
-        if group not in self.filter_groups:
-            raise KeyError, "Unknown filter group %s" % (group, )
+        category = kwargs.pop('category')
+        if category not in self.filter_categories:
+            raise KeyError, "Unknown filter category %s" % (category, )
         fltr = GroupFilter(**kwargs)
         if slug in self.filters:
             raise ValueError, "Duplicate filter %s" % (slug, )
         self.filters[slug] = fltr
-        self.filter_groups[group]['filters'].append(slug)
+        self.filter_categories[category]['filters'].append(slug)
 
     def get(self, slug):
         return self.filters[slug]
 
     def get_choices(self, ):
         choices = []
-        for group_slug, grp in self.filter_groups.items():
-            choices.append((group_slug, "[%s]" % (grp['name'], )))
-            for filter_slug in grp['filters']:
+        for category_slug, category in self.filter_categories.items():
+            choices.append((category_slug, "[%s]" % (category['name'], )))
+            for filter_slug in category['filters']:
                 choices.append((filter_slug, self.filters[filter_slug].name))
             choices.append(("", ""))
         return choices[:-1]
@@ -634,11 +634,11 @@ class GroupFilterRegistry(object):
                 raise ValidationError("Please select only filters")
             if slug not in self.filters:
                 raise ValidationError("%s is an unknown filter" % (slug, ))
-            if slug in self.filter_groups:
-                raise ValidationError(u"%s is a filter group — please select only filters" % (self.filter_groups[slug]['name'], ))
+            if slug in self.filter_categories:
+                raise ValidationError(u"%s is a filter category — please select only filters" % (self.filter_categories[slug]['name'], ))
 
 
 filter_registry = GroupFilterRegistry()
-filter_registry.register_group(name="People", slug='people', )
-filter_registry.register_group(name="Space", slug='space', )
-filter_registry.register_group(name="FYSM", slug='fysm', )
+filter_registry.register_category(name="People", slug='people', )
+filter_registry.register_category(name="Space", slug='space', )
+filter_registry.register_category(name="FYSM", slug='fysm', )

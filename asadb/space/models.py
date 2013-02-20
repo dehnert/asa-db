@@ -126,7 +126,7 @@ class SpaceAssignment(models.Model):
 
 
 groups.models.filter_registry.register(
-    group='space',
+    category='space',
     slug='space:owners',
     name='Space owners',
     desc='Groups with space',
@@ -143,14 +143,14 @@ def building_filter(building):
     return owners
 
 groups.models.filter_registry.register(
-    group='space',
+    category='space',
     slug='space:w20',
     name='W20 owners',
     desc='Owners of W20 space',
     qs_thunk=lambda: building_filter('W20'),
 )
 groups.models.filter_registry.register(
-    group='space',
+    category='space',
     slug='space:walker',
     name='Walker owners',
     desc='Owners of Walker space',
