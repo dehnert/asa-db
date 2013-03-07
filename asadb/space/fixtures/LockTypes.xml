@@ -48,4 +48,12 @@
         <field type="CharField" name="info_url"></field>
         <field type="CharField" name="db_update">none</field>
     </object>
+    <object pk="7" model="space.locktype">
+        <field type="CharField" name="name">Group</field>
+        <field type="SlugField" name="slug">group</field>
+        <field type="TextField" name="description">Room with access administered by the group directly.</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
 </django-objects>

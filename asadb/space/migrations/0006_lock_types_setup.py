@@ -6,20 +6,45 @@ from django.core.management import call_command
 from django.db import models
 
 
+# W20: mostly cac-card, but some other things
+# Walker: keys and combos
+# N52: SEMO
+# See also discuss[menelaus asa-db 1320]
+
 room_lock_types = (
     ('W20-454',     'cac-key', ),
     ('W20-401D',    'cac-combo', ),
-    #('W20-415A',    'inner', ), # not in list?
+    #('W20-415A',    'inner', ), # APO's press room --- doesn't even have a door
     ('W20-449',     'inner', ),
     ('W20-451A',    'inner', ),
     ('W20-459',     'inner', ),
     ('W20-463',     'inner', ),
     ('W20-481',     'inner', ),
     ('W20-485/A',   'inner', ),
-)
 
-# Walker: keys and combos: discuss[menelaus asa-db 1320]
-# N52: SEMO
+    # 50-XXX offices: see https://diswww.mit.edu/menelaus/asa-db/4606
+    ('50-001',      'cac-combo', ),
+    ('50-020',      'cac-key', ),
+    ('50-023',      'cac-key', ),
+    ('50-024',      'cac-combo', ),
+    ('50-028',      'cac-combo', ),
+    ('50-030',      'group', ),
+    ('50-301',      'group', ),
+    ('50-302',      'cac-combo', ),
+    ('50-303',      'cac-key', ),
+    ('50-304/A',    'cac-combo', ),
+    ('50-306',      'cac-key', ),
+    ('50-309',      'cac-key', ),
+    ('50-316/A',    'cac-key', ),
+    ('50-318',      'cac-key', ),
+    ('50-320',      'cac-combo', ),
+    #('50-352',     'cac-key', ),      # no current occupant
+    ('50-354A',     'cac-key', ),
+    ('50-356/A',    'cac-key', ),
+    ('50-357',      'cac-key', ),
+    ('50-358',      'cac-key', ),
+    ('50-360',      'cac-key', ),
+)
 
 class Migration(DataMigration):
 
@@ -28,9 +53,10 @@ class Migration(DataMigration):
         call_command("loaddata", "LockTypes.xml")
         lock_types = orm['space.LockType'].objects
         spaces = orm['space.Space'].objects
-        spaces.filter(number__startswith='50-').update(lock_type=lock_types.get(slug='cac-combo'))
+        spaces.filter(number__startswith='50-').update(lock_type=lock_types.get(slug='unknown'))
         spaces.filter(number__startswith='N52-').update(lock_type=lock_types.get(slug='semo'))
         for room, lock_type in room_lock_types:
+            print "Setting room=%s's lock_type to %s" % (room, lock_type, )
             room_obj = spaces.get(number=room)
             room_obj.lock_type = lock_types.get(slug=lock_type)
             room_obj.save()
