@@ -128,7 +128,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             StaticWidget.replace_widget(formfield, value)
         for field in self.force_required:
             self.fields[field].required = True
-        self.fields['constitution_url'].help_text = mark_safe("""Please put your current constitution URL or AFS path.<br>If you don't currently know where your constitution is, put "http://mit.edu/asa/start/constitution-req.html" and draft a constitution soon.""")
+        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitution URL or AFS path.")
 
     exec_only_fields = [
         'name', 'abbreviation',
