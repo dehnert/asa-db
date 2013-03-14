@@ -30,6 +30,7 @@ import reversion.models
 import django_filters
 
 from util.db_form_utils import StaticWidget
+import util.db_filters
 from util.emails import email_from_template
 
 urlvalidator = URLValidator()
@@ -899,16 +900,24 @@ class GroupStartupListView(ListView):
 class GroupFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_type='icontains', label="Name contains")
     abbreviation = django_filters.CharFilter(lookup_type='iexact', label="Abbreviation is")
+    officer_email = django_filters.CharFilter(lookup_type='icontains', label="Officers' list contains")
+
+    account_filter = util.db_filters.MultiNumberFilter(
+        lookup_type='exact', label="Account number",
+        names=('main_account_id', 'funding_account_id', ),
+    )
 
     class Meta:
         model = groups.models.Group
         fields = [
             'name',
             'abbreviation',
+            'officer_email',
             'activity_category',
             'group_class',
             'group_status',
             'group_funding',
+            'account_filter',
         ]
 
     def __init__(self, data=None, *args, **kwargs):
