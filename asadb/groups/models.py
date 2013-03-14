@@ -26,7 +26,7 @@ class ActiveGroupManager(models.Manager):
             group_status__slug='active',
         )
 
-locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker.')
+locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker. This should be the single "word" that appears in "/mit/word/" or "web.mit.edu/word/", with no slashes, spaces, etc..')
 
 class Group(models.Model):
     name = models.CharField(max_length=100, db_index=True, )
