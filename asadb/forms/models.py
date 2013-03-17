@@ -204,3 +204,27 @@ class PersonMembershipUpdate(models.Model):
 
     def __unicode__(self, ):
         return "PersonMembershipUpdate for %s" % (self.username, )
+
+
+
+##########
+# MIDWAY #
+##########
+
+
+class Midway(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField()
+    date = models.DateTimeField()
+    table_map = models.ImageField(upload_to='midway/maps')
+
+    def __str__(self, ):
+        return "%s" % (self.name, )
+
+class MidwayAssignment(models.Model):
+    midway = models.ForeignKey(Midway)
+    location = models.CharField(max_length=20)
+    group = models.ForeignKey(groups.models.Group)
+
+    def __str__(self, ):
+        return "<MidwayAssignment: %s at %s at %s>" % (self.group, self.location, self.midway, )

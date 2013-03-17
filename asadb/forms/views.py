@@ -14,6 +14,7 @@ from django.template.loader import get_template
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
+from django.forms import FileField
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
@@ -553,3 +554,49 @@ def group_confirmation_issues(request, ):
 
 
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )
+
+
+
+##########
+# Midway #
+##########
+
+
+
+class MidwayMapView(DetailView):
+    context_object_name = "midway"
+    model = forms.models.Midway
+    template_name = 'midway/map.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(MidwayMapView, self).get_context_data(**kwargs)
+        
+        midway = context['midway']
+        assignments = forms.models.MidwayAssignment.objects.filter(midway=midway)
+        context['assignments'] = assignments
+
+        return context
+
+
+class MidwayAssignmentsUploadForm(Form):
+    assignments = FileField()
+
+@permission_required('forms.add_midway_assignment')
+def midway_assignment_upload(request, slug, ):
+    midway = get_object_or_404(forms.models.Midway, slug=slug, )
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = MidwayAssignmentsUploadForm(request.POST, request.FILES, ) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            pass
+    else:
+        form = MidwayAssignmentsUploadForm() # An unbound form
+
+    context = {
+        'midway':midway,
+        'form':form,
+        'pagename':'midway',
+    }
+    return render_to_response('midway/upload.html', context, context_instance=RequestContext(request), )

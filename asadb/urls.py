@@ -72,6 +72,10 @@ urlpatterns = patterns('',
     ),
     url(r'^membership/admin/issues.csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
 
+    # Midway
+    url(r'^midway/(?P<slug>[\w-]+)/$', forms.views.MidwayMapView.as_view(), name='midway-map', ),
+    url(r'^midway/(?P<slug>[\w-]+)/assign/$', forms.views.midway_assignment_upload, name='midway-assign', ),
+
     # Group list
     (r'^groups/', include(groups.urls.urls(), ), ),
 

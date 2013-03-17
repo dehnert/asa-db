@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}ASA: {{midway.name}}{% endblock %}
+{% block content %}
+
+<h1><a href='http://web.mit.edu/asa/'>ASA</a>: {{midway.name}}</h1>
+
+<p>Welcome to the ASA {{midway.name}}! You can find out about MIT's many exciting student groups. Below you will find a map of the Midway, as well as groups' table assignments and links to their respective websites.</p>
+
+<h2>Map</h2>
+
+<img src='{{ MEDIA_URL }}{{midway.table_map}}' alt='Midway map'>
+
+<h2>Assignments</h2>
+
+{% endblock %}
