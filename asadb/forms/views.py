@@ -22,6 +22,7 @@ from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q, Count
 
+import collections
 import csv
 import datetime
 import StringIO
@@ -575,6 +576,7 @@ class MidwayMapView(DetailView):
         midway = context['midway']
         assignments = forms.models.MidwayAssignment.objects.filter(midway=midway)
         context['assignments'] = assignments
+        context['pagename'] = 'midway'
 
         return context
 
@@ -586,17 +588,50 @@ class MidwayAssignmentsUploadForm(Form):
 def midway_assignment_upload(request, slug, ):
     midway = get_object_or_404(forms.models.Midway, slug=slug, )
 
+    uploaded = False
+    found = []
+    issues = collections.defaultdict(list)
+
     if request.method == 'POST': # If the form has been submitted...
         form = MidwayAssignmentsUploadForm(request.POST, request.FILES, ) # A form bound to the POST data
 
         if form.is_valid(): # All validation rules pass
-            pass
+            uploaded = True
+            reader = csv.DictReader(request.FILES['assignments'])
+            for row in reader:
+                group_name = row['Group']
+                group_officers = row['officers']
+                table = row['Table']
+                issue = False
+                try:
+                    group = groups.models.Group.objects.get(name=group_name)
+                    assignment = forms.models.MidwayAssignment(
+                        midway=midway,
+                        location=table,
+                        group=group,
+                    )
+                    assignment.save()
+                    found.append(assignment)
+                    status = group.group_status.slug
+                    if status != 'active':
+                        issue = 'status=%s (added anyway)' % (status, )
+                except groups.models.Group.DoesNotExist:
+                    issue = 'unknown group (ignored)'
+                if issue:
+                    issues[issue].append((group_name, group_officers, table))
+            for issue in issues:
+                issues[issue] = sorted(issues[issue], key=lambda x: x[0])
+
     else:
         form = MidwayAssignmentsUploadForm() # An unbound form
 
     context = {
         'midway':midway,
         'form':form,
+        'uploaded': uploaded,
+        'found': found,
+        'issues': dict(issues),
+        #'issues': issues,
         'pagename':'midway',
     }
     return render_to_response('midway/upload.html', context, context_instance=RequestContext(request), )

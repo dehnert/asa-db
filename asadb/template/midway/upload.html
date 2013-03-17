@@ -2,7 +2,48 @@
 
 {% block title %}ASA: {{midway.name}}: upload assignments{% endblock %}
 {% block content %}
-<h2>{{midway.name}}: upload assignments</h2>
+<h1>{{midway.name}}: upload assignments</h1>
+
+{% if uploaded %}
+<h2>Results</h2>
+
+<h3>New entries added ({{found|length}})</h3>
+
+<table class='pretty-table'>
+<tr>
+    <th>Group</th>
+    <th>Table</th>
+</tr>
+{% for assignment in found %}
+<tr>
+    <th>{{assignment.group}}</th>
+    <td>{{assignment.location}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% for issue, cases in issues.items %}
+<h3>Issue: {{issue}} ({{cases|length}})</h3>
+<table class='pretty-table'>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Table</th>
+</tr>
+{% for name, email, table in cases %}
+<tr>
+    <th>{{name}}</th>
+    <td>{{email}}</td>
+    <td>{{table}}</td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}
+
+<!-- end of results -->
+{% endif %}
+
+<h2>Input</h2>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
