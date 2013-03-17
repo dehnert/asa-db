@@ -12,5 +12,19 @@
 <img src='{{ MEDIA_URL }}{{midway.table_map}}' alt='Midway map'>
 
 <h2>Assignments</h2>
+<table class='pretty-table'>
+<tr>
+    <th>Group</th>
+    <th>Table</th>
+    <th>Website</th>
+</tr>
+{% for assignment in assignments %}
+<tr>
+    <th>{{assignment.group}}</th>
+    <td>{{assignment.location}}</td>
+    <td>{% if assignment.group.website_url %}<a href='{{assignment.group.website_url}}'>Website</a>{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
 
 {% endblock %}

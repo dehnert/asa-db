@@ -631,7 +631,6 @@ def midway_assignment_upload(request, slug, ):
         'uploaded': uploaded,
         'found': found,
         'issues': dict(issues),
-        #'issues': issues,
         'pagename':'midway',
     }
     return render_to_response('midway/upload.html', context, context_instance=RequestContext(request), )
