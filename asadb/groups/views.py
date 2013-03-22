@@ -1012,7 +1012,7 @@ class GroupHistoryView(ListView):
         history_entries = None
         if 'pk' in self.kwargs:
             group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            history_entries = reversion.models.Version.objects.get_for_object(group)
+            history_entries = reversion.get_for_object(group)
         else:
             history_entries = reversion.models.Version.objects.all()
             group_content_type = ContentType.objects.get_for_model(groups.models.Group)
