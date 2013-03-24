@@ -564,6 +564,14 @@ def group_confirmation_issues(request, ):
 # Midway #
 ##########
 
+def midway_map_latest(request, ):
+    midways = forms.models.Midway.objects.order_by('-date')[:1]
+    if len(midways) == 0:
+        raise Http404("No midways found.")
+    else:
+        url = reverse('midway-map', args=(midways[0].slug, ))
+        return HttpResponseRedirect(url)
+
 
 class MidwayAssignmentFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(name='group__name', lookup_type='icontains', label="Name contains")
@@ -587,6 +595,7 @@ class MidwayAssignmentFilter(django_filters.FilterSet):
             ('group__activity_category__name', 'Activity category', ),
             ('location', 'Location', ),
         )
+
 
 class MidwayMapView(DetailView):
     context_object_name = "midway"
