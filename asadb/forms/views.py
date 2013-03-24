@@ -1,7 +1,7 @@
-import forms.models
-import groups.models
-import groups.views
-import util.emails
+import collections
+import csv
+import datetime
+import StringIO
 
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
@@ -22,10 +22,10 @@ from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q, Count
 
-import collections
-import csv
-import datetime
-import StringIO
+import forms.models
+import groups.models
+import groups.views
+import util.emails
 
 #################
 # GENERIC VIEWS #

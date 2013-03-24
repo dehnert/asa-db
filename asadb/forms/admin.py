@@ -1,5 +1,6 @@
-import forms.models
 from django.contrib import admin
+
+import forms.models
 
 class FYSMAdmin(admin.ModelAdmin):
     list_display = (
