@@ -617,7 +617,7 @@ class MidwayMapView(DetailView):
 class MidwayAssignmentsUploadForm(Form):
     assignments = FileField()
 
-@permission_required('forms.add_midway_assignment')
+@permission_required('forms.add_midwayassignment')
 def midway_assignment_upload(request, slug, ):
     midway = get_object_or_404(forms.models.Midway, slug=slug, )
 
