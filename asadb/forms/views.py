@@ -650,6 +650,8 @@ def midway_assignment_upload(request, slug, ):
                         issue = 'status=%s (added anyway)' % (status, )
                 except groups.models.Group.DoesNotExist:
                     issue = 'unknown group (ignored)'
+                except groups.models.Group.MultipleObjectsReturned:
+                    issue = 'multiple groups found (ignored)'
                 if issue:
                     issues[issue].append((group_name, group_officers, table))
             for issue in issues:
