@@ -15,16 +15,27 @@
 <table class='pretty-table'>
 <tr>
     <th>Group</th>
-    <th>Table</th>
+    <th>Category</th>
+    <th>Location</th>
     <th>Website</th>
 </tr>
 {% for assignment in assignments %}
 <tr>
     <th>{{assignment.group}}</th>
+    <td>{% if assignment.group.activity_category %}{{assignment.group.activity_category}}{% endif %}</td>
     <td>{{assignment.location}}</td>
     <td>{% if assignment.group.website_url %}<a href='{{assignment.group.website_url}}'>Website</a>{% endif %}</td>
 </tr>
 {% endfor %}
 </table>
+
+<h2>Sort the assignments</h2>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" value="Search" />
+</form>
 
 {% endblock %}

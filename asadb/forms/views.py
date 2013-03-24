@@ -22,6 +22,8 @@ from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q, Count
 
+import django_filters
+
 import forms.models
 import groups.models
 import groups.views
@@ -563,6 +565,28 @@ def group_confirmation_issues(request, ):
 ##########
 
 
+class MidwayAssignmentFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(name='group__name', lookup_type='icontains', label="Name contains")
+    abbreviation = django_filters.CharFilter(name='group__abbreviation', lookup_type='iexact', label="Abbreviation is")
+    activity_category = django_filters.ModelChoiceFilter(
+        label='Activity category',
+        name='group__activity_category',
+        queryset=groups.models.ActivityCategory.objects,
+    )
+
+    class Meta:
+        model = forms.models.MidwayAssignment
+        fields = [
+            'name',
+            'abbreviation',
+            'activity_category',
+        ]
+        order_by = (
+            ('group__name', 'Name', ),
+            ('group__abbreviation', 'Abbreviation', ),
+            ('group__activity_category__name', 'Activity category', ),
+            ('location', 'Location', ),
+        )
 
 class MidwayMapView(DetailView):
     context_object_name = "midway"
@@ -573,9 +597,9 @@ class MidwayMapView(DetailView):
         # Call the base implementation first to get a context
         context = super(MidwayMapView, self).get_context_data(**kwargs)
         
-        midway = context['midway']
-        assignments = forms.models.MidwayAssignment.objects.filter(midway=midway)
-        context['assignments'] = assignments
+        filterset = MidwayAssignmentFilter(self.request.GET)
+        context['assignments'] = filterset.qs
+        context['filter'] = filterset
         context['pagename'] = 'midway'
 
         return context
