@@ -1,10 +1,3 @@
-from django.conf import settings
-from django.db import models
-from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
-import reversion
-
 import datetime
 import filecmp
 import mimetypes
@@ -15,6 +8,14 @@ import subprocess
 import urlparse
 import urllib
 import urllib2
+
+from django.conf import settings
+from django.db import models
+from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+
+import reversion
 
 import mit
 

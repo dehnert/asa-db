@@ -1,7 +1,7 @@
-import forms.models
-import groups.models
-import groups.views
-import util.emails
+import collections
+import csv
+import datetime
+import StringIO
 
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
@@ -14,6 +14,7 @@ from django.template.loader import get_template
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage, mail_admins
+from django.forms import FileField
 from django.forms import Form
 from django.forms import ModelForm
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
@@ -21,9 +22,12 @@ from django.forms import ValidationError
 from django.db import connection
 from django.db.models import Q, Count
 
-import csv
-import datetime
-import StringIO
+import django_filters
+
+import forms.models
+import groups.models
+import groups.views
+import util.emails
 
 #################
 # GENERIC VIEWS #
@@ -553,3 +557,115 @@ def group_confirmation_issues(request, ):
 
 
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )
+
+
+
+##########
+# Midway #
+##########
+
+def midway_map_latest(request, ):
+    midways = forms.models.Midway.objects.order_by('-date')[:1]
+    if len(midways) == 0:
+        raise Http404("No midways found.")
+    else:
+        url = reverse('midway-map', args=(midways[0].slug, ))
+        return HttpResponseRedirect(url)
+
+
+class MidwayAssignmentFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(name='group__name', lookup_type='icontains', label="Name contains")
+    abbreviation = django_filters.CharFilter(name='group__abbreviation', lookup_type='iexact', label="Abbreviation is")
+    activity_category = django_filters.ModelChoiceFilter(
+        label='Activity category',
+        name='group__activity_category',
+        queryset=groups.models.ActivityCategory.objects,
+    )
+
+    class Meta:
+        model = forms.models.MidwayAssignment
+        fields = [
+            'name',
+            'abbreviation',
+            'activity_category',
+        ]
+        order_by = (
+            ('group__name', 'Name', ),
+            ('group__abbreviation', 'Abbreviation', ),
+            ('group__activity_category__name', 'Activity category', ),
+            ('location', 'Location', ),
+        )
+
+
+class MidwayMapView(DetailView):
+    context_object_name = "midway"
+    model = forms.models.Midway
+    template_name = 'midway/map.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(MidwayMapView, self).get_context_data(**kwargs)
+        
+        filterset = MidwayAssignmentFilter(self.request.GET)
+        context['assignments'] = filterset.qs
+        context['filter'] = filterset
+        context['pagename'] = 'midway'
+
+        return context
+
+
+class MidwayAssignmentsUploadForm(Form):
+    assignments = FileField()
+
+@permission_required('forms.add_midwayassignment')
+def midway_assignment_upload(request, slug, ):
+    midway = get_object_or_404(forms.models.Midway, slug=slug, )
+
+    uploaded = False
+    found = []
+    issues = collections.defaultdict(list)
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = MidwayAssignmentsUploadForm(request.POST, request.FILES, ) # A form bound to the POST data
+
+        if form.is_valid(): # All validation rules pass
+            uploaded = True
+            reader = csv.DictReader(request.FILES['assignments'])
+            for row in reader:
+                group_name = row['Group']
+                group_officers = row['officers']
+                table = row['Table']
+                issue = False
+                try:
+                    group = groups.models.Group.objects.get(name=group_name)
+                    assignment = forms.models.MidwayAssignment(
+                        midway=midway,
+                        location=table,
+                        group=group,
+                    )
+                    assignment.save()
+                    found.append(assignment)
+                    status = group.group_status.slug
+                    if status != 'active':
+                        issue = 'status=%s (added anyway)' % (status, )
+                except groups.models.Group.DoesNotExist:
+                    issue = 'unknown group (ignored)'
+                except groups.models.Group.MultipleObjectsReturned:
+                    issue = 'multiple groups found (ignored)'
+                if issue:
+                    issues[issue].append((group_name, group_officers, table))
+            for issue in issues:
+                issues[issue] = sorted(issues[issue], key=lambda x: x[0])
+
+    else:
+        form = MidwayAssignmentsUploadForm() # An unbound form
+
+    context = {
+        'midway':midway,
+        'form':form,
+        'uploaded': uploaded,
+        'found': found,
+        'issues': dict(issues),
+        'pagename':'midway',
+    }
+    return render_to_response('midway/upload.html', context, context_instance=RequestContext(request), )

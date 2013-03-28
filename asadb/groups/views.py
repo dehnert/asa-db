@@ -4,8 +4,6 @@ import collections
 import csv
 import datetime
 
-import groups.models
-
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
@@ -29,6 +27,7 @@ import form_utils.forms
 import reversion.models
 import django_filters
 
+import groups.models
 from util.db_form_utils import StaticWidget
 import util.db_filters
 from util.emails import email_from_template
