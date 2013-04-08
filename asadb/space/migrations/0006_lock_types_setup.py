@@ -28,7 +28,7 @@ room_lock_types = (
     ('50-023',      'cac-key', ),
     ('50-024',      'cac-combo', ),
     ('50-028',      'cac-combo', ),
-    ('50-030',      'group', ),
+    ('50-030',      'cac-combo', ), # guess --- matches 50-028, which seems to be same room
     ('50-301',      'group', ),
     ('50-302',      'cac-combo', ),
     ('50-303',      'cac-key', ),
@@ -44,6 +44,22 @@ room_lock_types = (
     ('50-357',      'cac-key', ),
     ('50-358',      'cac-key', ),
     ('50-360',      'cac-key', ),
+
+    # More 50-XXX offices: see https://diswww.mit.edu/menelaus/asa-db/7662
+    ('50-220',      'cac-card', ),  # GSC main office
+    ('50-209',      'cac-key', ),   # other GSC entries
+    ('50-210',      'cac-key', ),   # other GSC entries
+    ('50-221',      'cac-key', ),   # other GSC entries
+    ('50-222',      'cac-key', ),   # other GSC entries
+    ('50-030/ABCD', 'group', ),     # WMBR main office
+    ('50-027',      'cac-key', ),   # other WMBR
+    ('50-031A',     'cac-key', ),   # other WMBR
+    ('50-036',      'cac-key', ),   # other WMBR
+    ('50-038/ABCD', 'cac-key', ),   # other WMBR
+    ('50-039',      'cac-key', ),   # other WMBR
+    ('50-042/A',    'cac-key', ),   # other WMBR
+    ('50-025/A',    'cac-key', ),   # set shop
+    ('50-045',      'cac-key', ),   # set shop
 )
 
 class Migration(DataMigration):
