@@ -564,6 +564,20 @@ def group_confirmation_issues(request, ):
 # Midway #
 ##########
 
+
+class View_Midways(ListView):
+    context_object_name = "midway_list"
+    template_name = "midway/midway_list.html"
+
+    def get_queryset(self):
+        midways = forms.models.Midway.objects.order_by('date')
+        return midways
+
+    def get_context_data(self, **kwargs):
+        context = super(View_Midways, self).get_context_data(**kwargs)
+        context['pagename'] = 'midway'
+        return context
+
 def midway_map_latest(request, ):
     midways = forms.models.Midway.objects.order_by('-date')[:1]
     if len(midways) == 0:
