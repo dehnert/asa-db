@@ -629,7 +629,14 @@ class MidwayMapView(DetailView):
 
 
 class MidwayAssignmentsUploadForm(Form):
-    assignments = FileField()
+    def validate_csv_fields(upload_file):
+        reader = csv.reader(upload_file)
+        row = reader.next()
+        for col in ('Group', 'officers', 'Table', ):
+            if col not in row:
+                raise ValidationError('Please upload a CSV file with (at least) columns "Group", "officers", and "Table". (Missing at least "%s".)' % (col, ))
+
+    assignments = FileField(validators=[validate_csv_fields])
 
 @permission_required('forms.add_midwayassignment')
 def midway_assignment_upload(request, slug, ):
