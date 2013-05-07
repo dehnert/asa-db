@@ -1280,17 +1280,19 @@ def show_nonstudent_officers(request, ):
     office_holders = groups.models.OfficeHolder.current_holders.order_by('group__name', 'role', )
     office_holders = office_holders.filter(role__in=student_roles)
     office_holders = office_holders.exclude(person__in=students.values('username'))
-    office_holders = office_holders.select_related('group', 'role')
+    office_holders = office_holders.select_related('group', 'group__group_status', 'role')
 
     msg = None
     msg_type = ""
     if 'sort' in request.GET:
         if request.GET['sort'] == 'group':
-            office_holders = office_holders.order_by('group__name', 'role', 'person', )
+            office_holders = office_holders.order_by('group__name', 'group__group_status', 'role', 'person', )
+        elif request.GET['sort'] == 'status':
+            office_holders = office_holders.order_by('group__group_status', 'group__name', 'role', 'person', )
         elif request.GET['sort'] == 'role':
-            office_holders = office_holders.order_by('role', 'group__name', 'person', )
+            office_holders = office_holders.order_by('role', 'group__group_status', 'group__name', 'person', )
         elif request.GET['sort'] == 'person':
-            office_holders = office_holders.order_by('person', 'group__name', 'role', )
+            office_holders = office_holders.order_by('person', 'group__group_status', 'group__name', 'role', )
         else:
             msg = 'Unknown sort key "%s".' % (request.GET['sort'], )
             msg_type = 'error'
