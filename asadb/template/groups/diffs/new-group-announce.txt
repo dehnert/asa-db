@@ -11,7 +11,7 @@ group's complete information into the ASA Database:
 
 Your group's entry is at:
 
-      http://asa.mit.edu/{% url groups:group-detail group.pk %}
+      https://asa.mit.edu{% url groups:group-detail group.pk %}
 
 You should make sure to do the following:
 * add membership numbers
