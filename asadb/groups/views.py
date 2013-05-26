@@ -572,12 +572,12 @@ class GroupCreateForm(form_utils.forms.BetterModelForm):
     president_kerberos = forms.CharField(min_length=3, max_length=8, )
     treasurer_name = forms.CharField(max_length=50)
     treasurer_kerberos = forms.CharField(min_length=3, max_length=8, )
-    def clean_president(self, ):
+    def clean_president_kerberos(self, ):
         username = self.cleaned_data['president_kerberos']
         validate_athena(username, True, )
         return username
 
-    def clean_treasurer(self, ):
+    def clean_treasurer_kerberos(self, ):
         username = self.cleaned_data['treasurer_kerberos']
         validate_athena(username, True, )
         return username
