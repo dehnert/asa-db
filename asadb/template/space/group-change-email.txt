@@ -1,5 +1,8 @@
 {% autoescape off %}Hi {{group.name}},
-    Thank you for updating space access on the ASA database today. We've forwarded the following changes on to CAC:
+
+Thank you for updating space access on the ASA database today. We are forwarding these changes to CAC, which generally updates access within [interval]. They will reply when the update has been done; if you don't get a reply, the message may have been lost and you should reply-all to this email reminding them.
+
+We believe you made the following changes:
 
 {% if office_msg %}
 Office access:
