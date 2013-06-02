@@ -55,6 +55,12 @@
 
         {% else %}
 
+        <p>We recommend managing access on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page if possible. You should only need to use this page if:</p>
+        <ul>
+            <li>You need to grant access to somebody who does not have an Athena account, or</li>
+            <li>Your group has several offices, and somebody needs access to one or more of the offices, but should not have access to all of them</li>
+        </ul>
+
         <table class='pretty-table'>
             <tr>
                 {%if allow_edit%}<th>Grant</th>{%endif%}
