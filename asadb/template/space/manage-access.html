@@ -52,8 +52,8 @@
         <p><strong>Warning: Access to this office is not managed through the ASA DB.</strong></p>
         <p><em><a href='{% url space-lock-type %}'>{{lock_type.name}}</a></em>: {{lock_type.description}}</p>
         <p>Contact <a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a> for more information.</p>
-        {% endif %}
-        {% endwith %}
+
+        {% else %}
 
         <table class='pretty-table'>
             <tr>
@@ -74,6 +74,10 @@
                 <td><input type='text' name='new[{{assignment.pk}}][{{index}}][card]'></td>
             </tr>{% endfor %}
         </table>
+
+        {% endif %}
+        {% endwith %}
+
     </td>
 </tr>
 {% endfor %}
