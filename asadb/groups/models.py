@@ -97,6 +97,7 @@ class Group(models.Model):
         if as_of:
             if as_of == "now": as_of = datetime.datetime.now()
             office_holders = office_holders.filter(start_time__lte=as_of, end_time__gte=as_of)
+        office_holders = office_holders.order_by('role', 'person')
         return office_holders
 
     def slug(self, ):
