@@ -504,10 +504,7 @@ class GroupStatus(models.Model):
     is_active = models.BooleanField(default=True, help_text="This status represents an active group")
 
     def __str__(self, ):
-        active = ""
-        if not self.is_active:
-            active = " (inactive)"
-        return "%s%s" % (self.name, active, )
+        return self.name
 
     class Meta:
         verbose_name_plural= "group statuses"
