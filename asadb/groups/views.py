@@ -220,7 +220,7 @@ def manage_main(request, pk, ):
 # Helper for manage_officers view
 def manage_officers_load_officers(group, ):
     officers = group.officers()
-    people = list(set([ officer.person for officer in officers ]))
+    people = sorted(set([ officer.person for officer in officers ]))
     roles  = groups.models.OfficerRole.objects.all()
 
     name_map = {}
