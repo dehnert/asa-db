@@ -243,7 +243,7 @@ class UpdateOfficerListCallback(DiffCallback):
 
 
 def default_active_pred():
-    status_objs = groups.models.GroupStatus.objects.filter(slug__in=['active', 'suspended', 'nge'])
+    status_objs = groups.models.GroupStatus.objects.filter(slug__in=['active', 'suspended', ])
     status_pks = [status.pk for status in status_objs]
     def pred(version, fields):
         return fields['group_status'] in status_pks

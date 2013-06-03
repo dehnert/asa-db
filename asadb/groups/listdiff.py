@@ -15,7 +15,7 @@ import groups.models
 import util.mailinglist
 
 def get_lists():
-    status_objs = groups.models.GroupStatus.objects.filter(slug__in=['active', 'suspended', 'nge'])
+    status_objs = groups.models.GroupStatus.objects.filter(slug__in=['active', 'suspended', ])
     active_groups = groups.models.Group.objects.filter(group_status__in=status_objs)
     funded_groups = active_groups.filter(group_class__slug='mit-funded')
     return (
