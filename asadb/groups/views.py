@@ -952,12 +952,15 @@ def view_signatories(request, ):
     the_groups = groups.models.Group.objects.all()
     groups_filterset = GroupFilter(request.GET, the_groups)
     the_groups = groups_filterset.qs
+
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
     officers = officers.filter(group__in=the_groups)
     officers = officers.select_related(depth=1)
+
     role_slugs = ['president', 'treasurer', 'financial', 'reservation']
     roles = groups.models.OfficerRole.objects.filter(slug__in=role_slugs)
     roles = sorted(roles, key=lambda r: role_slugs.index(r.slug))
+
     officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
     for officer in officers:
         officers_map[officer.group][officer.role].add(officer.person)
@@ -965,7 +968,7 @@ def view_signatories(request, ):
     for group in the_groups:
         role_list = []
         for role in roles:
-            role_list.append(officers_map[group][role])
+            role_list.append(sorted(officers_map[group][role]))
         officers_data.append((group, role_list))
 
     context = {
