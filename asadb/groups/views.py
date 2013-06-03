@@ -630,6 +630,13 @@ class GroupCreateStartupForm(GroupCreateForm):
         self.fields['constitution_url'].required = True
         self.fields['constitution_url'].help_text = "Please put a copy of your finalized constitution on a publicly-accessible website (e.g. your group's, or your own, Public folder), and link to it in the box above."
         self.fields['athena_locker'].required = True
+        self.fields['athena_locker'].help_text = "In general, this is limited to twelve characters. You should stick to letters, numbers, and hyphens. (Underscores and dots are also acceptable, but may cause problems in some situations.)"
+
+        # Specifically, if the group ends up wanting to use scripts.mit.edu,
+        # they will currently be assigned locker.scripts.mit.edu. If they try
+        # to use foo.bar, then https://foo.bar.scripts.mit.edu/ will produce a
+        # certificate name mismatch. Officially, underscores are not allowed in
+        # hostnames, so foo_.scripts.mit.edu may fail with some software.
 
     class Meta(GroupCreateForm.Meta):
         fieldsets = filter(
