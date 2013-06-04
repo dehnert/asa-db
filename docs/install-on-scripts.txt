@@ -1,0 +1,71 @@
+If you're not running a Linux machine, the easiest way for (me to show you how)
+you can install the database is probably to run it on scripts.mit.edu, so here
+are instructions for that.
+
+You should ssh into an Athena machine (for example, athena.dialup.mit.edu).
+
+Once there, run "add scripts; scripts-django". That will ask you various
+questions, that I think are mostly straightforward to answer. I'm going
+to assume that you'll pick ~"1. Install into my locker.", give a path of
+"asa-db", and a project name of "asadb". Once you finish that, you'll
+have a generic Django install, which we need to turn into an ASA DB
+install (going roughly off the instructions at
+http://scripts.mit.edu/faq/127/how-can-i-import-an-outside-django-project).
+Adjust the directions below appropriately if you picked other options.
+
+In the directions below, where `adehnert` appears you should instead put your
+username.
+
+# 2. Move the autoinstalled version aside
+cd /mit/$USER/Scripts/django/
+mv asa-db{,.auto}
+
+# 3. Download the ASA DB code
+git clone https://asa-db.scripts.mit.edu/git/asa-db/asa-db.git asadb
+
+# 4. Fix index.fcgi
+nano /mit/$USER/web_scripts/asadb/index.fcgi
+# Add "sys.path.insert(0, "/mit/adehnert/Scripts/django/asa-db/asadb")"
+# just below the other sys.path.insert line
+
+# 5. Add the media symlink
+ln -s ../../Scripts/django/asa-db/asadb/media/ ../../web_scripts/asa-db/
+
+# 6. Configure your settings
+cd asa-db/asadb/
+cp settings/local_settings.scripts.py local_settings.py
+cp settings/local_settings_after.scripts.py local_settings_after.py
+nano local_settings.py
+# update the database name ("adehnert+asadb"), replace testing@mit.edu
+# with "adehnert@mit.edu", and use the supplied Python snippet to set
+# SECRET_KEY.
+# https://asa.scripts.mit.edu:444 should be adehnert, not asa.
+# I *think* everything else should be fine.
+
+# 7. Install dependencies
+# (see http://scripts.mit.edu/faq/126)
+add consult
+mkdir -p /mit/$USER/.local/lib/python2.7/site-packages/
+fsr sa /mit/$USER/.local/lib/python2.7/site-packages/ daemon.scripts write
+mkdir -p /mit/$USER/Scripts/
+fs sa /mit/$USER/Scripts/ daemon.scripts write
+
+ssh $USER@scripts.mit.edu
+cd /mit/$USER/Scripts/
+easy_install --user -Z django-form-utils django-reversion
+pip-python install --user -e git+https://github.com/alex/django-filter.git#egg=django-filter)
+
+# 8. Set up the database backend
+cd /mit/$USER/Scripts/django/asa-db/asadb/
+./manage.py syncdb
+./manage.py migrate
+
+At this point, it should be working. If it doesn't, debug or get a more
+experienced developer to help you do so.
+
+In general, the obvious next thing for new contributors to do is to look at
+https://asa.scripts.mit.edu/trac/query and
+https://asa.scripts.mit.edu/trac/wiki/PossibleNextTickets (more the latter),
+and see if there's a couple things listed there that look like fun to fix
+(probably with "Size: small" or "Size: tiny"). Take a shot at fixing them,
+or ask a more experienced developer to help you.

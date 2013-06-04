@@ -4,8 +4,6 @@ import collections
 import csv
 import datetime
 
-import groups.models
-
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
@@ -29,7 +27,9 @@ import form_utils.forms
 import reversion.models
 import django_filters
 
+import groups.models
 from util.db_form_utils import StaticWidget
+import util.db_filters
 from util.emails import email_from_template
 
 urlvalidator = URLValidator()
@@ -128,7 +128,7 @@ class GroupChangeMainForm(form_utils.forms.BetterModelForm):
             StaticWidget.replace_widget(formfield, value)
         for field in self.force_required:
             self.fields[field].required = True
-        self.fields['constitution_url'].help_text = mark_safe("""Please put your current constitution URL or AFS path.<br>If you don't currently know where your constitution is, put "http://mit.edu/asa/start/constitution-req.html" and draft a constitution soon.""")
+        self.fields['constitution_url'].help_text = mark_safe("Please put your current constitution URL or AFS path.")
 
     exec_only_fields = [
         'name', 'abbreviation',
@@ -220,7 +220,7 @@ def manage_main(request, pk, ):
 # Helper for manage_officers view
 def manage_officers_load_officers(group, ):
     officers = group.officers()
-    people = list(set([ officer.person for officer in officers ]))
+    people = sorted(set([ officer.person for officer in officers ]))
     roles  = groups.models.OfficerRole.objects.all()
 
     name_map = {}
@@ -572,12 +572,12 @@ class GroupCreateForm(form_utils.forms.BetterModelForm):
     president_kerberos = forms.CharField(min_length=3, max_length=8, )
     treasurer_name = forms.CharField(max_length=50)
     treasurer_kerberos = forms.CharField(min_length=3, max_length=8, )
-    def clean_president(self, ):
+    def clean_president_kerberos(self, ):
         username = self.cleaned_data['president_kerberos']
         validate_athena(username, True, )
         return username
 
-    def clean_treasurer(self, ):
+    def clean_treasurer_kerberos(self, ):
         username = self.cleaned_data['treasurer_kerberos']
         validate_athena(username, True, )
         return username
@@ -630,6 +630,13 @@ class GroupCreateStartupForm(GroupCreateForm):
         self.fields['constitution_url'].required = True
         self.fields['constitution_url'].help_text = "Please put a copy of your finalized constitution on a publicly-accessible website (e.g. your group's, or your own, Public folder), and link to it in the box above."
         self.fields['athena_locker'].required = True
+        self.fields['athena_locker'].help_text = "In general, this is limited to twelve characters. You should stick to letters, numbers, and hyphens. (Underscores and dots are also acceptable, but may cause problems in some situations.)"
+
+        # Specifically, if the group ends up wanting to use scripts.mit.edu,
+        # they will currently be assigned locker.scripts.mit.edu. If they try
+        # to use foo.bar, then https://foo.bar.scripts.mit.edu/ will produce a
+        # certificate name mismatch. Officially, underscores are not allowed in
+        # hostnames, so foo_.scripts.mit.edu may fail with some software.
 
     class Meta(GroupCreateForm.Meta):
         fieldsets = filter(
@@ -899,16 +906,24 @@ class GroupStartupListView(ListView):
 class GroupFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_type='icontains', label="Name contains")
     abbreviation = django_filters.CharFilter(lookup_type='iexact', label="Abbreviation is")
+    officer_email = django_filters.CharFilter(lookup_type='icontains', label="Officers' list contains")
+
+    account_filter = util.db_filters.MultiNumberFilter(
+        lookup_type='exact', label="Account number",
+        names=('main_account_id', 'funding_account_id', ),
+    )
 
     class Meta:
         model = groups.models.Group
         fields = [
             'name',
             'abbreviation',
+            'officer_email',
             'activity_category',
             'group_class',
             'group_status',
             'group_funding',
+            'account_filter',
         ]
 
     def __init__(self, data=None, *args, **kwargs):
@@ -941,18 +956,18 @@ class GroupListView(ListView):
 
 @permission_required('groups.view_signatories')
 def view_signatories(request, ):
-    # TODO:
-    # * limit which columns (roles) get displayed
-    # This might want to wait for the generic reporting infrastructure, since
-    # I'd imagine some of it can be reused.
-
     the_groups = groups.models.Group.objects.all()
     groups_filterset = GroupFilter(request.GET, the_groups)
     the_groups = groups_filterset.qs
+
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
     officers = officers.filter(group__in=the_groups)
     officers = officers.select_related(depth=1)
-    roles = groups.models.OfficerRole.objects.all()
+
+    role_slugs = ['president', 'treasurer', 'financial', 'reservation']
+    roles = groups.models.OfficerRole.objects.filter(slug__in=role_slugs)
+    roles = sorted(roles, key=lambda r: role_slugs.index(r.slug))
+
     officers_map = collections.defaultdict(lambda: collections.defaultdict(set))
     for officer in officers:
         officers_map[officer.group][officer.role].add(officer.person)
@@ -960,7 +975,7 @@ def view_signatories(request, ):
     for group in the_groups:
         role_list = []
         for role in roles:
-            role_list.append(officers_map[group][role])
+            role_list.append(sorted(officers_map[group][role]))
         officers_data.append((group, role_list))
 
     context = {
@@ -1006,7 +1021,7 @@ class GroupHistoryView(ListView):
         history_entries = None
         if 'pk' in self.kwargs:
             group = get_object_or_404(groups.models.Group, pk=self.kwargs['pk'])
-            history_entries = reversion.models.Version.objects.get_for_object(group)
+            history_entries = reversion.get_for_object(group)
         else:
             history_entries = reversion.models.Version.objects.all()
             group_content_type = ContentType.objects.get_for_model(groups.models.Group)
@@ -1099,6 +1114,15 @@ class ReportingForm(form_utils.forms.BetterForm):
         required=False,
     )
 
+    special_fields_choices = (
+        ('option_entry', '<option> entry', ),
+    )
+    special_fields = forms.fields.MultipleChoiceField(
+        choices=special_fields_choices,
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
     _format_choices = [
         ('html/inline',     "Web (HTML)", ),
         ('csv/inline',      "Spreadsheet (CSV) --- in browser", ),
@@ -1114,7 +1138,7 @@ class ReportingForm(form_utils.forms.BetterForm):
             }),
             ('fields', {
                 'legend': 'Data to display',
-                'fields': ['basic_fields', 'people_fields', 'show_as_emails', ],
+                'fields': ['basic_fields', 'people_fields', 'show_as_emails', 'special_fields', ],
             }),
             ('final', {
                 'legend': 'Final options',
@@ -1154,6 +1178,10 @@ def format_email(email):
     else:
         escaped = html.escape(email)
         return mark_safe("<a href='mailto:%s'>%s</a>" % (escaped, escaped))
+
+def format_option_entry(group):
+    name = html.escape(group.name)
+    return '<option value="%s">%s</option>' % (name, name, )
 
 reporting_html_formatters = {
     'id': format_id,
@@ -1195,6 +1223,12 @@ def reporting(request, ):
         for field in people_fields:
             col_labels.append(field.display_name)
 
+        # Set up special fields
+        special_formatters = []
+        if 'option_entry' in form.cleaned_data['special_fields']:
+            col_labels.append('option_entry')
+            special_formatters.append(format_option_entry)
+
         # Assemble data
         if output_format == 'html':
             formatters = reporting_html_formatters
@@ -1206,12 +1240,16 @@ def reporting(request, ):
             if field in formatters:
                 val = formatters[field](val)
             return val
+
         for group in qs:
             group_data = [fetch_item(group, field) for field in basic_fields]
             for field in people_fields:
                 people = people_map[group.pk][field.pk]
                 if show_as_emails: people = ["%s@mit.edu" % p for p in people]
                 group_data.append(", ".join(people))
+
+            for formatter in special_formatters:
+                group_data.append(formatter(group))
 
             report_groups.append(group_data)
 
@@ -1227,7 +1265,9 @@ def reporting(request, ):
                 response['Content-Disposition'] = 'attachment; filename=asa-db-report.csv'
             writer = csv.writer(response)
             writer.writerow(col_labels)
-            for row in report_groups: writer.writerow(row)
+            for row in report_groups:
+                utf8_row = [unicode(cell).encode("utf-8") for cell in row]
+                writer.writerow(utf8_row)
             return response
 
     # Handle output as HTML
@@ -1250,17 +1290,19 @@ def show_nonstudent_officers(request, ):
     office_holders = groups.models.OfficeHolder.current_holders.order_by('group__name', 'role', )
     office_holders = office_holders.filter(role__in=student_roles)
     office_holders = office_holders.exclude(person__in=students.values('username'))
-    office_holders = office_holders.select_related('group', 'role')
+    office_holders = office_holders.select_related('group', 'group__group_status', 'role')
 
     msg = None
     msg_type = ""
     if 'sort' in request.GET:
         if request.GET['sort'] == 'group':
-            office_holders = office_holders.order_by('group__name', 'role', 'person', )
+            office_holders = office_holders.order_by('group__name', 'group__group_status', 'role', 'person', )
+        elif request.GET['sort'] == 'status':
+            office_holders = office_holders.order_by('group__group_status', 'group__name', 'role', 'person', )
         elif request.GET['sort'] == 'role':
-            office_holders = office_holders.order_by('role', 'group__name', 'person', )
+            office_holders = office_holders.order_by('role', 'group__group_status', 'group__name', 'person', )
         elif request.GET['sort'] == 'person':
-            office_holders = office_holders.order_by('person', 'group__name', 'role', )
+            office_holders = office_holders.order_by('person', 'group__group_status', 'group__name', 'role', )
         else:
             msg = 'Unknown sort key "%s".' % (request.GET['sort'], )
             msg_type = 'error'

@@ -34,12 +34,14 @@
 <table class='pretty-table'>
 <tr>
     <th><a href='?sort=group'>Group</a></th>
+    <th><a href='?sort=status'>Status</a></th>
     <th><a href='?sort=role'>Role</a></th>
     <th><a href='?sort=person'>Person</a></th>
 </tr>
 {% for holder in holders %}
 <tr>
     <td><a href='{% url groups:group-detail holder.group.pk %}'>{{holder.group.name}}</a></td>
+    <td>{{holder.group.group_status}}</td>
     <td>{{holder.role.display_name}}</td>
     <td>{{holder.person}}</td>
 </tr>

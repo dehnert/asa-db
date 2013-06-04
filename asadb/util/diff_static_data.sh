@@ -4,7 +4,7 @@ author="$USER diff_static_data.sh on $(hostname) <asa-db@mit.edu>"
 
 date
 
-cd static-data
+cd "$(dirname "$0")/static-data"
 
 ../dump_group_perms.py > group-perms.py
 git add group-perms.py

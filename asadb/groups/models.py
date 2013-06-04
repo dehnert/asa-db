@@ -1,9 +1,3 @@
-from django.db import models
-from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
-import reversion
-
 import datetime
 import filecmp
 import mimetypes
@@ -15,7 +9,13 @@ import urlparse
 import urllib
 import urllib2
 
-import settings
+from django.conf import settings
+from django.db import models
+from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+
+import reversion
 
 import mit
 
@@ -27,7 +27,7 @@ class ActiveGroupManager(models.Manager):
             group_status__slug='active',
         )
 
-locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker.')
+locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker. This should be the single "word" that appears in "/mit/word/" or "web.mit.edu/word/", with no slashes, spaces, etc..')
 
 class Group(models.Model):
     name = models.CharField(max_length=100, db_index=True, )
@@ -97,6 +97,7 @@ class Group(models.Model):
         if as_of:
             if as_of == "now": as_of = datetime.datetime.now()
             office_holders = office_holders.filter(start_time__lte=as_of, end_time__gte=as_of)
+        office_holders = office_holders.order_by('role', 'person')
         return office_holders
 
     def slug(self, ):
@@ -503,10 +504,7 @@ class GroupStatus(models.Model):
     is_active = models.BooleanField(default=True, help_text="This status represents an active group")
 
     def __str__(self, ):
-        active = ""
-        if not self.is_active:
-            active = " (inactive)"
-        return "%s%s" % (self.name, active, )
+        return self.name
 
     class Meta:
         verbose_name_plural= "group statuses"

@@ -1,6 +1,12 @@
-import groups.models
+import datetime
+
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy
+
 from reversion.admin import VersionAdmin
+
+import groups.models
+import util.admin
 
 class GroupAdmin(VersionAdmin):
     list_max_show_all = 1000
@@ -97,6 +103,21 @@ admin.site.register(groups.models.OfficerRole, OfficerRoleAdmin)
 
 
 class OfficeHolderAdmin(VersionAdmin):
+    class OfficeHolderPeriodFilter(util.admin.TimePeriodFilter):
+        start_field = 'start_time'
+        end_field = 'end_time'
+
+    def expire_holders(self, request, queryset):
+        rows_updated = queryset.update(end_time=datetime.datetime.now())
+        if rows_updated == 1:
+            message_bit = "1 entry was"
+        else:
+            message_bit = "%s entries were" % rows_updated
+        self.message_user(request, "%s successfully expired." % message_bit)
+    expire_holders.short_description = ugettext_lazy("Expire selected %(verbose_name_plural)s")
+
+    actions = ['expire_holders']
+
     list_display = (
         'id',
         'person',
@@ -120,6 +141,7 @@ class OfficeHolderAdmin(VersionAdmin):
     )
     list_filter = [
         'role',
+        OfficeHolderPeriodFilter,
     ]
 admin.site.register(groups.models.OfficeHolder, OfficeHolderAdmin)
 
@@ -187,4 +209,5 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     )
     list_display_links = ( 'id', 'username', )
     search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
+    list_filter = ( 'account_class', 'mutable', )
 admin.site.register(groups.models.AthenaMoiraAccount, Admin_AthenaMoiraAccount)
