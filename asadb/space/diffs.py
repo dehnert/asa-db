@@ -119,7 +119,7 @@ class GroupInfo(object):
             group_lines.append(line)
 
             if lock_type.db_update == 'none':
-                tmpl =  'Warning: You submitted changes effecting this space, but this space is ' + \
+                tmpl =  'Warning: You submitted changes affecting this space, but this space is ' + \
                         'a "%s" space, and is not managed through the ASA DB. See ' + \
                         'https://asa.mit.edu%s for details on how to update spaces of this type.'
                 line = tmpl % (lock_type.name, reverse('space-lock-type'), )
