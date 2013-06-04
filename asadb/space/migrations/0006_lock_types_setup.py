@@ -28,7 +28,6 @@ room_lock_types = (
     ('50-023',      'cac-key', ),
     ('50-024',      'cac-combo', ),
     ('50-028',      'cac-combo', ),
-    ('50-030',      'cac-combo', ), # guess --- matches 50-028, which seems to be same room
     ('50-301',      'group', ),
     ('50-302',      'cac-combo', ),
     ('50-303',      'cac-key', ),
@@ -60,15 +59,32 @@ room_lock_types = (
     ('50-042/A',    'cac-key', ),   # other WMBR
     ('50-025/A',    'cac-key', ),   # set shop
     ('50-045',      'cac-key', ),   # set shop
+
+    # 50-032: See http://asa.scripts.mit.edu/trac/ticket/96#comment:4.
+    # The outer door has a keyhole, but all the groups are also in 50-028 and
+    # apparently just use the connecting door. The room was originally listed
+    # as 50-030, so that also needs to be fixed.
+    ('50-032',      'inner', ),
 )
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
+
+        spaces = orm['space.Space'].objects
+
+        # Fix 50-032 (see http://asa.scripts.mit.edu/trac/ticket/96#comment:4)
+        try:
+            W030 = spaces.get(number='50-030')
+            W030.number = '50-032'
+            W030.save()
+        except orm['space.Space'].DoesNotExist:
+            print "    - Could not find 50-030 for renaming to 50-032"
+
+        # Add lock types
         call_command("loaddata", "LockTypes.xml")
         lock_types = orm['space.LockType'].objects
-        spaces = orm['space.Space'].objects
         spaces.filter(number__startswith='50-').update(lock_type=lock_types.get(slug='unknown'))
         spaces.filter(number__startswith='N52-').update(lock_type=lock_types.get(slug='semo'))
         for room, lock_type in room_lock_types:
@@ -80,6 +96,14 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
         "Write your backwards methods here."
+        # Unfix 50-032
+        spaces = orm['space.Space'].objects
+        try:
+            W030 = spaces.get(number='50-032')
+            W030.number = '50-030'
+            W030.save()
+        except orm['space.Space'].DoesNotExist:
+            print "    - Could not find 50-032 to unrename back to 50-030"
 
 
     models = {
