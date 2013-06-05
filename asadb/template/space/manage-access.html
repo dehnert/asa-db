@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}{{group.name}}: Office Access{% endblock %}
+{% block title %}{{group.name}}: Space Access{% endblock %}
 {% block content %}
 
-<h1>{{group.name}}: Office Access</h1>
+<h1>{{group.name}}: Space Access</h1>
 
 {% include "groups/group_tools.part.html" %}
 
@@ -47,6 +47,20 @@
 <tr>
     <th>{{assignment.space}}</th>
     <td>
+        {% with assignment.space.lock_type as lock_type %}
+        {% if lock_type.db_update == "none" %}
+        <p><strong>Warning: Access to this office is not managed through the ASA DB.</strong></p>
+        <p><em><a href='{% url space-lock-type %}'>{{lock_type.name}}</a></em>: {{lock_type.description}}{% if lock_type.info_url %} <a href='{{lock_type.info_url}}'>Details.</a>{%endif%}</p>
+        <p>Contact <a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a> for more information.</p>
+
+        {% else %}
+
+        <p>We recommend managing access on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page if possible. You should only need to use this page if:</p>
+        <ul>
+            <li>You need to grant access to somebody who does not have an Athena account, or</li>
+            <li>Your group has several offices, and somebody needs access to one or more of the offices, but should not have access to all of them</li>
+        </ul>
+
         <table class='pretty-table'>
             <tr>
                 {%if allow_edit%}<th>Grant</th>{%endif%}
@@ -66,6 +80,10 @@
                 <td><input type='text' name='new[{{assignment.pk}}][{{index}}][card]'></td>
             </tr>{% endfor %}
         </table>
+
+        {% endif %}
+        {% endwith %}
+
     </td>
 </tr>
 {% endfor %}

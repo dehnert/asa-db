@@ -26,12 +26,14 @@ for any group for which you have permission.</p>
 <tr>
     <th>Room</th>
     <th>Group</th>
+    <th><a href='{% url space-lock-type %}'>Lock Type</a></th>
     <th>Access</th>
 </tr>
 {% for office in offices %}
 <tr>
     <td>{{office.space.number}}</td>
     <td><a href='{% url groups:group-detail office.group.pk %}'>{{office.group}}</a></td>
+    <td>{{office.space.lock_type.name}}</td>
     <td><a href='{% url groups:group-space-access office.group.pk %}'>Access</a></td>
 </tr>
 {% endfor %}
