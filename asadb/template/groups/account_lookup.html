@@ -42,6 +42,10 @@
 </table>
 {% endif %}
 
+{% if account_number %}
+<p>You may be able to find information about account {{account_number}} in <a href='https://rolesweb.mit.edu/cgi-bin/roleauth2.pl?category=SAP+SAP-related&amp;func_name=CAN+SPEND+OR+COMMIT+FUNDS&amp;qual_code=F{{account_number}}&amp;skip_root=Y'>Roles</a>.</p>
+{% endif %}
+
 <table class='pretty-table'>
 <form enctype="multipart/form-data" method="get" action="">
 {{ form.as_table }}
