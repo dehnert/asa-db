@@ -1,12 +1,20 @@
 from django.conf.urls.defaults import *
 
+import django.shortcuts
+
 import groups.views
 import space.views
+
+def redirect_view(to):
+    def _redirect_view(request, **kwargs):
+        return django.shortcuts.redirect(to, **kwargs)
+    return _redirect_view
 
 group_patterns = patterns('',
     url(r'^$', groups.views.GroupDetailView.as_view(), name='group-detail', ),
     url(r'^edit/main$', groups.views.manage_main, name='group-manage-main', ),
-    url(r'^edit/officers$', groups.views.manage_officers, name='group-manage-officers', ),
+    url(r'^edit/people$', groups.views.manage_officers, name='group-manage-officers', ),
+    url(r'^edit/officers$', redirect_view('groups:group-manage-officers'), ),
     url(r'^history/$', groups.views.GroupHistoryView.as_view(), name='group-manage-history', ),
     url(r'^space/$', space.views.manage_access, name='group-space-access', ),
 )
