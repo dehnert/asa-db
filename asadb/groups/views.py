@@ -629,6 +629,7 @@ class GroupCreateStartupForm(GroupCreateForm):
         self.fields['activity_category'].required = True
         self.fields['constitution_url'].required = True
         self.fields['constitution_url'].help_text = "Please put a copy of your finalized constitution on a publicly-accessible website (e.g. your group's, or your own, Public folder), and link to it in the box above."
+        self.fields['group_email'].required = True
         self.fields['athena_locker'].required = True
         self.fields['athena_locker'].help_text = "In general, this is limited to twelve characters. You should stick to letters, numbers, and hyphens. (Underscores and dots are also acceptable, but may cause problems in some situations.)"
 
