@@ -853,6 +853,14 @@ def recognize_normal_group(request, pk, ):
             group.recognition_date = datetime.datetime.now()
             group.set_updater(request.user)
 
+            note = groups.models.GroupNote(
+                author=request.user.username,
+                body="Approved group for recognition.",
+                acl_read_group=True,
+                acl_read_offices=True,
+                group=group,
+            ).save()
+
             group.save()
             officer_emails = create_group_officers(group, group_startup.__dict__, )
             welcome_mail, accounts_mail = create_group_get_emails(group, group_startup, officer_emails, )
