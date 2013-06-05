@@ -87,11 +87,17 @@ class Migration(DataMigration):
         lock_types = orm['space.LockType'].objects
         spaces.filter(number__startswith='50-').update(lock_type=lock_types.get(slug='unknown'))
         spaces.filter(number__startswith='N52-').update(lock_type=lock_types.get(slug='semo'))
+        created_rooms = []
         for room, lock_type in room_lock_types:
             print "Setting room=%s's lock_type to %s" % (room, lock_type, )
-            room_obj = spaces.get(number=room)
-            room_obj.lock_type = lock_types.get(slug=lock_type)
+            lt_obj = lock_types.get(slug=lock_type)
+            room_obj, created = spaces.get_or_create(number=room, defaults=dict(lock_type=lt_obj))
+            if created: created_rooms.append(room_obj)
+            room_obj.lock_type = lt_obj
             room_obj.save()
+
+        for room_obj in created_rooms:
+            print "Created %s while setting lock_type" % (room_obj.number, )
 
 
     def backwards(self, orm):
