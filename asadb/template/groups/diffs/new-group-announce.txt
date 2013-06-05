@@ -4,8 +4,9 @@
 
 to the MIT community!
 
-The last step to finalize the group recognition is for you to finish entering the
-group's complete information into the ASA Database:
+Your group is currently *suspended*. The last step to finalize the group
+recognition is for you to finish entering the group's complete information into
+the ASA Database:
 
       http://web.mit.edu/asa/www/asa-db.shtml
 
@@ -28,6 +29,9 @@ Note that at this point only the President and Treasurer of the group
 ({{officer_emails|join:", "}})
 can modify the information and that MIT personal certificates are
 required to access the group's account in the ASA Database.
+
+Once you have completed these steps, you must *notify asa-groups@mit.edu* to
+become an active group.
 
 *** Please keep this e-mail for further reference. ***
 

@@ -848,7 +848,7 @@ def recognize_normal_group(request, pk, ):
             group_startup.stage = groups.models.GROUP_STARTUP_STAGE_APPROVED
             group_startup.save()
 
-            group.group_status = groups.models.GroupStatus.objects.get(slug='active')
+            group.group_status = groups.models.GroupStatus.objects.get(slug='suspended')
             group.constitution_url = ""
             group.recognition_date = datetime.datetime.now()
             group.set_updater(request.user)
