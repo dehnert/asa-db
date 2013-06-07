@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}ASA Midways{% endblock %}
+{% block content %}
+
+<h1>ASA Midways</h1>
+
+<p>The ASA has held many midways over the years. Maps of some of them are available below.</p>
+
+<ul>
+{% for midway in midway_list %}
+    <li><a href='{% url midway-map midway.slug %}'>{{midway.name}}</a> ({{midway.date.date}})</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
