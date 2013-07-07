@@ -129,7 +129,7 @@ def get_or_create_mit_user(username, ):
 
 def scripts_login(request, **kwargs):
     host = request.META['HTTP_HOST'].split(':')[0]
-    if host == 'localhost':
+    if host in ('localhost', '127.0.0.1'):
         return login(request, **kwargs)
     elif request.META['SERVER_PORT'] == '444':
         if request.user.is_authenticated():
