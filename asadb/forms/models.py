@@ -17,7 +17,7 @@ class FYSM(models.Model):
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
     description = models.TextField(help_text="Explain, in no more than 400 characters (including spaces), what your group does and why incoming students should get involved.")
     logo = models.ImageField(upload_to='fysm/logos', blank=True, help_text="Upload a logo (JPG, GIF, or PNG) to display on the main FYSM page as well as the group detail page. This will be scaled to be 100px wide.")
-    slide = models.ImageField(upload_to='fysm/slides', default="", help_text="Upload a slide (JPG, GIF, or PNG) to display on the group detail page. This will be scaled to be at most 600x600 pixels. We recommend making it exactly that size.")
+    slide = models.ImageField(upload_to='fysm/slides', blank=True, default="", help_text="Upload a slide (JPG, GIF, or PNG) to display on the group detail page. This will be scaled to be at most 600x600 pixels. We recommend making it exactly that size.")
     tags = models.CharField(max_length=100, blank=True, help_text="Specify some free-form, comma-delimited tags for your group", )
     categories = models.ManyToManyField('FYSMCategory', blank=True, help_text="Put your group into whichever of our categories seem applicable.", )
     join_preview = models.ForeignKey('PagePreview', null=True, )

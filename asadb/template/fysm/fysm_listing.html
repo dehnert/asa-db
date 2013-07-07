@@ -58,7 +58,11 @@ href="http://web.mit.edu/asa">our website</a>.</p>
 
 {% for fysm in fysm_list %}
 <div class='single-fysm-entry'>
-    <h3><a href='{% url fysm-view year fysm.pk %}'>{{fysm.display_name}}</a></h3>
+    {% comment %}
+    If we were cooler, years when we had slides would still link them here.
+    We're not that cool, though, so we just always link the join page.
+    {% endcomment %}
+    <h3><a href='{% url fysm-link year "join" fysm.pk %}'>{{fysm.display_name}}</a></h3>
     <div class='fysm-body'>
     <div class='logo'>
         {% if fysm.logo %}
