@@ -72,7 +72,7 @@ href="http://web.mit.edu/asa">our website</a>.</p>
         {% endif %}
     </div>
     <p class='data'>{{fysm.description}}</p>
-    <p class='join'><a href='{% url fysm-link year "join" fysm.pk %}'>Join {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
+    <p class='join'><a href='{% url fysm-link year "join" fysm.pk %}'>Learn more about {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
     </div>
     {% if fysm.tags %}
     <p class='tags'>tags: {{fysm.tags}}</p>
