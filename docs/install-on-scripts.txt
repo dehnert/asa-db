@@ -53,7 +53,7 @@ fs sa /mit/$USER/Scripts/ daemon.scripts write
 ssh $USER@scripts.mit.edu
 cd /mit/$USER/Scripts/
 easy_install --user -Z django-form-utils django-reversion
-pip-python install --user -e git+https://github.com/alex/django-filter.git#egg=django-filter)
+pip-python install --user -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
 # 8. Set up the database backend
 cd /mit/$USER/Scripts/django/asa-db/asadb/
