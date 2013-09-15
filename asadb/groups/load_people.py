@@ -25,6 +25,8 @@ fields = [
     'first_name',
     'last_name',
     'account_class',
+    'affiliation_basic',
+    'affiliation_detailed',
 ]
 
 def load_dcm(dcm_stream):

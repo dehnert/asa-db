@@ -1293,9 +1293,8 @@ def reporting(request, ):
 @permission_required('groups.view_group_private_info')
 def show_nonstudent_officers(request, ):
     student_roles  = groups.models.OfficerRole.objects.filter(require_student=True, )
-    year = datetime.datetime.now().year
-    account_classes = ["G"] + [str(yr) for yr in range(year-5, year+10)]
-    students = groups.models.AthenaMoiraAccount.active_accounts.filter(account_class__in=account_classes)
+    student_q = groups.models.AthenaMoiraAccount.student_q()
+    students = groups.models.AthenaMoiraAccount.active_accounts.filter(student_q)
     office_holders = groups.models.OfficeHolder.current_holders.order_by('group__name', 'role', )
     office_holders = office_holders.filter(role__in=student_roles)
     office_holders = office_holders.exclude(person__in=students.values('username'))

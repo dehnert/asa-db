@@ -202,6 +202,8 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
         'first_name',
         'last_name',
         'account_class',
+        'affiliation_basic',
+        'loose_student',
         'mutable',
         'add_date',
         'del_date',
@@ -209,5 +211,10 @@ class Admin_AthenaMoiraAccount(admin.ModelAdmin):
     )
     list_display_links = ( 'id', 'username', )
     search_fields = ( 'username', 'mit_id', 'first_name', 'last_name', 'account_class', )
-    list_filter = ( 'account_class', 'mutable', )
+    list_filter = (
+        'account_class',
+        'affiliation_basic', 'affiliation_detailed',
+        'loose_student',
+        'mutable',
+    )
 admin.site.register(groups.models.AthenaMoiraAccount, Admin_AthenaMoiraAccount)

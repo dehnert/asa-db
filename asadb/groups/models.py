@@ -11,6 +11,7 @@ import urllib2
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -524,12 +525,19 @@ class AthenaMoiraAccount_ActiveManager(models.Manager):
     def get_query_set(self, ):
         return super(AthenaMoiraAccount_ActiveManager, self).get_query_set().filter(del_date=None)
 
+def student_account_classes():
+    year = datetime.datetime.now().year
+    return ["G"] + [str(yr) for yr in range(year-5, year+10)]
+
 class AthenaMoiraAccount(models.Model):
     username = models.CharField(max_length=8, unique=True, )
     mit_id = models.CharField(max_length=15)
     first_name      = models.CharField(max_length=45)
     last_name       = models.CharField(max_length=45)
     account_class   = models.CharField(max_length=10)
+    affiliation_basic       = models.CharField(max_length=10)
+    affiliation_detailed    = models.CharField(max_length=40)
+    loose_student   = models.BooleanField(default=False, help_text='Whether to use loose or strict determination of student status. Loose means that either the account class or the affiliation should indicate student status; strict means that the affiliation must be student. In general, we use strict; for some people ("secret people") directory information is suppressed and the affiliation will be misleading.')
     mutable         = models.BooleanField(default=True)
     add_date        = models.DateField(help_text="Date when this person was added to the dump.", )
     del_date        = models.DateField(help_text="Date when this person was removed from the dump.", blank=True, null=True, )
@@ -539,8 +547,15 @@ class AthenaMoiraAccount(models.Model):
     active_accounts = AthenaMoiraAccount_ActiveManager()
 
     def is_student(self, ):
-        # XXX: Is this... right?
-        return self.account_class == 'G' or self.account_class.isdigit()
+        student_affiliation = (self.affiliation_basic == 'student')
+        student_class = (self.account_class in student_account_classes())
+        return student_affiliation or (student_class and self.loose_student)
+
+    @staticmethod
+    def student_q():
+        q_affiliation = Q(affiliation_basic='student')
+        q_class = Q(account_class__in=student_account_classes())
+        return q_affiliation | (q_class & Q(loose_student=True))
 
     def format(self, ):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.username, )
