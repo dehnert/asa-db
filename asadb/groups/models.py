@@ -410,7 +410,7 @@ class OfficeHolder(models.Model):
     EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
     END_NEVER       = datetime.datetime.max
 
-    person = models.CharField(max_length=30, db_index=True, )
+    person = models.CharField(max_length=30, db_index=True, help_text='Athena username')
     role = models.ForeignKey('OfficerRole', db_index=True, )
     group = models.ForeignKey('Group', db_index=True, )
     start_time = models.DateTimeField(default=datetime.datetime.now, db_index=True, )
