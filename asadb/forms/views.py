@@ -251,7 +251,7 @@ membership_update_qs = groups.models.Group.objects.filter(group_status__slug__in
 def group_membership_update_select_group(request, ):
     cycle = forms.models.GroupConfirmationCycle.latest()
 
-    users_groups = groups.models.Group.involved_groups(request.user.username)
+    users_groups = groups.models.Group.admin_groups(request.user.username)
     qs = membership_update_qs.filter(pk__in=users_groups)
 
     return select_group(request=request,
@@ -260,7 +260,6 @@ def group_membership_update_select_group(request, ):
         pagename='groups',
         queryset=qs,
         title="Submit membership update for...",
-        msg="The list below contains only groups that list you as being involved. You must be an administrator of a group to submit an update.",
     )
 
 class Form_GroupMembershipUpdate(ModelForm):
