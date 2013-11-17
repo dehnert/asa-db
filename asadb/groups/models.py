@@ -1,3 +1,4 @@
+import collections
 import datetime
 import filecmp
 import mimetypes
@@ -13,7 +14,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 
 import reversion
@@ -111,6 +113,11 @@ class Group(models.Model):
     def involved_groups(username):
         current_officers = OfficeHolder.current_holders.filter(person=username)
         users_groups = Group.objects.filter(officeholder__in=current_officers).distinct()
+
+    @staticmethod
+    def admin_groups(username, codename='admin_group'):
+        holders = OfficeHolder.current_holders.filter_perm(codename=codename).filter(person=username)
+        users_groups = Group.objects.filter(officeholder__in=holders).distinct()
         return users_groups
 
     @classmethod
@@ -394,8 +401,30 @@ class OfficerRole(models.Model):
         return ret
 
     @classmethod
+    def getRolesGrantingPerm(cls, perm=None, model=Group, codename=None, ):
+        """Get all OfficerRole objects granting a permission
+
+        Either `perm` or `codename` must be supplied, but not both. If
+        `codename` is provided (and `perm` is None), then `perm` the
+        permission corresponding to `model` (default: `Group`) and `codename`
+        will be found and used."""
+
+        if perm is None:
+            ct = ContentType.objects.get_for_model(model)
+            print ct
+            print Permission.objects.filter(content_type=ct)
+            perm = Permission.objects.get(content_type=ct, codename=codename)
+
+        Q_user = Q(user_permissions=perm)
+        Q_group = Q(groups__permissions=perm)
+        users = User.objects.filter(Q_user|Q_group)
+        roles = cls.objects.filter(grant_user__in=users)
+        return roles
+
+    @classmethod
     def retrieve(cls, slug, ):
         return cls.objects.get(slug=slug)
+
 reversion.register(OfficerRole)
 
 
@@ -405,6 +434,10 @@ class OfficeHolder_CurrentManager(models.Manager):
             start_time__lte=datetime.datetime.now,
             end_time__gte=datetime.datetime.now,
         )
+
+    def filter_perm(self, perm=None, model=Group, codename=None, ):
+        roles = OfficerRole.getRolesGrantingPerm(perm=perm, model=model, codename=codename)
+        return self.get_query_set().filter(role__in=roles)
 
 class OfficeHolder(models.Model):
     EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
@@ -432,6 +465,7 @@ class OfficeHolder(models.Model):
 
     def __repr__(self, ):
         return str(self)
+
 reversion.register(OfficeHolder)
 
 
