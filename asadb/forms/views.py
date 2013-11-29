@@ -541,7 +541,7 @@ def group_confirmation_issues(request, slug, ):
 
     for group_update in group_updates:
         group = group_update.group
-        num_confirms = len(people_confirmations.filter(groups=group))
+        num_confirms = people_confirmations.filter(groups=group).count()
         problems = []
 
         if num_confirms < 5:
