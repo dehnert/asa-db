@@ -167,7 +167,7 @@ class GroupMembershipUpdate(models.Model):
     num_other_affiliate = models.IntegerField(verbose_name="Num other MIT affiliates")
     num_other = models.IntegerField(verbose_name="Num non-MIT")
 
-    membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
+    membership_list = models.TextField(blank=True, help_text="Member emails on separate lines (Athena usernames where applicable)")
 
     email_preface = models.TextField(blank=True, help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
 

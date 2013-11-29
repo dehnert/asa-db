@@ -282,7 +282,7 @@ class Form_GroupMembershipUpdate(ModelForm):
             'num_alum',
             'num_other_affiliate',
             'num_other',
-            'membership_list',
+            #'membership_list',
         ]
 
 @login_required
