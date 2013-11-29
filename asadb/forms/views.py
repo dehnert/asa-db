@@ -497,15 +497,27 @@ class View_GroupMembershipList(ListView):
         return group_updates
 
 
+class View_GroupConfirmationCyclesList(ListView):
+    context_object_name = "cycle_list"
+    template_name = "membership/admin.html"
+    model = forms.models.GroupConfirmationCycle
+
+    def get_context_data(self, **kwargs):
+        context = super(View_GroupConfirmationCyclesList, self).get_context_data(**kwargs)
+        context['pagename'] = 'groups'
+        return context
+
+
 @permission_required('groups.view_group_private_info')
-def group_confirmation_issues(request, ):
+def group_confirmation_issues(request, slug, ):
     account_numbers = ("accounts" in request.GET) and request.GET['accounts'] == "1"
 
     active_groups = groups.models.Group.active_groups
-    group_updates = forms.models.GroupMembershipUpdate.objects.all()
+    group_updates = forms.models.GroupMembershipUpdate.objects.filter(cycle__slug=slug, )
     people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
         deleted__isnull=True,
         valid__gt=0,
+        cycle__slug=slug,
     )
 
     buf = StringIO.StringIO()

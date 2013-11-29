@@ -5,13 +5,30 @@
 
 <h2>Membership confirmations &mdash; ASA Exec pages</h2>
 
-<p>Exec members can check the <a href='{% url membership-issues %}'>list of groups with issues</a> (or a version <a href='{% url membership-issues %}?accounts=1'>with account numbers</a>)</p>
+<p>Exec members can check the issues:</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Name</th>
+    <th>Create date</th>
+    <th>Issues</th>
+    <th>(with accounts)</th>
+</tr>
+{% for cycle in cycle_list %}
+<tr>
+    <th>{{cycle.name}}</th>
+    <td>{{cycle.create_date}}</td>
+    <td><a href='{% url membership-issues cycle.slug %}'>Issues</a></td>
+    <td><a href='{% url membership-issues cycle.slug %}?accounts=1'>(with accounts)</a></td>
+</tr>
+{% endfor %}
+</table>
 
 <p>The list includes the following types of issues:</p>
 <dl>
-    <dt>unsubmitted</dt><dd>active groups ("group status" is "Active") who have not submitted an update (ever &mdash; see ASA-#191)</dd>
-    <dt>confirmations</dt><dd>groups that have submitted an update (ever) but had less than five members confirm membership (again, ever &mdash; ASA-#191)</dd>
-    <dt>50%</dt><dd>groups that (ever) submitted a confirmation with more non-students (alum, other affiliates, or other) than students (grad or undergrad)</dd>
+    <dt>unsubmitted</dt><dd>active groups ("group status" is "Active") who have not submitted an update
+    <dt>confirmations</dt><dd>groups that have submitted an update but had less than five members confirm membership</dd>
+    <dt>50%</dt><dd>groups that submitted a confirmation with more non-students (alum, other affiliates, or other) than students (grad or undergrad)</dd>
 </dl>
 
 <p>The technically-inclined may wish to read <a href='http://asa.scripts.mit.edu/trac/browser/asadb/forms/views.py'>/asadb/forms/views.py</a> to verify these issue types.</p>
