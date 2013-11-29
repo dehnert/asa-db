@@ -505,8 +505,9 @@ def group_confirmation_issues(request, slug, ):
     account_numbers = ("accounts" in request.GET) and request.GET['accounts'] == "1"
 
     check_groups = groups.models.Group.objects.filter(group_status__slug__in=('active', 'suspended', ))
-    check_groups = check_groups.select_related('group_status__slug')
+    check_groups = check_groups.select_related('group_status')
     group_updates = forms.models.GroupMembershipUpdate.objects.filter(cycle__slug=slug, )
+    group_updates = group_updates.select_related('group', 'group__group_status')
     people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
         deleted__isnull=True,
         valid__gt=0,
@@ -535,8 +536,8 @@ def group_confirmation_issues(request, slug, ):
     missing_groups = check_groups.filter(~q_present)
     #print len(list(group_updates))
     for group in missing_groups:
-        num_confirms = len(people_confirmations.filter(groups=group))
-        output_issue(group, 'unsubmitted', num_confirms)
+        #num_confirms = len(people_confirmations.filter(groups=group))
+        output_issue(group, 'unsubmitted', '')
 
     for group_update in group_updates:
         group = group_update.group
