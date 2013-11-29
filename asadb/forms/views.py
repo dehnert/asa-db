@@ -526,20 +526,23 @@ def group_confirmation_issues(request, slug, ):
     if account_numbers: fields.append("main_account")
     output.writerow(fields)
 
-    q_present = Q(id__in=group_updates.values('group'))
-    missing_groups = active_groups.filter(~q_present)
-    #print len(list(group_updates))
-    for group in missing_groups:
-        num_confirms = len(people_confirmations.filter(groups=group))
+    def output_issue(group, issue, num_confirms):
         fields = [
             group.id,
             group.name,
-            'unsubmitted',
+            issue,
             num_confirms,
             group.officer_email,
         ]
         if account_numbers: fields.append(group.main_account_id)
         output.writerow(fields)
+
+    q_present = Q(id__in=group_updates.values('group'))
+    missing_groups = active_groups.filter(~q_present)
+    #print len(list(group_updates))
+    for group in missing_groups:
+        num_confirms = len(people_confirmations.filter(groups=group))
+        output_issue(group, 'unsubmitted', num_confirms)
 
     for group_update in group_updates:
         group = group_update.group
@@ -555,16 +558,7 @@ def group_confirmation_issues(request, slug, ):
             problems.append("50%")
 
         for problem in problems:
-            fields = [
-                group.id,
-                group.name,
-                problem,
-                num_confirms,
-                group.officer_email,
-            ]
-            if account_numbers: fields.append(group.main_account_id)
-            output.writerow(fields)
-
+            output_issue(group, problem, num_confirms)
 
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )
 
