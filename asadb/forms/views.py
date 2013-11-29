@@ -512,7 +512,8 @@ class View_GroupConfirmationCyclesList(ListView):
 def group_confirmation_issues(request, slug, ):
     account_numbers = ("accounts" in request.GET) and request.GET['accounts'] == "1"
 
-    active_groups = groups.models.Group.active_groups
+    check_groups = groups.models.Group.objects.filter(group_status__slug__in=('active', 'suspended', ))
+    check_groups = check_groups.select_related('group_status__slug')
     group_updates = forms.models.GroupMembershipUpdate.objects.filter(cycle__slug=slug, )
     people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
         deleted__isnull=True,
@@ -522,7 +523,7 @@ def group_confirmation_issues(request, slug, ):
 
     buf = StringIO.StringIO()
     output = csv.writer(buf)
-    fields = ['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ]
+    fields = ['group_id', 'group_name', 'group_status', 'issue', 'num_confirm', 'officer_email', ]
     if account_numbers: fields.append("main_account")
     output.writerow(fields)
 
@@ -530,6 +531,7 @@ def group_confirmation_issues(request, slug, ):
         fields = [
             group.id,
             group.name,
+            group.group_status.slug,
             issue,
             num_confirms,
             group.officer_email,
@@ -538,7 +540,7 @@ def group_confirmation_issues(request, slug, ):
         output.writerow(fields)
 
     q_present = Q(id__in=group_updates.values('group'))
-    missing_groups = active_groups.filter(~q_present)
+    missing_groups = check_groups.filter(~q_present)
     #print len(list(group_updates))
     for group in missing_groups:
         num_confirms = len(people_confirmations.filter(groups=group))
