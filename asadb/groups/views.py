@@ -695,12 +695,6 @@ def create_group_get_emails(group, group_startup, officer_emails, ):
             cc=officer_emails+['asa-admin@mit.edu'],
             from_email='asa-admin@mit.edu',
         )
-        # XXX: Handle this better
-        if officer_domain != 'mit.edu' or (create_group_list and group_domain != 'mit.edu'):
-            accounts_mail.to = ['asa-groups@mit.edu']
-            accounts_mail.cc = ['asa-db@mit.edu']
-            accounts_mail.subject = "ERROR: " + accounts_mail.subject
-            accounts_mail.body = "Bad domain on officer or group list\n\n" + accounts_mail.body
 
     else:
         accounts_mail = None
@@ -827,6 +821,33 @@ def startup_form(request, ):
     }
     return render_to_response('groups/create/startup.html', context, context_instance=RequestContext(request), )
 
+def review_group_check_warnings(group_startup, group, ):
+    warnings = []
+
+    if group.name.startswith("MIT "):
+        warnings.append('Group name starts with "MIT". Generally, we prefer "Foo, MIT" instead.')
+    if "mit" in group.athena_locker.lower():
+        warnings.append('Athena locker name contains "mit", which may be redundant with paths like "http://web.mit.edu/mitfoo" or "/mit/foo/".')
+
+    if group_startup.president_kerberos == group_startup.treasurer_kerberos:
+        warnings.append('President matches Treasurer.')
+    if "%s@mit.edu" % (group_startup.president_kerberos, ) in (group.officer_email, group.group_email):
+        warnings.append('President email matches officer and/or group email.')
+    if group.officer_email == group.group_email:
+        warnings.append('Officer email matches group email.')
+
+    if '@mit.edu' not in group.officer_email or '@mit.edu' not in group.group_email:
+        warnings.append('Officer and/or group email are non-MIT. Ensure that they are not requesting the addresses be created, and consider suggesting they use an MIT list instead.')
+
+    if '.' in group.athena_locker:
+        warnings.append('Athena locker contains a ".". This is not compatible with scripts.mit.edu\'s wildcard certificate, and may cause other problems.')
+    if '_' in group.athena_locker:
+        warnings.append('Athena locker contains a "_". If this locker name gets used in a URL (for example, locker.scripts.mit.edu), it will technically violate the hostname specification and may not work in some clients.')
+    if len(group.athena_locker) > 12:
+        warnings.append('Athena locker is more than twelve characters long. In general, twelve characters is the longest Athena locker an ASA-recognized group can get.')
+
+    return warnings
+
 @permission_required('groups.recognize_group')
 def recognize_normal_group(request, pk, ):
     group_startup = get_object_or_404(groups.models.GroupStartup, pk=pk, )
@@ -842,6 +863,8 @@ def recognize_normal_group(request, pk, ):
         return render_to_response('groups/create/err.not-applying.html', context, context_instance=RequestContext(request), )
     if group_startup.stage != groups.models.GROUP_STARTUP_STAGE_SUBMITTED:
         return render_to_response('groups/create/err.not-applying.html', context, context_instance=RequestContext(request), )
+
+    context['warnings'] = review_group_check_warnings(group_startup, group)
 
     context['msg'] = ""
     if request.method == 'POST':
