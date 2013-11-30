@@ -66,6 +66,7 @@ urlpatterns = patterns('',
     url(r'^membership/submitted/$', forms.views.View_GroupMembershipList.as_view(), name='membership-submitted', ),
     url(r'^membership/admin/$', forms.views.View_GroupConfirmationCyclesList.as_view(), name='membership-admin', ),
     url(r'^membership/admin/issues/(?P<slug>[\w-]+).csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
+    url(r'^membership/people-lookup/((?P<pk>\d+)/)?$', forms.views.people_status_lookup, name='membership-people-lookup', ),
 
     # Midway
     url(r'^midway/$', forms.views.View_Midways.as_view(), name='midway-list', ),

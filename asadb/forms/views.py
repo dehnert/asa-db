@@ -558,6 +558,38 @@ def group_confirmation_issues(request, slug, ):
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )
 
 
+class PeopleStatusLookupForm(ModelForm):
+    class Meta:
+        model = forms.models.PeopleStatusLookup
+        fields = ('people', )
+
+def people_status_lookup(request, pk=None, ):
+    if pk is None:
+        if request.method == 'POST':
+            form = PeopleStatusLookupForm(request.POST, request.FILES, )
+            if form.is_valid(): # All validation rules pass
+                lookup = form.save(commit=False)
+                lookup.requestor = request.user
+                lookup.referer = request.META['HTTP_REFERER']
+                results = lookup.update_classified_people()
+                lookup.save()
+        else:
+            form = PeopleStatusLookupForm()
+            results = None
+    else:
+        if request.user.has_perm('forms.view_peoplestatusupdate'):
+            lookup = get_object_or_404(forms.models.PeopleStatusLookup, pk=int(pk))
+            results = lookup.classified_people
+            form = None
+        else:
+            raise PermissionDenied("You don't have permission to view old lookup requests.")
+
+    context = {
+        'form': form,
+        'results': results,
+    }
+
+    return render_to_response('membership/people-lookup.html', context, context_instance=RequestContext(request), )
 
 ##########
 # Midway #

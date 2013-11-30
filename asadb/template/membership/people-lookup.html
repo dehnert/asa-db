@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}People lookup{% endblock %}
+{% block content %}
+
+<h2>People lookup</h2>
+
+{% if form %}
+<p>You can specify a list of email addresses and/or MIT usernames below, and we'll try to identify which ones are undergrads, grad students, etc.. This is not definitive (<kbd>joe.mit.student@gmail.com</kbd> will show up as "other", for example, and we can't check the student status of people who chose to suppress MIT directory information), but it may be a good first step in figuring out the breakdown of your membership numbers.</p>
+
+<form enctype="multipart/form-data" method="post" action="">
+{% csrf_token %}
+<table class='pretty-table'>
+{{ form.as_table }}
+<tr><th colspan='2'><input type='submit' value='Lookup' /></th></tr>
+</table>
+</form>
+
+{% endif %}
+
+{% if results %}
+<table class='pretty-table'>
+<tr>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Number</th>
+    <th>People</th>
+</tr>
+{% for name,result in results.items %}
+<tr>
+    <th>{{name}}</th>
+    <td>{{result.description}}</td>
+    <td>{{result.people|length}}</td>
+    <td><ul>
+        {% for person in result.people %}
+        <li>{{person}}</li>
+        {% endfor %}
+    </ul></td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

@@ -1,7 +1,12 @@
 import datetime
-import os, errno
+import errno
+import json
+import os
+
+import ldap
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 
 import groups.models
@@ -205,6 +210,108 @@ class PersonMembershipUpdate(models.Model):
     def __unicode__(self, ):
         return "PersonMembershipUpdate for %s" % (self.username, )
 
+
+class PeopleStatusLookup(models.Model):
+    people = models.TextField(help_text="Enter some usernames or email addresses to look up here.")
+    requestor = models.ForeignKey(User, null=True, blank=True, )
+    referer = models.URLField(blank=True)
+    time = models.DateTimeField(default=datetime.datetime.now)
+    classified_people_json = models.TextField()
+    _classified_people = None
+
+    def ldap_classify(self, usernames, ):
+        con = ldap.open('ldap-too.mit.edu')
+        con.simple_bind_s("", "")
+        dn = "ou=users,ou=moira,dc=mit,dc=edu"
+        fields = ['uid', 'eduPersonAffiliation', 'mitDirStudentYear']
+
+        filters = [ldap.filter.filter_format('(uid=%s)', [u]) for u in usernames]
+        userfilter = "(|%s)" % (''.join(filters), )
+        results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
+
+        left = set(usernames)
+        undergrads = []
+        grads = []
+        staff = []
+        secret = []
+        other = []
+        info = {
+            'undergrads': undergrads,
+            'grads': grads,
+            'staff': staff,
+            'secret': secret,
+            'affiliate': other,
+        }
+        descriptions = {
+            'undergrads': 'Undergraduate students',
+            'grads': 'Graduate students',
+            'staff': 'MIT Staff (including faculty)',
+            'secret': 'People with directory information suppressed. These people have Athena accounts, but they could have any MIT affiliation, including just being a student group member.',
+            'affiliate': 'This includes some alumni, group members with Athena accounts sponsored through SAO, and many others.',
+        }
+        for result in results:
+            username = result[1]['uid'][0]
+            left.remove(username)
+            affiliation = result[1].get('eduPersonAffiliation', ['secret'])[0]
+            if affiliation == 'student':
+                year = result[1].get('mitDirStudentYear', [None])[0]
+                if year == 'G':
+                    grads.append(username)
+                elif year.isdigit():
+                    undergrads.append((username, year))
+                else:
+                    other.append((username, year))
+            else:
+                info[affiliation].append(username)
+        info['unknown'] = left
+        descriptions['unknown'] = "While this looks like an Athena account, we couldn't find it. This could be a deactivated account, or it might never have existed."
+        return descriptions, info
+
+    def classify_people(self, people):
+        mit_usernames = set()
+        alum_addresses = set()
+        other_mit_addresses = set()
+        nonmit_addresses = set()
+
+        for name in people:
+            local, at, domain = name.partition('@')
+            if domain.lower() == 'mit.edu' or domain == '':
+                mit_usernames.add(local)
+            elif domain.lower() == 'alum.mit.edu':
+                alum_addresses.add(name)
+            elif domain.endswith('.mit.edu'):
+                other_mit_addresses.add(name)
+            else:
+                nonmit_addresses.add(name)
+
+        descriptions, results = self.ldap_classify(mit_usernames)
+        descriptions['alum'] = "Alumni Association addresses"
+        descriptions['other-mit'] = ".mit.edu addresses that aren't @mit.edu or @alum.mit.edu."
+        descriptions['non-mit'] = "Non-MIT addresses, including outside addresses of MIT students."
+        results['alum'] = alum_addresses
+        results['other-mit'] = other_mit_addresses
+        results['non-mit'] = nonmit_addresses
+
+        sorted_results = {}
+        for k, v in results.items():
+            sorted_results[k] = {
+                'description': descriptions[k],
+                'people': sorted(v),
+            }
+        return sorted_results
+
+    def update_classified_people(self):
+        people = [p.strip() for p in self.people.split('\n')]
+        print people
+        self._classified_people = self.classify_people(people)
+        self.classified_people_json = json.dumps(self._classified_people)
+        return self._classified_people
+
+    @property
+    def classified_people(self):
+        if self._classified_people is None:
+            self._classified_people = json.loads(self.classified_people_json)
+        return self._classified_people
 
 
 ##########
