@@ -55,6 +55,12 @@ cd /mit/$USER/Scripts/
 easy_install --user -Z django-form-utils django-reversion
 pip-python install --user -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
+cd /mit/$USER/Scripts/django/asa-db/asadb/media/
+mkdir -p js/libs/chosen/
+cd js/libs/chosen/
+wget https://github.com/harvesthq/chosen/releases/download/1.0.0/chosen_v1.0.0.zip
+unzip chosen_v1.0.0.zip
+
 # 8. Set up the database backend
 cd /mit/$USER/Scripts/django/asa-db/asadb/
 ./manage.py syncdb
