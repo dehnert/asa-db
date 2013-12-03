@@ -251,7 +251,7 @@ membership_update_qs = groups.models.Group.objects.filter(group_status__slug__in
 def group_membership_update_select_group(request, ):
     cycle = forms.models.GroupConfirmationCycle.latest()
 
-    users_groups = groups.models.Group.involved_groups(request.user.username)
+    users_groups = groups.models.Group.admin_groups(request.user.username)
     qs = membership_update_qs.filter(pk__in=users_groups)
 
     return select_group(request=request,
@@ -260,13 +260,14 @@ def group_membership_update_select_group(request, ):
         pagename='groups',
         queryset=qs,
         title="Submit membership update for...",
-        msg="The list below contains only groups that list you as being involved. You must be an administrator of a group to submit an update.",
     )
 
 class Form_GroupMembershipUpdate(ModelForm):
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
         self.fields['no_hazing'].required = True
+        help_text = "If you have a membership list, you can get help turning it into membership breakdown using our <a href='%s'>people lookup</a> tool. You'll need to copy the numbers back over, though." % (reverse('membership-people-lookup'), )
+        self.fields['num_undergrads'].help_text = help_text
 
     class Meta:
         model = forms.models.GroupMembershipUpdate
@@ -283,7 +284,7 @@ class Form_GroupMembershipUpdate(ModelForm):
             'num_alum',
             'num_other_affiliate',
             'num_other',
-            'membership_list',
+            #'membership_list',
         ]
 
 @login_required
@@ -418,11 +419,6 @@ def person_membership_update(request, ):
             role_groups[office_holder.group.pk] = (office_holder.group, set())
         role_groups[office_holder.group.pk][1].add(office_holder.role.display_name)
 
-    # Find groups the user searched for
-    filterset = groups.views.GroupFilter(request.GET, membership_update_qs)
-    filtered_groups = filterset.qs.all()
-    show_filtered_groups = ('search' in request.GET)
-
     message = ""
     message_type = "info"
 
@@ -468,9 +464,6 @@ def person_membership_update(request, ):
     context = {
         'role_groups':role_groups,
         'form':form,
-        'filter':filterset,
-        'show_filtered_groups':show_filtered_groups,
-        'filtered_groups':filtered_groups,
         'member_groups':selected_groups,
         'message': message,
         'message_type': message_type,
@@ -498,41 +491,59 @@ class View_GroupMembershipList(ListView):
         return group_updates
 
 
+class View_GroupConfirmationCyclesList(ListView):
+    context_object_name = "cycle_list"
+    template_name = "membership/admin.html"
+    model = forms.models.GroupConfirmationCycle
+
+    def get_context_data(self, **kwargs):
+        context = super(View_GroupConfirmationCyclesList, self).get_context_data(**kwargs)
+        context['pagename'] = 'groups'
+        return context
+
+
 @permission_required('groups.view_group_private_info')
-def group_confirmation_issues(request, ):
+def group_confirmation_issues(request, slug, ):
     account_numbers = ("accounts" in request.GET) and request.GET['accounts'] == "1"
 
-    active_groups = groups.models.Group.active_groups
-    group_updates = forms.models.GroupMembershipUpdate.objects.all()
+    check_groups = groups.models.Group.objects.filter(group_status__slug__in=('active', 'suspended', ))
+    check_groups = check_groups.select_related('group_status')
+    group_updates = forms.models.GroupMembershipUpdate.objects.filter(cycle__slug=slug, )
+    group_updates = group_updates.select_related('group', 'group__group_status')
     people_confirmations = forms.models.PersonMembershipUpdate.objects.filter(
         deleted__isnull=True,
         valid__gt=0,
+        cycle__slug=slug,
     )
 
     buf = StringIO.StringIO()
     output = csv.writer(buf)
-    fields = ['group_id', 'group_name', 'issue', 'num_confirm', 'officer_email', ]
+    fields = ['group_id', 'group_name', 'group_status', 'issue', 'num_confirm', 'officer_email', ]
     if account_numbers: fields.append("main_account")
     output.writerow(fields)
 
-    q_present = Q(id__in=group_updates.values('group'))
-    missing_groups = active_groups.filter(~q_present)
-    #print len(list(group_updates))
-    for group in missing_groups:
-        num_confirms = len(people_confirmations.filter(groups=group))
+    def output_issue(group, issue, num_confirms):
         fields = [
             group.id,
             group.name,
-            'unsubmitted',
+            group.group_status.slug,
+            issue,
             num_confirms,
             group.officer_email,
         ]
         if account_numbers: fields.append(group.main_account_id)
         output.writerow(fields)
 
+    q_present = Q(id__in=group_updates.values('group'))
+    missing_groups = check_groups.filter(~q_present)
+    #print len(list(group_updates))
+    for group in missing_groups:
+        #num_confirms = len(people_confirmations.filter(groups=group))
+        output_issue(group, 'unsubmitted', '')
+
     for group_update in group_updates:
         group = group_update.group
-        num_confirms = len(people_confirmations.filter(groups=group))
+        num_confirms = people_confirmations.filter(groups=group).count()
         problems = []
 
         if num_confirms < 5:
@@ -544,20 +555,44 @@ def group_confirmation_issues(request, ):
             problems.append("50%")
 
         for problem in problems:
-            fields = [
-                group.id,
-                group.name,
-                problem,
-                num_confirms,
-                group.officer_email,
-            ]
-            if account_numbers: fields.append(group.main_account_id)
-            output.writerow(fields)
-
+            output_issue(group, problem, num_confirms)
 
     return HttpResponse(buf.getvalue(), mimetype='text/csv', )
 
 
+class PeopleStatusLookupForm(ModelForm):
+    class Meta:
+        model = forms.models.PeopleStatusLookup
+        fields = ('people', )
+
+def people_status_lookup(request, pk=None, ):
+    if pk is None:
+        if request.method == 'POST':
+            form = PeopleStatusLookupForm(request.POST, request.FILES, )
+            if form.is_valid(): # All validation rules pass
+                lookup = form.save(commit=False)
+                lookup.requestor = request.user
+                lookup.referer = request.META['HTTP_REFERER']
+                lookup.update_classified_people()
+                results = lookup.classifications_with_descriptions()
+                lookup.save()
+        else:
+            form = PeopleStatusLookupForm()
+            results = None
+    else:
+        if request.user.has_perm('forms.view_peoplestatusupdate'):
+            lookup = get_object_or_404(forms.models.PeopleStatusLookup, pk=int(pk))
+            results = lookup.classifications_with_descriptions()
+            form = None
+        else:
+            raise PermissionDenied("You don't have permission to view old lookup requests.")
+
+    context = {
+        'form': form,
+        'results': results,
+    }
+
+    return render_to_response('membership/people-lookup.html', context, context_instance=RequestContext(request), )
 
 ##########
 # Midway #
