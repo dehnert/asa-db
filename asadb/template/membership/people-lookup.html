@@ -3,10 +3,10 @@
 {% block title %}People lookup{% endblock %}
 {% block content %}
 
-<h2>People lookup</h2>
+<h1>People lookup</h1>
 
 {% if form %}
-<p>You can specify a list of email addresses and/or MIT usernames below, and we'll try to identify which ones are undergrads, grad students, etc.. This is not definitive (<kbd>joe.mit.student@gmail.com</kbd> will show up as "other", for example, and we can't check the student status of people who chose to suppress MIT directory information), but it may be a good first step in figuring out the breakdown of your membership numbers.</p>
+<p>You can specify a list of email addresses and/or MIT usernames below, and we'll try to identify which ones are undergrads, grad students, and so forth:</p>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
@@ -19,21 +19,27 @@
 {% endif %}
 
 {% if results %}
+<h2>Results</h2>
+
+<p>This information is not definitive (<kbd>joe.mit.student@gmail.com</kbd> will show up as "other", for example, and we can't check the student status of people who chose to suppress MIT directory information), but we hope it can be helpful in figuring out the breakdown of your membership numbers.</p>
+
+<p><em>If you wish to use this for an ASA form, <strong>you</strong> will need to transfer the numbers yourself &ndash; we do not do that automatically.</em></p>
+
 <table class='pretty-table'>
 <tr>
     <th>Type</th>
-    <th>Description</th>
+    <th style='width: 20em;'>Description</th>
     <th>Number</th>
     <th>People</th>
 </tr>
-{% for name,result in results.items %}
+{% for result in results %}
 <tr>
-    <th>{{name}}</th>
+    <th>{{result.label}}</th>
     <td>{{result.description}}</td>
-    <td>{{result.people|length}}</td>
+    <td style='text-align: right; padding: 0.5em;'>{{result.people|length}}</td>
     <td><ul>
         {% for person in result.people %}
-        <li>{{person}}</li>
+        <li>{{person.0}}{% if person.1 %} ({{person.1}}){%endif%}</li>
         {% endfor %}
     </ul></td>
 </tr>

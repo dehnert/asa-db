@@ -242,13 +242,6 @@ class PeopleStatusLookup(models.Model):
             'secret': secret,
             'affiliate': other,
         }
-        descriptions = {
-            'undergrads': 'Undergraduate students',
-            'grads': 'Graduate students',
-            'staff': 'MIT Staff (including faculty)',
-            'secret': 'People with directory information suppressed. These people have Athena accounts, but they could have any MIT affiliation, including just being a student group member.',
-            'affiliate': 'This includes some alumni, group members with Athena accounts sponsored through SAO, and many others.',
-        }
         for result in results:
             username = result[1]['uid'][0]
             left.remove(username)
@@ -256,53 +249,41 @@ class PeopleStatusLookup(models.Model):
             if affiliation == 'student':
                 year = result[1].get('mitDirStudentYear', [None])[0]
                 if year == 'G':
-                    grads.append(username)
+                    grads.append((username, None))
                 elif year.isdigit():
                     undergrads.append((username, year))
                 else:
                     other.append((username, year))
             else:
-                info[affiliation].append(username)
-        info['unknown'] = left
-        descriptions['unknown'] = "While this looks like an Athena account, we couldn't find it. This could be a deactivated account, or it might never have existed."
-        return descriptions, info
+                info[affiliation].append((username, None, ))
+        info['unknown'] = [(u, None) for u in left]
+        return info
 
     def classify_people(self, people):
         mit_usernames = set()
-        alum_addresses = set()
-        other_mit_addresses = set()
-        nonmit_addresses = set()
+        alum_addresses = []
+        other_mit_addresses = []
+        nonmit_addresses = []
 
         for name in people:
             local, at, domain = name.partition('@')
             if domain.lower() == 'mit.edu' or domain == '':
                 mit_usernames.add(local)
             elif domain.lower() == 'alum.mit.edu':
-                alum_addresses.add(name)
+                alum_addresses.append((name, None))
             elif domain.endswith('.mit.edu'):
-                other_mit_addresses.add(name)
+                other_mit_addresses.append((name, None))
             else:
-                nonmit_addresses.add(name)
+                nonmit_addresses.append((name, None))
 
-        descriptions, results = self.ldap_classify(mit_usernames)
-        descriptions['alum'] = "Alumni Association addresses"
-        descriptions['other-mit'] = ".mit.edu addresses that aren't @mit.edu or @alum.mit.edu."
-        descriptions['non-mit'] = "Non-MIT addresses, including outside addresses of MIT students."
+        results = self.ldap_classify(mit_usernames)
         results['alum'] = alum_addresses
         results['other-mit'] = other_mit_addresses
         results['non-mit'] = nonmit_addresses
-
-        sorted_results = {}
-        for k, v in results.items():
-            sorted_results[k] = {
-                'description': descriptions[k],
-                'people': sorted(v),
-            }
-        return sorted_results
+        return results
 
     def update_classified_people(self):
-        people = [p.strip() for p in self.people.split('\n')]
-        print people
+        people = [p for p in [p.strip() for p in self.people.split('\n')] if p]
         self._classified_people = self.classify_people(people)
         self.classified_people_json = json.dumps(self._classified_people)
         return self._classified_people
@@ -312,6 +293,41 @@ class PeopleStatusLookup(models.Model):
         if self._classified_people is None:
             self._classified_people = json.loads(self.classified_people_json)
         return self._classified_people
+
+    def classifications_with_descriptions(self):
+        descriptions = {
+            'undergrads':   'Undergraduate students (class year in parentheses)',
+            'grads':        'Graduate students',
+            'alum':         "Alumni Association addresses",
+            'staff':        'MIT Staff (including faculty)',
+            'affiliate':    'This includes some alumni, group members with Athena accounts sponsored through SAO, and many others.',
+            'secret':       'People with directory information suppressed. These people have Athena accounts, but they could have any MIT affiliation, including just being a student group member.',
+            'unknown':      "While this looks like an Athena account, we couldn't find it. This could be a deactivated account, or it might never have existed.",
+            'other-mit':    ".mit.edu addresses that aren't @mit.edu or @alum.mit.edu.",
+            'non-mit':      "Non-MIT addresses, including outside addresses of MIT students.",
+        }
+
+        names = (
+            ('undergrads', 'Undergrads', ),
+            ('grads', 'Grad students', ),
+            ('alum', 'Alumni', ),
+            ('staff', 'Staff', ),
+            ('affiliate', 'Affiliates', ),
+            ('secret', 'Secret', ),
+            ('unknown', 'Unknown', ),
+            ('other-mit', 'Other MIT addresses', ),
+            ('non-mit', 'Non-MIT addresses', ),
+        )
+
+        classifications = self.classified_people
+        sorted_results = []
+        for k, label in names:
+            sorted_results.append({
+                'label': label,
+                'description': descriptions[k],
+                'people': sorted(classifications[k]),
+            })
+        return sorted_results
 
 
 ##########

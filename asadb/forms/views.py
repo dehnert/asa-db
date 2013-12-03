@@ -571,7 +571,8 @@ def people_status_lookup(request, pk=None, ):
                 lookup = form.save(commit=False)
                 lookup.requestor = request.user
                 lookup.referer = request.META['HTTP_REFERER']
-                results = lookup.update_classified_people()
+                lookup.update_classified_people()
+                results = lookup.classifications_with_descriptions()
                 lookup.save()
         else:
             form = PeopleStatusLookupForm()
@@ -579,7 +580,7 @@ def people_status_lookup(request, pk=None, ):
     else:
         if request.user.has_perm('forms.view_peoplestatusupdate'):
             lookup = get_object_or_404(forms.models.PeopleStatusLookup, pk=int(pk))
-            results = lookup.classified_people
+            results = lookup.classifications_with_descriptions()
             form = None
         else:
             raise PermissionDenied("You don't have permission to view old lookup requests.")
