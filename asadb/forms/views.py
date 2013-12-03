@@ -266,6 +266,8 @@ class Form_GroupMembershipUpdate(ModelForm):
     def __init__(self, *args, **kwargs):
         super(Form_GroupMembershipUpdate, self).__init__(*args, **kwargs)
         self.fields['no_hazing'].required = True
+        help_text = "If you have a membership list, you can get help turning it into membership breakdown using our <a href='%s'>people lookup</a> tool. You'll need to copy the numbers back over, though." % (reverse('membership-people-lookup'), )
+        self.fields['num_undergrads'].help_text = help_text
 
     class Meta:
         model = forms.models.GroupMembershipUpdate
