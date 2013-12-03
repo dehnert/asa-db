@@ -225,9 +225,22 @@ class PeopleStatusLookup(models.Model):
         dn = "ou=users,ou=moira,dc=mit,dc=edu"
         fields = ['uid', 'eduPersonAffiliation', 'mitDirStudentYear']
 
-        filters = [ldap.filter.filter_format('(uid=%s)', [u]) for u in usernames]
-        userfilter = "(|%s)" % (''.join(filters), )
-        results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
+        chunk_size = 100
+        username_chunks = []
+        ends = range(chunk_size, len(usernames), chunk_size)
+        start = 0
+        for end in ends:
+            username_chunks.append(usernames[start:end])
+            start = end
+        username_chunks.append(usernames[end:])
+        print username_chunks
+
+        results = []
+        for chunk in username_chunks:
+            filters = [ldap.filter.filter_format('(uid=%s)', [u]) for u in chunk]
+            userfilter = "(|%s)" % (''.join(filters), )
+            batch_results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
+            results.extend(batch_results)
 
         left = set(usernames)
         undergrads = []
@@ -260,7 +273,7 @@ class PeopleStatusLookup(models.Model):
         return info
 
     def classify_people(self, people):
-        mit_usernames = set()
+        mit_usernames = []
         alum_addresses = []
         other_mit_addresses = []
         nonmit_addresses = []
@@ -268,7 +281,7 @@ class PeopleStatusLookup(models.Model):
         for name in people:
             local, at, domain = name.partition('@')
             if domain.lower() == 'mit.edu' or domain == '':
-                mit_usernames.add(local)
+                mit_usernames.append(local)
             elif domain.lower() == 'alum.mit.edu':
                 alum_addresses.append((name, None))
             elif domain.endswith('.mit.edu'):
