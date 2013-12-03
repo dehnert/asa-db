@@ -6,7 +6,7 @@
 <h1>People lookup</h1>
 
 {% if form %}
-<p>You can specify a list of email addresses and/or MIT usernames below, and we'll try to identify which ones are undergrads, grad students, and so forth:</p>
+<p>You can specify a list of email addresses and/or MIT usernames below, and we'll try to identify which ones are undergrads, grad students, and so forth. All data is from MIT's publicly-available LDAP directory.</p>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
