@@ -527,6 +527,7 @@ def group_confirmation_issues(request, slug, ):
             group.id,
             group.name,
             group.group_status.slug,
+            group.recognition_date,
             issue,
             num_confirms,
             group.officer_email,
