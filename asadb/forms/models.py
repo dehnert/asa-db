@@ -233,8 +233,9 @@ class PeopleStatusLookup(models.Model):
         for end in ends:
             username_chunks.append(usernames[start:end])
             start = end
-        username_chunks.append(usernames[end:])
-        print username_chunks
+        extra = usernames[end:]
+        if extra:
+            username_chunks.append(extra)
 
         results = []
         for chunk in username_chunks:
