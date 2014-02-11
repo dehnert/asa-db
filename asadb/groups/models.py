@@ -687,6 +687,6 @@ class GroupFilterRegistry(object):
 
 
 filter_registry = GroupFilterRegistry()
-filter_registry.register_category(name="People", slug='people', )
+#filter_registry.register_category(name="People", slug='people', )
 filter_registry.register_category(name="Space", slug='space', )
-filter_registry.register_category(name="FYSM", slug='fysm', )
+#filter_registry.register_category(name="FYSM", slug='fysm', )
