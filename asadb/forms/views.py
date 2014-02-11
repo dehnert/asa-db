@@ -518,7 +518,7 @@ def group_confirmation_issues(request, slug, ):
 
     buf = StringIO.StringIO()
     output = csv.writer(buf)
-    fields = ['group_id', 'group_name', 'group_status', 'issue', 'num_confirm', 'officer_email', ]
+    fields = ['group_id', 'group_name', 'group_status', 'recognition_date', 'issue', 'num_confirm', 'officer_email', ]
     if account_numbers: fields.append("main_account")
     output.writerow(fields)
 
