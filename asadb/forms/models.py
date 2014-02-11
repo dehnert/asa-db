@@ -176,10 +176,10 @@ class GroupMembershipUpdate(models.Model):
 
     email_preface = models.TextField(blank=True, help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
 
-    hazing_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
+    hazing_statement = "By checking this, I hereby affirm that I have read and understand <a href='http://web.mit.edu/asa/rules/ma-hazing-law.html'>Chapter 269: Sections 17, 18, and 19 of Massachusetts Law</a>. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
     no_hazing = models.BooleanField(help_text=hazing_statement)
 
-    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the MIT Non-Discrimination Policy.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
+    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the <a href='http://web.mit.edu/referencepubs/nondiscrimination/'>MIT Non-Discrimination Policy</a>.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
     no_discrimination = models.BooleanField(help_text=discrimination_statement)
 
     def __unicode__(self, ):
