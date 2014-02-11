@@ -2,6 +2,7 @@ import datetime
 import errno
 import json
 import os
+import re
 
 import ldap
 
@@ -212,7 +213,7 @@ class PersonMembershipUpdate(models.Model):
 
 
 class PeopleStatusLookup(models.Model):
-    people = models.TextField(help_text="Enter some usernames or email addresses to look up here.")
+    people = models.TextField(help_text="Enter some usernames or email addresses, separated by newlines, to look up here.")
     requestor = models.ForeignKey(User, null=True, blank=True, )
     referer = models.URLField(blank=True)
     time = models.DateTimeField(default=datetime.datetime.now)
@@ -233,8 +234,9 @@ class PeopleStatusLookup(models.Model):
         for end in ends:
             username_chunks.append(usernames[start:end])
             start = end
-        username_chunks.append(usernames[end:])
-        print username_chunks
+        extra = usernames[end:]
+        if extra:
+            username_chunks.append(extra)
 
         results = []
         for chunk in username_chunks:
@@ -243,7 +245,7 @@ class PeopleStatusLookup(models.Model):
             batch_results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
             results.extend(batch_results)
 
-        left = set(usernames)
+        left = set([u.lower() for u in usernames])
         undergrads = []
         grads = []
         staff = []
@@ -258,7 +260,7 @@ class PeopleStatusLookup(models.Model):
         }
         for result in results:
             username = result[1]['uid'][0]
-            left.remove(username)
+            left.remove(username.lower())
             affiliation = result[1].get('eduPersonAffiliation', ['secret'])[0]
             if affiliation == 'student':
                 year = result[1].get('mitDirStudentYear', [None])[0]
@@ -296,8 +298,20 @@ class PeopleStatusLookup(models.Model):
         results['non-mit'] = nonmit_addresses
         return results
 
+    def split_people(self):
+        splitted = re.split(r'[\n,]+', self.people)
+        people = []
+        for name in splitted:
+            name = name.strip()
+            if len(name) > 2 and (name[0] == '(') and (name[-1] == ')'):
+                name = name[1:-1]
+            name = name.replace(' at ', '@')
+            if name:
+                people.append(name)
+        return people
+
     def update_classified_people(self):
-        people = [p for p in [p.strip() for p in self.people.split('\n')] if p]
+        people = self.split_people()
         self._classified_people = self.classify_people(people)
         self.classified_people_json = json.dumps(self._classified_people)
         return self._classified_people
