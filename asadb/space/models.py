@@ -145,6 +145,57 @@ class SpaceAssignment(models.Model):
         )
 
 
+groups.models.filter_registry.register(
+    category='space',
+    slug='space:owners',
+    name='Space owners',
+    desc='Groups with space',
+    qs_thunk=lambda: SpaceAssignment.current.values('group'),
+)
+
+def assignment_filter(building=None, locker=None):
+    assign = SpaceAssignment.current.all()
+    if building:
+        assign = assign.filter(
+            space__number__startswith="%s-" % (building, ),
+        )
+    if locker == True:
+        assign = assign.exclude(locker_num="")
+    elif locker == False:
+        assign = assign.filter(locker_num="")
+    owners = groups.models.Group.objects.filter(pk__in=assign.values('group'))
+    return owners
+
+groups.models.filter_registry.register(
+    category='space',
+    slug='space:locker',
+    name='Locker owners',
+    desc='Owners of lockers',
+    qs_thunk=lambda: assignment_filter(locker=True),
+)
+groups.models.filter_registry.register(
+    category='space',
+    slug='space:office',
+    name='Office owners',
+    desc='Owners of offices',
+    qs_thunk=lambda: assignment_filter(locker=False),
+)
+groups.models.filter_registry.register(
+    category='space',
+    slug='space:w20',
+    name='W20 owners',
+    desc='Owners of W20 space',
+    qs_thunk=lambda: assignment_filter(building='W20'),
+)
+groups.models.filter_registry.register(
+    category='space',
+    slug='space:walker',
+    name='Walker owners',
+    desc='Owners of Walker space',
+    qs_thunk=lambda: assignment_filter(building='50'),
+)
+
+
 class CurrentACLEntryManager(models.Manager):
     def get_query_set(self, ):
         return super(CurrentACLEntryManager, self).get_query_set().filter(

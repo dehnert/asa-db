@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 import collections
 import datetime
 import filecmp
@@ -13,6 +15,7 @@ import urllib2
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -617,3 +620,73 @@ class AthenaMoiraAccount(models.Model):
 
     class Meta:
         verbose_name = "Athena (Moira) account"
+
+
+
+class GroupFilter(object):
+    def __init__(self, **kwargs):
+        self.qs_thunk = kwargs['qs_thunk']
+        self.name = kwargs['name']
+        self.description = kwargs['desc']
+
+    def queryset(self, ):
+        return self.qs_thunk()
+
+
+class GroupFilterRegistry(object):
+    def __init__(self, ):
+        self.filters = {}
+        self.filter_categories = {}
+
+    def register_category(self, name, slug, ):
+        if slug in self.filter_categories:
+            raise ValueError, "Duplicate filter category %s" % (slug, )
+        if slug in self.filters:
+            raise ValueError, "Category %s matches filter" % (slug, )
+        self.filter_categories[slug] = dict(
+            name=name,
+            filters=[],
+        )
+        self.filters[slug] = GroupFilter(
+            qs_thunk=None,
+            name=name,
+            desc=None,
+        )
+
+    def register(self, **kwargs):
+        slug = kwargs.pop('slug')
+        category = kwargs.pop('category')
+        if category not in self.filter_categories:
+            raise KeyError, "Unknown filter category %s" % (category, )
+        fltr = GroupFilter(**kwargs)
+        if slug in self.filters:
+            raise ValueError, "Duplicate filter %s" % (slug, )
+        self.filters[slug] = fltr
+        self.filter_categories[category]['filters'].append(slug)
+
+    def get(self, slug):
+        return self.filters[slug]
+
+    def get_choices(self, ):
+        choices = []
+        for category_slug, category in self.filter_categories.items():
+            choices.append((category_slug, "[%s]" % (category['name'], )))
+            for filter_slug in category['filters']:
+                choices.append((filter_slug, self.filters[filter_slug].name))
+            choices.append(("", ""))
+        return choices[:-1]
+
+    def validate_filter_slug(self, value, ):
+        for slug in value:
+            if slug == "":
+                raise ValidationError("Please select only filters")
+            if slug not in self.filters:
+                raise ValidationError("%s is an unknown filter" % (slug, ))
+            if slug in self.filter_categories:
+                raise ValidationError(u"%s is a filter category — please select only filters" % (self.filter_categories[slug]['name'], ))
+
+
+filter_registry = GroupFilterRegistry()
+#filter_registry.register_category(name="People", slug='people', )
+filter_registry.register_category(name="Space", slug='space', )
+#filter_registry.register_category(name="FYSM", slug='fysm', )

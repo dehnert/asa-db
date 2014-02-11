@@ -1127,7 +1127,20 @@ def downloaded_constitutions_csv(request, ):
 # REPORTING COMPONENT #
 #######################
 
+name_formats = collections.OrderedDict()
+name_formats['username']    = ('username',                      False,  '%(user)s')
+name_formats['email']       = ('username@mit.edu',              False,  '%(user)s@mit.edu')
+name_formats['name']        = ('First Last',                    True,   '%(first)s %(last)s')
+name_formats['name-email']  = ('First Last <username@mit.edu>', True,   '%(first)s %(last)s <%(user)s@mit.edu>')
+
 class ReportingForm(form_utils.forms.BetterForm):
+    special_filters = forms.fields.MultipleChoiceField(
+        choices=[],
+        widget=forms.SelectMultiple(attrs={'size': 10}),
+        validators=[groups.models.filter_registry.validate_filter_slug],
+        required=False,
+    )
+
     basic_fields_choices = groups.models.Group.reporting_fields()
     basic_fields_labels = dict(basic_fields_choices) # name -> verbose_name
     basic_fields = forms.fields.MultipleChoiceField(
@@ -1141,9 +1154,11 @@ class ReportingForm(form_utils.forms.BetterForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    show_as_emails = forms.BooleanField(
-        help_text='Append "@mit.edu" to each value of people fields to allow use as email addresses?',
-        required=False,
+    name_format = forms.ChoiceField(
+        help_text='How to format the names of the President, Treasurer, etc., if displayed',
+        choices=[(k, v[0]) for k,v in name_formats.items()],
+        initial='username',
+        required=True,
     )
 
     special_fields_choices = (
@@ -1166,17 +1181,27 @@ class ReportingForm(form_utils.forms.BetterForm):
         fieldsets = [
             ('filter', {
                 'legend': 'Filter Groups',
-                'fields': ['name', 'abbreviation', 'activity_category', 'group_class', 'group_status', 'group_funding', ],
+                'fields': [
+                    'name', 'abbreviation',
+                    'activity_category', 'group_class', 'group_status', 'group_funding',
+                    'special_filters',
+                ],
             }),
             ('fields', {
                 'legend': 'Data to display',
-                'fields': ['basic_fields', 'people_fields', 'show_as_emails', 'special_fields', ],
+                'fields': ['basic_fields', 'people_fields', 'name_format', 'special_fields', ],
             }),
             ('final', {
                 'legend': 'Final options',
                 'fields': ['o', 'output_format', ],
             }),
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(ReportingForm, self).__init__(*args, **kwargs)
+
+        registry = groups.models.filter_registry
+        self.fields['special_filters'].choices = registry.get_choices()
 
 class GroupReportingFilter(GroupFilter):
     class Meta(GroupFilter.Meta):
@@ -1239,6 +1264,10 @@ def reporting(request, ):
 
         # Set up query
         qs = groups_filterset.qs
+        for fltr_slug in form.cleaned_data['special_filters']:
+            fltr = groups.models.filter_registry.get(fltr_slug)
+            qs = qs.filter(pk__in=fltr.queryset())
+
         # Prefetch foreign keys
         prefetch_fields = groups.models.Group.reporting_prefetch()
         prefetch_fields = prefetch_fields.intersection(basic_fields)
@@ -1254,6 +1283,15 @@ def reporting(request, ):
             people_map[holder.group_id][holder.role_id].add(holder.person)
         for field in people_fields:
             col_labels.append(field.display_name)
+        # Figure out the format, and if necessary fetch human names
+        nf_slug = form.cleaned_data['name_format']
+        nf_label, nf_need_name, nf_fmt = name_formats[nf_slug]
+        name_map = collections.defaultdict(lambda: ('???', '???'))
+        if nf_need_name:
+            people_usernames = people_data.values('person')
+            name_data = groups.models.AthenaMoiraAccount.objects.filter(username__in=people_usernames)
+            for account in name_data:
+                name_map[account.username] = (account.first_name, account.last_name)
 
         # Set up special fields
         special_formatters = []
@@ -1266,7 +1304,6 @@ def reporting(request, ):
             formatters = reporting_html_formatters
         else:
             formatters = {}
-        show_as_emails = form.cleaned_data['show_as_emails']
         def fetch_item(group, field):
             val = getattr(group, field)
             if field in formatters:
@@ -1277,7 +1314,14 @@ def reporting(request, ):
             group_data = [fetch_item(group, field) for field in basic_fields]
             for field in people_fields:
                 people = people_map[group.pk][field.pk]
-                if show_as_emails: people = ["%s@mit.edu" % p for p in people]
+                if nf_need_name:
+                    def fmt(p):
+                        first, last = name_map[p]
+                        ctx = {'user': p, 'first': first, 'last': last}
+                        return nf_fmt % ctx
+                    people = [fmt(p) for p in people]
+                else:
+                    people = [nf_fmt % {'user': p} for p in people]
                 group_data.append(", ".join(people))
 
             for formatter in special_formatters:
