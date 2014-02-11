@@ -64,13 +64,15 @@ urlpatterns = patterns('',
         name='membership-thanks',
     ),
     url(r'^membership/submitted/$', forms.views.View_GroupMembershipList.as_view(), name='membership-submitted', ),
-    url(
-        r'^membership/admin/$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'membership/admin.html', 'extra_context': { 'pagename':'groups' }, },
-        name='membership-admin',
-    ),
-    url(r'^membership/admin/issues.csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
+    url(r'^membership/admin/$', forms.views.View_GroupConfirmationCyclesList.as_view(), name='membership-admin', ),
+    url(r'^membership/admin/issues/(?P<slug>[\w-]+).csv$', forms.views.group_confirmation_issues, name='membership-issues', ),
+    url(r'^membership/people-lookup/((?P<pk>\d+)/)?$', forms.views.people_status_lookup, name='membership-people-lookup', ),
+
+    # Midway
+    url(r'^midway/$', forms.views.View_Midways.as_view(), name='midway-list', ),
+    url(r'^midway/latest/$', forms.views.midway_map_latest, name='midway-map-latest', ),
+    url(r'^midway/(?P<slug>[\w-]+)/$', forms.views.MidwayMapView.as_view(), name='midway-map', ),
+    url(r'^midway/(?P<slug>[\w-]+)/assign/$', forms.views.midway_assignment_upload, name='midway-assign', ),
 
     # Group list
     (r'^groups/', include(groups.urls.urls(), ), ),
@@ -79,6 +81,7 @@ urlpatterns = patterns('',
     url(r'^space/dump/locker-access.csv$', space.views.dump_locker_access, name='space-dump-locker-access', ),
     url(r'^space/dump/office-access.csv$', space.views.dump_office_access, name='space-dump-office-access', ),
     url(r'^space/$', space.views.summary, name='space-summary', ),
+    url(r'^space/lock_types.html$', space.views.lock_types, name='space-lock-type', ),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:

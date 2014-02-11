@@ -4,14 +4,15 @@ author="$USER diff_static_data.sh on $(hostname) <asa-db@mit.edu>"
 
 date
 
-cd static-data
+cd "$(dirname "$0")/static-data"
 
 ../dump_group_perms.py > group-perms.py
 git add group-perms.py
 
 ../../manage.py dumpdata --format=xml --indent=4 groups.ActivityCategory > groups_initial_data.xml
 ../../manage.py dumpdata --format=xml --indent=4 forms.FYSMCategory > forms_initial_data.xml
-git add {groups,forms}_initial_data.xml
+../../manage.py dumpdata --format=xml --indent=4 space.LockType --format=xml --indent=4 > space_lock_types.xml
+git add {groups,forms}_initial_data.xml space_lock_types.xml
 
 echo
 echo Committing current static data:

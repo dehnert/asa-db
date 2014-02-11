@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<django-objects version="1.0">
+    <object pk="1" model="space.locktype">
+        <field type="CharField" name="name">CAC Card Access</field>
+        <field type="SlugField" name="slug">cac-card</field>
+        <field type="TextField" name="description">Office with the standard CAC-maintained card access system.</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">cac-card</field>
+    </object>
+    <object pk="2" model="space.locktype">
+        <field type="CharField" name="name">Inner</field>
+        <field type="SlugField" name="slug">inner</field>
+        <field type="TextField" name="description">Office accessed through another office owned by the same group, which therefore do not have a separate lock.</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+    <object pk="3" model="space.locktype">
+        <field type="CharField" name="name">CAC Combo Only</field>
+        <field type="SlugField" name="slug">cac-combo</field>
+        <field type="TextField" name="description">Room accessible only with a CAC-administered combination, rather than using IDs. Presidents and Treasurers of organizations with this type of lock can come to the CAC office to request a combo change.</field>
+        <field type="CharField" name="info_addr">caclocks@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+    <object pk="4" model="space.locktype">
+        <field type="CharField" name="name">CAC Key</field>
+        <field type="SlugField" name="slug">cac-key</field>
+        <field type="TextField" name="description">Room accessible with a (physical, CAC-administered) key.</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url">http://web.mit.edu/asa/resources/office-space-alloc.html#access-keys</field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+    <object pk="5" model="space.locktype">
+        <field type="CharField" name="name">Unknown</field>
+        <field type="SlugField" name="slug">unknown</field>
+        <field type="TextField" name="description">Room that the ASA does not (currently) know how to manage the access of. (If you know, please tell us at asa-exec@mit.edu.)</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+    <object pk="6" model="space.locktype">
+        <field type="CharField" name="name">SEMO</field>
+        <field type="SlugField" name="slug">semo</field>
+        <field type="TextField" name="description">Room with access administered through SEMO (the Security and Emergency Management Office).</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+    <object pk="7" model="space.locktype">
+        <field type="CharField" name="name">Group</field>
+        <field type="SlugField" name="slug">group</field>
+        <field type="TextField" name="description">Room with access administered by the group directly.</field>
+        <field type="CharField" name="info_addr">asa-exec@mit.edu</field>
+        <field type="CharField" name="info_url"></field>
+        <field type="CharField" name="db_update">none</field>
+    </object>
+</django-objects>

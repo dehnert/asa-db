@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}ASA: {{midway.name}}{% endblock %}
+{% block content %}
+
+<h1><a href='http://web.mit.edu/asa/'>ASA</a>: {{midway.name}}</h1>
+
+<p>Welcome to the ASA {{midway.name}}! You can find out about MIT's many exciting student groups. Below you will find a map of the Midway, as well as groups' table assignments and links to their respective websites.</p>
+
+<h2>Map</h2>
+
+<img src='{{ MEDIA_URL }}{{midway.table_map}}' alt='Midway map'>
+
+<h2>Assignments</h2>
+<table class='pretty-table'>
+<tr>
+    <th>Group</th>
+    <th>Category</th>
+    <th>Location</th>
+    <th>Website</th>
+</tr>
+{% for assignment in assignments %}
+<tr>
+    <th>{{assignment.group}}</th>
+    <td>{% if assignment.group.activity_category %}{{assignment.group.activity_category}}{% endif %}</td>
+    <td>{{assignment.location}}</td>
+    <td>{% if assignment.group.website_url %}<a href='{{assignment.group.website_url}}'>Website</a>{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Sort the assignments</h2>
+
+<form action="" method="get">
+    <table class='pretty-table'>
+    {{ filter.form.as_table }}
+    </table>
+    <input type="submit" value="Search" />
+</form>
+
+{% if perms.models.add_midwayassignment %}
+<p>You can <a href='{% url midway-assign midway.slug %}'>upload table assignments</a>.</p>
+{% endif %}
+
+{% endblock %}

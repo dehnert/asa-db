@@ -13,7 +13,7 @@
 </tr>
 <tr><th>Description</th><td>{{group.description}}</td></tr>
 
-<tr><th colspan='2'>Type</th></tr>
+<tr><th colspan='2'>Officers</th></tr>
 <tr><th>President</th><td>{{startup.president_name}} ({{startup.president_kerberos}})</td></tr>
 <tr><th>Treasurer</th><td>{{startup.treasurer_name}} ({{startup.treasurer_kerberos}})</td></tr>
 
@@ -50,10 +50,30 @@
 </div>
 {% endif %}
 
+{% if warnings %}
+<div class='messagebox warnbox'>
+<h3>Potential issues</h3>
+
+<p>The following potential issues were identified with this group's startup application:</p>
+
+<ul>
+{% for warning in warnings %}
+    <li>{{warning}}</li>
+{%endfor%}
+</ul>
+
+<p>Please look over these issues. Usually, you should <strong>reach out to the group</strong> and ask them to fix (or consider fixing) each issue before you approve the group. In some cases, it may be appropriate to ignore an issue. (For example, "MIT" is a central part of some group's acronyms (like "HTGAMIT"). In these cases, confirming with the group may not be necessary.)</p>
+</div>
+{%endif%}
+
 {% if disp_form %}
 <form enctype="multipart/form-data" method="post" action="">
 {% csrf_token %}
+{% if warnings %}
+<input type='submit' name='approve' value='Approve DESPITE WARNINGS' />
+{% else %}
 <input type='submit' name='approve' value='Approve' />
+{% endif %}
 <input type='submit' name='reject' value='Reject' />
 </form>
 {% endif %}

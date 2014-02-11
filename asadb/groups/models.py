@@ -1,13 +1,6 @@
 # -*- coding: utf8 -*-
 
-from django.conf import settings
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
-from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
-import reversion
-
+import collections
 import datetime
 import filecmp
 import mimetypes
@@ -19,6 +12,17 @@ import urlparse
 import urllib
 import urllib2
 
+from django.conf import settings
+from django.db import models
+from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from django.contrib.auth.models import User, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import slugify
+
+import reversion
+
 import mit
 
 # Create your models here.
@@ -29,7 +33,7 @@ class ActiveGroupManager(models.Manager):
             group_status__slug='active',
         )
 
-locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker.')
+locker_validator = RegexValidator(regex=r'^[-A-Za-z0-9_.]+$', message='Enter a valid Athena locker. This should be the single "word" that appears in "/mit/word/" or "web.mit.edu/word/", with no slashes, spaces, etc..')
 
 class Group(models.Model):
     name = models.CharField(max_length=100, db_index=True, )
@@ -99,6 +103,7 @@ class Group(models.Model):
         if as_of:
             if as_of == "now": as_of = datetime.datetime.now()
             office_holders = office_holders.filter(start_time__lte=as_of, end_time__gte=as_of)
+        office_holders = office_holders.order_by('role', 'person')
         return office_holders
 
     def slug(self, ):
@@ -111,6 +116,11 @@ class Group(models.Model):
     def involved_groups(username):
         current_officers = OfficeHolder.current_holders.filter(person=username)
         users_groups = Group.objects.filter(officeholder__in=current_officers).distinct()
+
+    @staticmethod
+    def admin_groups(username, codename='admin_group'):
+        holders = OfficeHolder.current_holders.filter_perm(codename=codename).filter(person=username)
+        users_groups = Group.objects.filter(officeholder__in=holders).distinct()
         return users_groups
 
     @classmethod
@@ -394,8 +404,30 @@ class OfficerRole(models.Model):
         return ret
 
     @classmethod
+    def getRolesGrantingPerm(cls, perm=None, model=Group, codename=None, ):
+        """Get all OfficerRole objects granting a permission
+
+        Either `perm` or `codename` must be supplied, but not both. If
+        `codename` is provided (and `perm` is None), then `perm` the
+        permission corresponding to `model` (default: `Group`) and `codename`
+        will be found and used."""
+
+        if perm is None:
+            ct = ContentType.objects.get_for_model(model)
+            print ct
+            print Permission.objects.filter(content_type=ct)
+            perm = Permission.objects.get(content_type=ct, codename=codename)
+
+        Q_user = Q(user_permissions=perm)
+        Q_group = Q(groups__permissions=perm)
+        users = User.objects.filter(Q_user|Q_group)
+        roles = cls.objects.filter(grant_user__in=users)
+        return roles
+
+    @classmethod
     def retrieve(cls, slug, ):
         return cls.objects.get(slug=slug)
+
 reversion.register(OfficerRole)
 
 
@@ -406,11 +438,15 @@ class OfficeHolder_CurrentManager(models.Manager):
             end_time__gte=datetime.datetime.now,
         )
 
+    def filter_perm(self, perm=None, model=Group, codename=None, ):
+        roles = OfficerRole.getRolesGrantingPerm(perm=perm, model=model, codename=codename)
+        return self.get_query_set().filter(role__in=roles)
+
 class OfficeHolder(models.Model):
     EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
     END_NEVER       = datetime.datetime.max
 
-    person = models.CharField(max_length=30, db_index=True, )
+    person = models.CharField(max_length=30, db_index=True, help_text='Athena username')
     role = models.ForeignKey('OfficerRole', db_index=True, )
     group = models.ForeignKey('Group', db_index=True, )
     start_time = models.DateTimeField(default=datetime.datetime.now, db_index=True, )
@@ -432,6 +468,7 @@ class OfficeHolder(models.Model):
 
     def __repr__(self, ):
         return str(self)
+
 reversion.register(OfficeHolder)
 
 
@@ -505,10 +542,7 @@ class GroupStatus(models.Model):
     is_active = models.BooleanField(default=True, help_text="This status represents an active group")
 
     def __str__(self, ):
-        active = ""
-        if not self.is_active:
-            active = " (inactive)"
-        return "%s%s" % (self.name, active, )
+        return self.name
 
     class Meta:
         verbose_name_plural= "group statuses"
@@ -528,12 +562,19 @@ class AthenaMoiraAccount_ActiveManager(models.Manager):
     def get_query_set(self, ):
         return super(AthenaMoiraAccount_ActiveManager, self).get_query_set().filter(del_date=None)
 
+def student_account_classes():
+    year = datetime.datetime.now().year
+    return ["G"] + [str(yr) for yr in range(year-5, year+10)]
+
 class AthenaMoiraAccount(models.Model):
     username = models.CharField(max_length=8, unique=True, )
     mit_id = models.CharField(max_length=15)
     first_name      = models.CharField(max_length=45)
     last_name       = models.CharField(max_length=45)
     account_class   = models.CharField(max_length=10)
+    affiliation_basic       = models.CharField(max_length=10)
+    affiliation_detailed    = models.CharField(max_length=40)
+    loose_student   = models.BooleanField(default=False, help_text='Whether to use loose or strict determination of student status. Loose means that either the account class or the affiliation should indicate student status; strict means that the affiliation must be student. In general, we use strict; for some people ("secret people") directory information is suppressed and the affiliation will be misleading.')
     mutable         = models.BooleanField(default=True)
     add_date        = models.DateField(help_text="Date when this person was added to the dump.", )
     del_date        = models.DateField(help_text="Date when this person was removed from the dump.", blank=True, null=True, )
@@ -543,8 +584,15 @@ class AthenaMoiraAccount(models.Model):
     active_accounts = AthenaMoiraAccount_ActiveManager()
 
     def is_student(self, ):
-        # XXX: Is this... right?
-        return self.account_class == 'G' or self.account_class.isdigit()
+        student_affiliation = (self.affiliation_basic == 'student')
+        student_class = (self.account_class in student_account_classes())
+        return student_affiliation or (student_class and self.loose_student)
+
+    @staticmethod
+    def student_q():
+        q_affiliation = Q(affiliation_basic='student')
+        q_class = Q(account_class__in=student_account_classes())
+        return q_affiliation | (q_class & Q(loose_student=True))
 
     def format(self, ):
         return "%s %s <%s>" % (self.first_name, self.last_name, self.username, )

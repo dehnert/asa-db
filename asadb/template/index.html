@@ -43,6 +43,7 @@
         <li><a href='{%url fysm%}'>View the entries</a></li>
         <li><a href='{%url fysm-select%}'>Submit an entry</a></li>
     </ul></li>
+    <li><a href='{% url midway-list %}'>Midways</a>: <a href='{% url midway-map-latest %}'>latest map</a></li>
     <li>Membership updates<ul>
         <li><a href='{%url membership-update-cycle %}'>Group update</a></li>
         <li><a href='{%url membership-confirm%}'>Individual confirmations</a></li>
@@ -56,12 +57,13 @@
         {%if perms.groups.recognize_nge %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
     </ul></li>
     <li><a href='{% url space-summary %}'>Space assignments</a>
-        {% if perms.groups.view_group_private_info %}
         <ul>
+        <li><a href='{% url space-lock-type %}'>Lock Types</a></li>
+        {% if perms.groups.view_group_private_info %}
         <li><a href='{% url space-dump-locker-access %}'>Locker access (CSV)</a></li>
         <li><a href='{% url space-dump-office-access %}'>Office access (CSV)</a></li>
-        </ul>
         {% endif %}
+        </ul>
     </li>
     <li><a href='{% url about %}'>About the ASA Database</a><ul>
         <li><a href='{% url about-data %}'>Use of Data</a></li>

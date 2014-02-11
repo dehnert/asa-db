@@ -18,6 +18,10 @@
     <td>{{group}}</td>
 </tr>
 <tr>
+    <th>Status</th>
+    <td>{{group.group_status}}</td>
+</tr>
+<tr>
     <th>Account number</th>
     <td>{{account_number}}</td>
 </tr>
@@ -38,12 +42,38 @@
 </table>
 {% endif %}
 
+{% if account_number %}
+<p>You may be able to find information about account {{account_number}} in <a href='https://rolesweb.mit.edu/cgi-bin/roleauth2.pl?category=SAP+SAP-related&amp;func_name=CAN+SPEND+OR+COMMIT+FUNDS&amp;qual_code=F{{account_number}}&amp;skip_root=Y'>Roles</a>.</p>
+{% endif %}
+
 <table class='pretty-table'>
 <form enctype="multipart/form-data" method="get" action="">
 {{ form.as_table }}
 <tr><th colspan='2'><input type='submit' name='search' value='Search' /></th></tr>
 </form>
 </table>
+
+<h2>Group Status</h2>
+
+<table class='pretty-table'>
+<tr>
+    <th>Status</th>
+    <th>Description</th>
+</tr>
+<tr>
+    <th>Active</th>
+    <td>Active groups are normal ASA groups in good standing.</td>
+</tr>
+<tr>
+    <th>Suspended and Derecognized</th>
+    <td>Suspended and derecognized groups are <strong>not</strong> in good standing, and should generally not be permitted to spend money, reserve rooms, etc..</td>
+</tr>
+<tr>
+    <th>Non-Group Entity</th>
+    <td>Non-Group Entities do not necessarily have any ASA recognition, but are included in the ASA Database as a courtesy to other MIT offices. You may assume the roles listed are authoritative. However, the ASA does not grant them any privileges.</td>
+</tr>
+</table>
+
 
 <h2>Available Roles</h2>
 

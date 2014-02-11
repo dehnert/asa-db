@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{group.name}}: Change people{% endblock %}
+{% block title %}{{group.name}}: Update people{% endblock %}
 {% block content %}
 
-<h1>{{group.name}}: Change people</h1>
+<h1>{{group.name}}: Update people</h1>
 
 {% include "groups/group_tools.part.html" %}
 
-<p>Please adjust your signatories below.</p>
+<p>Please adjust the people associated with your group below.</p>
 
 <h2>Available roles</h2>
 
@@ -51,19 +51,19 @@
 </table>
 {% endif %}
 
-<h2>Option 1: View and update signatories one at a time</h2>
+<h2>Option 1: View and update people one at a time</h2>
 
 <p>Please note:</p>
 <ul>
-    <li>We don't track "group membership" &mdash; people will show up in the list below only if they have one of the roles listed</li>
-    <li>Type only the <em>Athena username</em> to add people &mdash; do not type full names or names plus username</li>
+    <li>We don't track "group membership" &ndash; people will show up in the list below only if they have one of the roles listed</li>
+    <li>Type only the <em>Athena username</em> to add people &ndash; do not type full names or names plus username</li>
     <li>To add <em>more than four</em> new people, add four at a time and <em>submit multiple times</em></li>
 </ul>
 
 <form enctype="multipart/form-data" method="post" action="">
 <input type='hidden' name='opt-mode' value='table' />
 {% csrf_token %}
-<table class='pretty-table group-change-officers-change'>
+<table class='pretty-table group-update-people-change'>
 <thead>
 <tr>
     <th></th>

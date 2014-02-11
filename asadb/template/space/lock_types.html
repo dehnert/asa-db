@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Lock Types{% endblock %}
+{% block content %}
+
+<h1>Lock Types</h1>
+
+<p>Access to most ASA-allocated space is controlled using MIT IDs, and can be granted or revoked through the ASA Database. Some offices have access controlled through other mechanisms, described below. The <a href='{% url space-summary %}'>space summary page</a> lists which offices use which access access control mechanism.</p>
+
+<table class='pretty-table'>
+<tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>For more information,<br>contact...</th>
+    <th>Managed in the ASA DB?</th>
+</tr>
+{% for lock_type in lock_types %}
+<tr>
+    <th>{{lock_type.name}}</th>
+    <td>{{lock_type.description}}{% if lock_type.info_url %} <a href='{{lock_type.info_url}}'>Details.</a>{%endif%}</td>
+    <td><a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a></td>
+    <td>{% if lock_type.db_update != "none" %}Yes: {%endif%}{{lock_type.get_db_update_display}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

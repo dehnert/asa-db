@@ -1,5 +1,6 @@
-import forms.models
 from django.contrib import admin
+
+import forms.models
 
 class FYSMAdmin(admin.ModelAdmin):
     list_display = (
@@ -65,3 +66,27 @@ class Admin_PersonMembershipUpdate(admin.ModelAdmin):
     list_display_links = ('pk', 'username', 'cycle', )
     search_fields = ('username', 'groups__officer_email', 'groups__name', 'groups__abbreviation', )
 admin.site.register(forms.models.PersonMembershipUpdate, Admin_PersonMembershipUpdate)
+
+class Admin_Midway(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'name',
+        'slug',
+        'date',
+    )
+    list_display_links = list_display
+    search_fields = ('name', )
+    prepopulated_fields = {"slug": ("name",)}
+admin.site.register(forms.models.Midway, Admin_Midway)
+
+class Admin_MidwayAssignment(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'midway',
+        'location',
+        'group',
+    )
+    list_display_links = list_display
+    list_filter = ('midway', )
+    search_fields = ('location', 'group__name', )
+admin.site.register(forms.models.MidwayAssignment, Admin_MidwayAssignment)

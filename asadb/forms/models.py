@@ -1,8 +1,14 @@
-from django.conf import settings
-from django.db import models
-
 import datetime
-import os, errno
+import errno
+import json
+import os
+import re
+
+import ldap
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 
 import groups.models
 from util.misc import log_and_ignore_failures, mkdir_p
@@ -17,7 +23,7 @@ class FYSM(models.Model):
     contact_email = models.EmailField(help_text="Give an address for students interested in joining the group to email (e.g., an officers list)")
     description = models.TextField(help_text="Explain, in no more than 400 characters (including spaces), what your group does and why incoming students should get involved.")
     logo = models.ImageField(upload_to='fysm/logos', blank=True, help_text="Upload a logo (JPG, GIF, or PNG) to display on the main FYSM page as well as the group detail page. This will be scaled to be 100px wide.")
-    slide = models.ImageField(upload_to='fysm/slides', default="", help_text="Upload a slide (JPG, GIF, or PNG) to display on the group detail page. This will be scaled to be at most 600x600 pixels. We recommend making it exactly that size.")
+    slide = models.ImageField(upload_to='fysm/slides', blank=True, default="", help_text="Upload a slide (JPG, GIF, or PNG) to display on the group detail page. This will be scaled to be at most 600x600 pixels. We recommend making it exactly that size.")
     tags = models.CharField(max_length=100, blank=True, help_text="Specify some free-form, comma-delimited tags for your group", )
     categories = models.ManyToManyField('FYSMCategory', blank=True, help_text="Put your group into whichever of our categories seem applicable.", )
     join_preview = models.ForeignKey('PagePreview', null=True, )
@@ -167,14 +173,14 @@ class GroupMembershipUpdate(models.Model):
     num_other_affiliate = models.IntegerField(verbose_name="Num other MIT affiliates")
     num_other = models.IntegerField(verbose_name="Num non-MIT")
 
-    membership_list = models.TextField(help_text="Member emails on separate lines (Athena usernames where applicable)")
+    membership_list = models.TextField(blank=True, help_text="Member emails on separate lines (Athena usernames where applicable)")
 
     email_preface = models.TextField(blank=True, help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
 
-    hazing_statement = "By checking this, I hereby affirm that I have read and understand Chapter 269: Sections 17, 18, and 19 of Massachusetts Law. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
+    hazing_statement = "By checking this, I hereby affirm that I have read and understand <a href='http://web.mit.edu/asa/rules/ma-hazing-law.html'>Chapter 269: Sections 17, 18, and 19 of Massachusetts Law</a>. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
     no_hazing = models.BooleanField(help_text=hazing_statement)
 
-    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the MIT Non-Discrimination Policy.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
+    discrimination_statement = "By checking this, I hereby affirm that I have read and understand the <a href='http://web.mit.edu/referencepubs/nondiscrimination/'>MIT Non-Discrimination Policy</a>.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
     no_discrimination = models.BooleanField(help_text=discrimination_statement)
 
     def __unicode__(self, ):
@@ -204,3 +210,172 @@ class PersonMembershipUpdate(models.Model):
 
     def __unicode__(self, ):
         return "PersonMembershipUpdate for %s" % (self.username, )
+
+
+class PeopleStatusLookup(models.Model):
+    people = models.TextField(help_text="Enter some usernames or email addresses, separated by newlines, to look up here.")
+    requestor = models.ForeignKey(User, null=True, blank=True, )
+    referer = models.URLField(blank=True)
+    time = models.DateTimeField(default=datetime.datetime.now)
+    classified_people_json = models.TextField()
+    _classified_people = None
+
+    def ldap_classify(self, usernames, ):
+        con = ldap.open('ldap-too.mit.edu')
+        con.simple_bind_s("", "")
+        dn = "ou=users,ou=moira,dc=mit,dc=edu"
+        fields = ['uid', 'eduPersonAffiliation', 'mitDirStudentYear']
+
+        chunk_size = 100
+        username_chunks = []
+        ends = range(chunk_size, len(usernames), chunk_size)
+        start = 0
+        end = 0
+        for end in ends:
+            username_chunks.append(usernames[start:end])
+            start = end
+        extra = usernames[end:]
+        if extra:
+            username_chunks.append(extra)
+
+        results = []
+        for chunk in username_chunks:
+            filters = [ldap.filter.filter_format('(uid=%s)', [u]) for u in chunk]
+            userfilter = "(|%s)" % (''.join(filters), )
+            batch_results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
+            results.extend(batch_results)
+
+        left = set([u.lower() for u in usernames])
+        undergrads = []
+        grads = []
+        staff = []
+        secret = []
+        other = []
+        info = {
+            'undergrads': undergrads,
+            'grads': grads,
+            'staff': staff,
+            'secret': secret,
+            'affiliate': other,
+        }
+        for result in results:
+            username = result[1]['uid'][0]
+            left.remove(username.lower())
+            affiliation = result[1].get('eduPersonAffiliation', ['secret'])[0]
+            if affiliation == 'student':
+                year = result[1].get('mitDirStudentYear', [None])[0]
+                if year == 'G':
+                    grads.append((username, None))
+                elif year.isdigit():
+                    undergrads.append((username, year))
+                else:
+                    other.append((username, year))
+            else:
+                info[affiliation].append((username, None, ))
+        info['unknown'] = [(u, None) for u in left]
+        return info
+
+    def classify_people(self, people):
+        mit_usernames = []
+        alum_addresses = []
+        other_mit_addresses = []
+        nonmit_addresses = []
+
+        for name in people:
+            local, at, domain = name.partition('@')
+            if domain.lower() == 'mit.edu' or domain == '':
+                mit_usernames.append(local)
+            elif domain.lower() == 'alum.mit.edu':
+                alum_addresses.append((name, None))
+            elif domain.endswith('.mit.edu'):
+                other_mit_addresses.append((name, None))
+            else:
+                nonmit_addresses.append((name, None))
+
+        results = self.ldap_classify(mit_usernames)
+        results['alum'] = alum_addresses
+        results['other-mit'] = other_mit_addresses
+        results['non-mit'] = nonmit_addresses
+        return results
+
+    def split_people(self):
+        splitted = re.split(r'[\n,]+', self.people)
+        people = []
+        for name in splitted:
+            name = name.strip()
+            if len(name) > 2 and (name[0] == '(') and (name[-1] == ')'):
+                name = name[1:-1]
+            name = name.replace(' at ', '@')
+            if name:
+                people.append(name)
+        return people
+
+    def update_classified_people(self):
+        people = self.split_people()
+        self._classified_people = self.classify_people(people)
+        self.classified_people_json = json.dumps(self._classified_people)
+        return self._classified_people
+
+    @property
+    def classified_people(self):
+        if self._classified_people is None:
+            self._classified_people = json.loads(self.classified_people_json)
+        return self._classified_people
+
+    def classifications_with_descriptions(self):
+        descriptions = {
+            'undergrads':   'Undergraduate students (class year in parentheses)',
+            'grads':        'Graduate students',
+            'alum':         "Alumni Association addresses",
+            'staff':        'MIT Staff (including faculty)',
+            'affiliate':    'This includes some alumni, group members with Athena accounts sponsored through SAO, and many others.',
+            'secret':       'People with directory information suppressed. These people have Athena accounts, but they could have any MIT affiliation, including just being a student group member.',
+            'unknown':      "While this looks like an Athena account, we couldn't find it. This could be a deactivated account, or it might never have existed.",
+            'other-mit':    ".mit.edu addresses that aren't @mit.edu or @alum.mit.edu.",
+            'non-mit':      "Non-MIT addresses, including outside addresses of MIT students.",
+        }
+
+        names = (
+            ('undergrads', 'Undergrads', ),
+            ('grads', 'Grad students', ),
+            ('alum', 'Alumni', ),
+            ('staff', 'Staff', ),
+            ('affiliate', 'Affiliates', ),
+            ('secret', 'Secret', ),
+            ('unknown', 'Unknown', ),
+            ('other-mit', 'Other MIT addresses', ),
+            ('non-mit', 'Non-MIT addresses', ),
+        )
+
+        classifications = self.classified_people
+        sorted_results = []
+        for k, label in names:
+            sorted_results.append({
+                'label': label,
+                'description': descriptions[k],
+                'people': sorted(classifications[k]),
+            })
+        return sorted_results
+
+
+##########
+# MIDWAY #
+##########
+
+
+class Midway(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField()
+    date = models.DateTimeField()
+    table_map = models.ImageField(upload_to='midway/maps')
+
+    def __str__(self, ):
+        return "%s" % (self.name, )
+
+class MidwayAssignment(models.Model):
+    midway = models.ForeignKey(Midway)
+    location = models.CharField(max_length=20)
+    group = models.ForeignKey(groups.models.Group)
+
+    def __str__(self, ):
+        return "<MidwayAssignment: %s at %s at %s>" % (self.group, self.location, self.midway, )
