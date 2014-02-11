@@ -243,7 +243,7 @@ class PeopleStatusLookup(models.Model):
             batch_results = con.search_s(dn, ldap.SCOPE_SUBTREE, userfilter, fields)
             results.extend(batch_results)
 
-        left = set(usernames)
+        left = set([u.lower() for u in usernames])
         undergrads = []
         grads = []
         staff = []
@@ -258,7 +258,7 @@ class PeopleStatusLookup(models.Model):
         }
         for result in results:
             username = result[1]['uid'][0]
-            left.remove(username)
+            left.remove(username.lower())
             affiliation = result[1].get('eduPersonAffiliation', ['secret'])[0]
             if affiliation == 'student':
                 year = result[1].get('mitDirStudentYear', [None])[0]
