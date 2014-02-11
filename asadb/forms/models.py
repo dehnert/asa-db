@@ -2,6 +2,7 @@ import datetime
 import errno
 import json
 import os
+import re
 
 import ldap
 
@@ -297,8 +298,20 @@ class PeopleStatusLookup(models.Model):
         results['non-mit'] = nonmit_addresses
         return results
 
+    def split_people(self):
+        splitted = re.split(r'[\n,]+', self.people)
+        people = []
+        for name in splitted:
+            name = name.strip()
+            if len(name) > 2 and (name[0] == '(') and (name[-1] == ')'):
+                name = name[1:-1]
+            name = name.replace(' at ', '@')
+            if name:
+                people.append(name)
+        return people
+
     def update_classified_people(self):
-        people = [p for p in [p.strip() for p in self.people.split('\n')] if p]
+        people = self.split_people()
         self._classified_people = self.classify_people(people)
         self.classified_people_json = json.dumps(self._classified_people)
         return self._classified_people
