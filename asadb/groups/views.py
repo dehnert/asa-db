@@ -1288,10 +1288,10 @@ def reporting(request, ):
         nf_label, nf_need_name, nf_fmt = name_formats[nf_slug]
         name_map = collections.defaultdict(lambda: ('???', '???'))
         if nf_need_name:
-            people_usernames = people_data.values('person')
+            people_usernames = [p.person.lower() for p in people_data]
             name_data = groups.models.AthenaMoiraAccount.objects.filter(username__in=people_usernames)
             for account in name_data:
-                name_map[account.username] = (account.first_name, account.last_name)
+                name_map[account.username.lower()] = (account.first_name, account.last_name)
 
         # Set up special fields
         special_formatters = []
@@ -1316,7 +1316,7 @@ def reporting(request, ):
                 people = people_map[group.pk][field.pk]
                 if nf_need_name:
                     def fmt(p):
-                        first, last = name_map[p]
+                        first, last = name_map[p.lower()]
                         ctx = {'user': p, 'first': first, 'last': last}
                         return nf_fmt % ctx
                     people = [fmt(p) for p in people]
