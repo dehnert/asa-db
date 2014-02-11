@@ -212,7 +212,7 @@ class PersonMembershipUpdate(models.Model):
 
 
 class PeopleStatusLookup(models.Model):
-    people = models.TextField(help_text="Enter some usernames or email addresses to look up here.")
+    people = models.TextField(help_text="Enter some usernames or email addresses, separated by newlines, to look up here.")
     requestor = models.ForeignKey(User, null=True, blank=True, )
     referer = models.URLField(blank=True)
     time = models.DateTimeField(default=datetime.datetime.now)
