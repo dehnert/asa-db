@@ -242,6 +242,12 @@ def manage_officers_load_accounts(max_new, people, request, msgs, ):
         key = "extra.%d" % (i, )
         if key in request.POST and request.POST[key] != "":
             username = request.POST[key]
+
+            local, at, domain = username.partition('@')
+            if at and domain.lower() == 'mit.edu':
+                msgs.append('In general, you should specify just the Athena username (for example, %s), not the whole email address (like %s).' % (local, username))
+                username = local
+
             try:
                 moira_accounts[username] = groups.models.AthenaMoiraAccount.active_accounts.get(username=username)
                 new_people[i] = username
