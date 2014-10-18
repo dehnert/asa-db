@@ -1,7 +1,11 @@
+import os
+
+_site_root = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
+
 DATABASES = {
     'default' : {
         'ENGINE' : 'django.db.backends.sqlite3',
-        'NAME' : 'asa-db.sqlite',
+        'NAME' : os.path.join(_site_root, 'asa-db.sqlite'),
     },
 }
 

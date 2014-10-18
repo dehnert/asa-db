@@ -2,7 +2,7 @@
 import os
 import sys
 
-SITE_ROOT = os.path.normpath(os.path.dirname(__file__))
+SITE_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 SITE_WEB_PATH = ''
 
 DEBUG = False
@@ -53,7 +53,7 @@ USE_I18N = True
 
 DATETIME_FORMAT_PYTHON = "%c"
 
-from local_settings import *
+from local import *
 
 SESSION_COOKIE_NAME = COOKIES_PREFIX + "sessionid"
 CSRF_COOKIE_NAME = COOKIES_PREFIX + "csrftoken"
@@ -140,4 +140,4 @@ INSTALLED_APPS = (
     'space',
 )
 
-from local_settings_after import *
+from local_after import *
