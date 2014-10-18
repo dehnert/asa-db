@@ -6,7 +6,7 @@ setup(
     packages = ["asadb"],
     install_requires = [
         # Server
-        "django",
+        "django<1.7",   # Django 1.7 isn't compatible with South (ASA-#264)
         "south",
         "django-form-utils",
         "django-reversion",
