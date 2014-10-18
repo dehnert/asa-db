@@ -60,7 +60,7 @@ class FYSMView(models.Model):
     fysm = models.ForeignKey(FYSM, null=True, blank=True, )
     year = models.IntegerField(null=True, blank=True, )
     page = models.CharField(max_length=20, blank=True, )
-    referer = models.URLField(verify_exists=False, null=True, )
+    referer = models.URLField(null=True, )
     user_agent = models.CharField(max_length=255)
     source_ip = models.IPAddressField()
     source_user = models.CharField(max_length=30, blank=True, )
@@ -178,10 +178,10 @@ class GroupMembershipUpdate(models.Model):
     email_preface = models.TextField(blank=True, help_text="If you would like, you may add text here that will preface the text of the policies when it is sent out to the group membership list provided above.")
 
     hazing_statement = "By checking this, I hereby affirm that I have read and understand <a href='http://web.mit.edu/asa/rules/ma-hazing-law.html'>Chapter 269: Sections 17, 18, and 19 of Massachusetts Law</a>. I furthermore attest that I have provided the appropriate address or will otherwise distribute to group members, pledges, and/or applicants, copies of Massachusetts Law 269: 17, 18, 19 and that our organization, group, or team agrees to comply with the provisions of that law. (See below for text.)"
-    no_hazing = models.BooleanField(help_text=hazing_statement)
+    no_hazing = models.BooleanField(help_text=hazing_statement, default=False)
 
     discrimination_statement = "By checking this, I hereby affirm that I have read and understand the <a href='http://web.mit.edu/referencepubs/nondiscrimination/'>MIT Non-Discrimination Policy</a>.  I furthermore attest that our organization, group, or team agrees to not discriminate against individuals on the basis of race, color, sex, sexual orientation, gender identity, religion, disability, age, genetic information, veteran status, ancestry, or national or ethnic origin."
-    no_discrimination = models.BooleanField(help_text=discrimination_statement)
+    no_discrimination = models.BooleanField(help_text=discrimination_statement, default=False)
 
     def __unicode__(self, ):
         return "GroupMembershipUpdate for %s" % (self.group, )

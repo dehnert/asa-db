@@ -334,9 +334,9 @@ class GroupStartup(models.Model):
     group = models.ForeignKey(Group, unique=True, )
     stage = models.IntegerField(choices=GROUP_STARTUP_STAGE)
     submitter = models.CharField(max_length=30, editable=False, )
-    create_officer_list = models.BooleanField()
-    create_group_list = models.BooleanField()
-    create_athena_locker = models.BooleanField()
+    create_officer_list = models.BooleanField(default=False)
+    create_group_list = models.BooleanField(default=False)
+    create_athena_locker = models.BooleanField(default=True)
     president_name = models.CharField(max_length=50)
     president_kerberos = models.CharField(max_length=8)
     treasurer_name = models.CharField(max_length=50)
@@ -526,7 +526,7 @@ class GroupClass(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True, )
     description = models.TextField()
-    gets_publicity = models.BooleanField(help_text="Gets publicity resources such as FYSM or Activities Midway")
+    gets_publicity = models.BooleanField(help_text="Gets publicity resources such as FYSM or Activities Midway", default=False)
 
     def __str__(self, ):
         return self.name
