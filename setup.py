@@ -11,6 +11,7 @@ setup(
         "django-form-utils",
         "django-reversion",
         "django-filter",
+        "pillow", # required for ImageField in FYSM
         # python-ldap is a C extension with various build dependencies
         # on Ubuntu, try apt-get build-dep python-ldap
         "python-ldap"
