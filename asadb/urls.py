@@ -1,7 +1,8 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import login, logout
-from django.views.generic import list_detail
+from django.shortcuts import render_to_response
+from django.views.generic.base import RedirectView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -14,8 +15,7 @@ import space.views
 about_patterns = patterns('',
     url(
         r'^data/$',
-        'django.views.generic.simple.redirect_to',
-        {'url': 'http://web.mit.edu/asa/database/use-of-data.html'},
+        RedirectView.as_view(url='http://web.mit.edu/asa/database/use-of-data.html'),
         name='about-data',
     ),
     url(
@@ -25,8 +25,7 @@ about_patterns = patterns('',
     ),
     url(
         r'^$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'about/index.html', 'extra_context': { 'pagename':'about' }, },
+        lambda r: render_to_response('about/index.html', { 'pagename':'about' }),
         name='about',
     ),
 )
@@ -59,8 +58,7 @@ urlpatterns = patterns('',
     url(r'^membership/confirm/$', forms.views.person_membership_update, name='membership-confirm', ),
     url(
         r'^membership/thanks/$',
-        'django.views.generic.simple.direct_to_template',
-        {'template': 'membership/thanks.html', 'extra_context': { 'pagename':'groups' }, },
+        lambda r: render_to_response('membership/thanks.html', { 'pagename':'groups' }),
         name='membership-thanks',
     ),
     url(r'^membership/submitted/$', forms.views.View_GroupMembershipList.as_view(), name='membership-submitted', ),

@@ -10,7 +10,7 @@
 <h2>My Groups</h2>
 
 {% if user.is_anonymous %}
-<p><a href='{% url login %}'>Login</a> to see your groups.</p>
+<p><a href='{% url "login" %}'>Login</a> to see your groups.</p>
 {% else %}
 {%if not groups %}
 <p>You do not currently appear to be listed with any groups.</p>
@@ -20,7 +20,7 @@
 {% if groups %}
 <ul>
 {% for group in groups %}
-    <li><a href='{% url groups:group-detail group.pk %}'>{{group}}</a></li>
+    <li><a href='{% url "groups:group-detail" group.pk %}'>{{group}}</a></li>
 {%endfor%}
 </ul>
 {% endif %}
@@ -29,44 +29,44 @@
 <ul>
     <li><a href='http://web.mit.edu/asa/'>ASA Homepage</a></li>
     <li>General group information<ul>
-        <li><a href='{%url groups:search%}'>Search groups</a></li>
-        <li><a href='{%url groups:list%}'>List of groups</a></li>
-        {%if perms.groups.view_signatories %}<li><a href='{% url groups:signatories %}'>View Signatories</a></li>{%endif%}
+        <li><a href='{%url "groups:search" %}'>Search groups</a></li>
+        <li><a href='{%url "groups:list" %}'>List of groups</a></li>
+        {%if perms.groups.view_signatories %}<li><a href='{% url "groups:signatories" %}'>View Signatories</a></li>{%endif%}
         {%if perms.groups.view_group_private_info %}
-        <li><a href='{%url groups:reporting%}'>Reporting</a></li>
-        <li><a href='{%url groups:reporting-nonstudents%}'>Non-student group officers</a></li>
-        <li><a href='{%url groups:constitutions%}'>Constitutions</a></li>
+        <li><a href='{%url "groups:reporting"%}'>Reporting</a></li>
+        <li><a href='{%url "groups:reporting-nonstudents"%}'>Non-student group officers</a></li>
+        <li><a href='{%url "groups:constitutions"%}'>Constitutions</a></li>
         {%endif%}
-        <li><a href='{%url groups:account-lookup%}'>Account lookup</a></li>
+        <li><a href='{%url "groups:account-lookup"%}'>Account lookup</a></li>
     </ul></li>
     <li>First Year Summer Mailing<ul>
-        <li><a href='{%url fysm%}'>View the entries</a></li>
-        <li><a href='{%url fysm-select%}'>Submit an entry</a></li>
+        <li><a href='{%url "fysm"%}'>View the entries</a></li>
+        <li><a href='{%url "fysm-select"%}'>Submit an entry</a></li>
     </ul></li>
-    <li><a href='{% url midway-list %}'>Midways</a>: <a href='{% url midway-map-latest %}'>latest map</a></li>
+    <li><a href='{% url "midway-list" %}'>Midways</a>: <a href='{% url "midway-map-latest" %}'>latest map</a></li>
     <li>Membership updates<ul>
-        <li><a href='{%url membership-update-cycle %}'>Group update</a></li>
-        <li><a href='{%url membership-confirm%}'>Individual confirmations</a></li>
-        <li><a href='{%url membership-submitted%}'>Groups with submitted updates</a></li>
-        {% if perms.groups.view_group_private_info %}<li><a href='{%url membership-admin %}'>Issues with submissions</a></li>{% endif %}
+        <li><a href='{%url "membership-update-cycle" %}'>Group update</a></li>
+        <li><a href='{%url "membership-confirm"%}'>Individual confirmations</a></li>
+        <li><a href='{%url "membership-submitted"%}'>Groups with submitted updates</a></li>
+        {% if perms.groups.view_group_private_info %}<li><a href='{%url "membership-admin" %}'>Issues with submissions</a></li>{% endif %}
     </ul></li>
     <li>Group recognition<ul>
         <li><a href='http://web.mit.edu/asa/start/new-group-app.html'>New Group Application</a></li>
-        {%if perms.groups.add_group %}<li><a href='{% url groups:startup %}'>Startup form</a></li>{%endif%}
-        {%if perms.groups.add_group %}<li><a href='{% url groups:startup-list %}'>Review startup applications</a></li>{%endif%}
-        {%if perms.groups.recognize_nge %}<li><a href='{% url groups:recognize-nge %}'>Recognize Non-Group Entity</a></li>{%endif%}
+        {%if perms.groups.add_group %}<li><a href='{% url "groups:startup" %}'>Startup form</a></li>{%endif%}
+        {%if perms.groups.add_group %}<li><a href='{% url "groups:startup-list" %}'>Review startup applications</a></li>{%endif%}
+        {%if perms.groups.recognize_nge %}<li><a href='{% url "groups:recognize-nge" %}'>Recognize Non-Group Entity</a></li>{%endif%}
     </ul></li>
-    <li><a href='{% url space-summary %}'>Space assignments</a>
+    <li><a href='{% url "space-summary" %}'>Space assignments</a>
         <ul>
-        <li><a href='{% url space-lock-type %}'>Lock Types</a></li>
+        <li><a href='{% url "space-lock-type" %}'>Lock Types</a></li>
         {% if perms.groups.view_group_private_info %}
-        <li><a href='{% url space-dump-locker-access %}'>Locker access (CSV)</a></li>
-        <li><a href='{% url space-dump-office-access %}'>Office access (CSV)</a></li>
+        <li><a href='{% url "space-dump-locker-access" %}'>Locker access (CSV)</a></li>
+        <li><a href='{% url "space-dump-office-access" %}'>Office access (CSV)</a></li>
         {% endif %}
         </ul>
     </li>
-    <li><a href='{% url about %}'>About the ASA Database</a><ul>
-        <li><a href='{% url about-data %}'>Use of Data</a></li>
+    <li><a href='{% url "about" %}'>About the ASA Database</a><ul>
+        <li><a href='{% url "about-data" %}'>Use of Data</a></li>
     </ul></li>
     <li>Related resources<ul>
         <li><a href='http://web.mit.edu/asa/'>Association of Student Activities (ASA)</a></li>

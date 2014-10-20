@@ -14,7 +14,7 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.core.validators import URLValidator, EmailValidator, email_re
+from django.core.validators import URLValidator, EmailValidator
 from django.core.mail import EmailMessage, mail_admins
 from django import forms
 from django.forms import ValidationError
@@ -33,7 +33,7 @@ import util.db_filters
 from util.emails import email_from_template
 
 urlvalidator = URLValidator()
-emailvalidator = EmailValidator(email_re)
+emailvalidator = EmailValidator()
 
 
 

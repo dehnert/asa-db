@@ -6,7 +6,7 @@ import StringIO
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.core.exceptions import PermissionDenied
-from django.views.generic import list_detail, ListView, DetailView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template import Context, Template
@@ -79,18 +79,14 @@ def fysm_by_years(request, year, category, ):
         queryset = queryset.filter(categories=category_obj)
     forms.models.FYSMView.record_metric(request=request, fysm=None, year=year, page=category_name, )
     categories = forms.models.FYSMCategory.objects.all()
-    return list_detail.object_list(
-        request,
-        queryset=queryset,
-        template_name="fysm/fysm_listing.html",
-        template_object_name="fysm",
-        extra_context={
-            "year": year,
-            "pagename": "fysm",
-            "category": category_obj,
-            "categories": categories,
-        }
-    )
+    context = {
+        "fysm":queryset,
+        "year": year,
+        "pagename": "fysm",
+        "category": category_obj,
+        "categories": categories,
+    }
+    return render_to_response('fysm/fysm_listing.html', context, context_instance=RequestContext(request), )
 
 @login_required
 def fysm_view(request, year, submission, ):
@@ -105,19 +101,14 @@ def fysm_view(request, year, submission, ):
     except IndexError:
         next = None
     forms.models.FYSMView.record_metric(request=request, fysm=submit_obj, year=year, page="detail", )
-    return list_detail.object_detail(
-        request,
-        forms.models.FYSM.objects,
-        object_id=submission,
-        template_name="fysm/fysm_detail.html",
-        template_object_name="fysm",
-        extra_context={
-            "year": year,
-            "pagename": "fysm",
-            "prev": prev,
-            "next": next,
-        },
-    )
+    context = {
+        "fysm": submit_obj,
+        "year": year,
+        "pagename": "fysm",
+        "prev": prev,
+        "next": next,
+    }
+    return render_to_response('fysm/fysm_detail.html', context, context_instance=RequestContext(request), )
 
 def fysm_link(request, year, link_type, submission, ):
     submit_obj = get_object_or_404(forms.models.FYSM, pk=submission,)

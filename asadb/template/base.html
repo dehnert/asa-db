@@ -12,12 +12,12 @@
   </head>
   <body>
     <ul class='tab-navigation'>
-        <li{% ifequal pagename "homepage" %} class='selected'{% endifequal %}><a href="{% url homepage   %}">Home</a></li>
-        <li{% ifequal pagename "groups"   %} class='selected'{% endifequal %}><a href="{% url groups:list %}">Groups</a></li>
-        <li{% ifequal pagename "fysm"     %} class='selected'{% endifequal %}><a href="{% url fysm       %}">FYSM</a></li>
-        <li{% ifequal pagename "midway"     %} class='selected'{% endifequal %}><a href="{% url midway-list %}">Midway</a></li>
-        <li{% ifequal pagename "about"    %} class='selected'{% endifequal %}><a href="{% url about %}">Help &amp; About</a></li>
-        {% if user.is_staff %}<li><a href='{% url admin:index %}'>Admin</a></li>{% endif %}
+        <li{% ifequal pagename "homepage" %} class='selected'{% endifequal %}><a href="{% url "homepage"   %}">Home</a></li>
+        <li{% ifequal pagename "groups"   %} class='selected'{% endifequal %}><a href="{% url "groups:list" %}">Groups</a></li>
+        <li{% ifequal pagename "fysm"     %} class='selected'{% endifequal %}><a href="{% url "fysm"       %}">FYSM</a></li>
+        <li{% ifequal pagename "midway"     %} class='selected'{% endifequal %}><a href="{% url "midway-list" %}">Midway</a></li>
+        <li{% ifequal pagename "about"    %} class='selected'{% endifequal %}><a href="{% url "about" %}">Help &amp; About</a></li>
+        {% if user.is_staff %}<li><a href='{% url "admin:index" %}'>Admin</a></li>{% endif %}
     </ul>
     <div id='content'>
         <div class='curuser'>
@@ -28,10 +28,10 @@
                 {% else %}
                 <p>Welcome, <span class='username'>{{user.username}}</span>.</p>
                 {% endif %}
-                <p><a href='{% url logout %}'>Logout</a></p>
+                <p><a href='{% url "logout" %}'>Logout</a></p>
             {% else %}
                 <p>You are not logged in.</p>
-                <p><a href='{% url login %}?next={% firstof request.path '/' %}'>Login</a></p>
+                <p><a href='{% url "login" %}?next={% firstof request.path '/' %}'>Login</a></p>
             {% endif %}
         </div>
 {% block content %}{% endblock %}
