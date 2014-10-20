@@ -5,18 +5,19 @@ from south.v2 import DataMigration
 from django.db import models
 
 from django.core.management import call_command
-from django.contrib.auth.hashers import UNUSABLE_PASSWORD
+from django.contrib.auth.hashers import make_password
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
         user_manager = orm['auth.User'].objects
+        unusable_pw = make_password(None)
         sys_user, created = user_manager.get_or_create(username='gather-constitutions@SYSTEM', defaults={
             'first_name': 'Gather',
             'last_name': 'Constitutions',
             'email':'asa-db@mit.edu',
-            'password':UNUSABLE_PASSWORD,
+            'password':unusable_pw,
         })
         call_command('createinitialrevisions', 'groups.GroupConstitution')
 

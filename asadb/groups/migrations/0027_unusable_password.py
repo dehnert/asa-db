@@ -4,13 +4,16 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+from django.contrib.auth.hashers import make_password
+
 class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         issues = orm['auth.user'].objects.filter(password__in=['', 'ScriptsSSLAuth'])
-        issues.update(password=UNUSABLE_PASSWORD)
+        unusable_pw = make_password(None)
+        issues.update(password=unusable_pw)
 
     def backwards(self, orm):
         "Write your backwards methods here."
