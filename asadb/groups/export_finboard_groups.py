@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
-# Exports data for the Finboard app as JSON: currently just group id/name and
-# P/T/GA/FS
+# Exports data for the Finboard app as JSON: currently just group
+# id/name/account number and P/T/GA/FS
 #
 # Use as e.g.
 # ./export_finboard_groups.py > /mit/asa-db/data/finboard/groups.json
@@ -36,6 +36,7 @@ if __name__ == '__main__':
         group_dict = {
             'id': group.id,
             'name': group.name,
+            'funding-account': group.funding_account_id,
         }
         for role in ROLES:
             group_dict[role] = [officer.person for officer in officers
