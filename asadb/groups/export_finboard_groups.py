@@ -23,28 +23,29 @@ import groups.models
 ROLES = ['president', 'treasurer', 'financial', 'group-admin']
 
 if __name__ == '__main__':
-    groups = groups.models.Group.objects.filter(group_status__is_active=True)
-    groups = groups.filter(group_funding__slug='undergrad')
-    groups = groups.filter(officeholder__role__slug__in=ROLES)
-    groups.prefetch_related('officeholder_set', 'officeholder_set__officerrole')
-    groups = groups.distinct()
+    gs = groups.models.Group.objects.filter(group_status__is_active=True)
+    gs = gs.filter(group_funding__slug='undergrad')
 
-    group_dicts = []
-    for group in groups:
-        # do the processing in python because of the prefetch_related
-        officers = list(group.officeholder_set.all())
+    officers = groups.models.OfficeHolder.current_holders
+    officers = officers.filter(group__in=gs, role__slug__in=ROLES)
+    officers = officers.select_related('role__slug', 'group')
+
+    group_dicts = {}
+    for group in gs:
         group_dict = {
             'id': group.id,
             'name': group.name,
             'funding-account': group.funding_account_id,
         }
         for role in ROLES:
-            group_dict[role] = [officer.person for officer in officers
-                                if officer.role.slug == role]
-        group_dicts.append(group_dict)
+            group_dict[role] = []
+        group_dicts[group.id] = group_dict
+
+    for officer in officers:
+        group_dicts[officer.group.id][officer.role.slug].append(officer.person)
 
     out = codecs.getwriter('utf-8')(sys.stdout)
     json.dump({
-        'groups': group_dicts,
+        'groups': group_dicts.values(),
         'date': datetime.datetime.now().isoformat(),
-    }, out)
+    }, out, indent=2)
