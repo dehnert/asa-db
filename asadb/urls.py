@@ -91,14 +91,8 @@ urlpatterns = patterns('',
     url(r'^accounts/logout/', logout, name='logout', ),
 )
 
-if settings.DEBUG:
-    print "In debug mode; enabling static media serving"
-    from django.views.static import serve
-    _media_url = settings.MEDIA_URL
-    if _media_url.startswith('/'):
-        _media_url = _media_url[1:]
-        urlpatterns += patterns('',
-                                (r'^%s(?P<path>.*)$' % _media_url,
-                                serve,
-                                {'document_root': settings.MEDIA_ROOT}))
-    del(_media_url, serve)
+# Static and media file serving in DEBUG
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += staticfiles_urlpatterns()
