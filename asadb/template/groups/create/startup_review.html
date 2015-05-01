@@ -38,10 +38,10 @@
 </table>
 
 <ul>
-    <li><a href='{% url admin:groups_groupstartup_change startup.pk %}'>Admin for startup information</a>
-    <li><a href='{% url groups:group-detail group.pk %}'>Group detail page</a></li>
-    <li><a href='{% url groups:group-manage-main group.pk %}'>Group update page</a></li>
-    <li><a href='{% url admin:groups_group_change group.pk %}'>Admin for group</a>
+    <li><a href='{% url "admin:groups_groupstartup_change" startup.pk %}'>Admin for startup information</a>
+    <li><a href='{% url "groups:group-detail" group.pk %}'>Group detail page</a></li>
+    <li><a href='{% url "groups:group-manage-main" group.pk %}'>Group update page</a></li>
+    <li><a href='{% url "admin:groups_group_change" group.pk %}'>Admin for group</a>
 </ul>
 
 {% if msg %}

@@ -12,7 +12,7 @@ the ASA Database:
 
 Your group's entry is at:
 
-      https://asa.mit.edu{% url groups:group-detail group.pk %}
+      https://asa.mit.edu{% url "groups:group-detail" group.pk %}
 
 You should make sure to do the following:
 * add membership numbers
