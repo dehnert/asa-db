@@ -40,7 +40,7 @@
         <ul>{% for person in office %}
             <li>{{person.format_person}}</li>
         {% endfor %}</ul>
-        <p>Manage on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page.</p>
+        <p>Manage on the <a href='{% url "groups:group-manage-officers" group.id %}'>update people</a> page.</p>
     </td>
 </tr>
 {% for assignment, entries in office_pairs %}
@@ -50,12 +50,12 @@
         {% with assignment.space.lock_type as lock_type %}
         {% if lock_type.db_update == "none" %}
         <p><strong>Warning: Access to this office is not managed through the ASA DB.</strong></p>
-        <p><em><a href='{% url space-lock-type %}'>{{lock_type.name}}</a></em>: {{lock_type.description}}{% if lock_type.info_url %} <a href='{{lock_type.info_url}}'>Details.</a>{%endif%}</p>
+        <p><em><a href='{% url "space-lock-type" %}'>{{lock_type.name}}</a></em>: {{lock_type.description}}{% if lock_type.info_url %} <a href='{{lock_type.info_url}}'>Details.</a>{%endif%}</p>
         <p>Contact <a href='mailto:{{lock_type.info_addr}}'>{{lock_type.info_addr}}</a> for more information.</p>
 
         {% else %}
 
-        <p>We recommend managing access on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page if possible. You should only need to use this page if:</p>
+        <p>We recommend managing access on the <a href='{% url "groups:group-manage-officers" group.id %}'>update people</a> page if possible. You should only need to use this page if:</p>
         <ul>
             <li>You need to grant access to somebody who does not have an Athena account, or</li>
             <li>Your group has several offices, and somebody needs access to one or more of the offices, but should not have access to all of them</li>
@@ -107,7 +107,7 @@
         <ul>{% for person in locker %}
             <li>{{person.format_person}}</li>
         {% endfor %}</ul>
-        <p>Manage on the <a href='{% url groups:group-manage-officers group.id %}'>update people</a> page.</p>
+        <p>Manage on the <a href='{% url "groups:group-manage-officers" group.id %}'>update people</a> page.</p>
         <p><a href='mailto:asa-exec@mit.edu'>Contact us</a> if you need to do something that page does not support &mdash; give access to somebody without an Athena account or give access to just one locker room your group has access to, for example. We will happily do either of those upon request.</p>
     </td>
 </tr>

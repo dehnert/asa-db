@@ -14,7 +14,7 @@
 {% for const in consts %}
 <tr>
     <th>{{const.group.pk}}</th>
-    <td><a href='{% url groups:group-detail const.group.pk %}'>{{const.group.name}}</a>{% if const.group.group_status.slug != "active" %} ({{const.group.group_status}}){%endif%}</td>
+    <td><a href='{% url "groups:group-detail" const.group.pk %}'>{{const.group.name}}</a>{% if const.group.group_status.slug != "active" %} ({{const.group.group_status}}){%endif%}</td>
     <td>{{const.pk}}</td>
     <td>{{const.source_url|format_constitution_link}}</td>
     <td>{{const.failure_date}}</td>

@@ -55,6 +55,6 @@
 </table>
 </form>
 
-<p>You may wish to <a href='{% url admin:forms_midwayassignment_changelist %}?midway__id__exact={{midway.pk}}'>modify the assignments</a> or <a href='{% url midway-map midway.slug %}'>view the map</a>.</p>
+<p>You may wish to <a href='{% url "admin:forms_midwayassignment_changelist" %}?midway__id__exact={{midway.pk}}'>modify the assignments</a> or <a href='{% url "midway-map" midway.slug %}'>view the map</a>.</p>
 
 {% endblock %}

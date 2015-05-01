@@ -39,7 +39,7 @@
 </form>
 
 {% if perms.models.add_midwayassignment %}
-<p>You can <a href='{% url midway-assign midway.slug %}'>upload table assignments</a>.</p>
+<p>You can <a href='{% url "midway-assign" midway.slug %}'>upload table assignments</a>.</p>
 {% endif %}
 
 {% endblock %}

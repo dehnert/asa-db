@@ -38,7 +38,7 @@
         <th>{{group.abbreviation}}</th>
         <td class='group-status'>{{group.group_status}}</td>
         <td>{% if group.website_url %}<a href='{{group.website_url}}'>Website</a>{%endif%}</td>
-        <td><a href='{% url groups:group-detail group.pk %}'>DB Entry</a></td>
+        <td><a href='{% url "groups:group-detail" group.pk %}'>DB Entry</a></td>
         <td>{{group.description}}</td>
         <td>{{group.meeting_times}}</td>
     </tr>

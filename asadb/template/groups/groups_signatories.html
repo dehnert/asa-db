@@ -29,7 +29,7 @@
 {%for group, role_list in officers %}
 <tr>
     <th>
-        <a href='{% url groups:group-detail group.pk %}'>{{group}}</a> ({{group.group_status}})
+        <a href='{% url "groups:group-detail" group.pk %}'>{{group}}</a> ({{group.group_status}})
         {% if group.abbreviation %}<br>Abbreviation: {{group.abbreviation}}{% endif %}
         {% if user.is_authenticated and group.officer_email %}<br>Officer list: {{group.officer_email}}{% endif %}
         {% if perms.groups.view_group_private_info %}

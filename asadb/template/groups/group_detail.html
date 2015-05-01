@@ -15,9 +15,9 @@
 {% if user.is_authenticated %}
 <p>You are not an admin of this group.</p>
 <p><a href='http://web.mit.edu/asa/database/faq.html#perm'>See FAQ</a> for more info.</p>
-{% if viewpriv %}<p>See also <a href='{% url groups:group-space-access group.pk %}'>space access</a>.</p>{% endif %}
+{% if viewpriv %}<p>See also <a href='{% url "groups:group-space-access" group.pk %}'>space access</a>.</p>{% endif %}
 {% else %}
-<p>No tools available without <a href='{% url login %}?next={% firstof request.path '/' %}'>logging in</a>.</p>
+<p>No tools available without <a href='{% url "login" %}?next={% firstof request.path '/' %}'>logging in</a>.</p>
 {% endif %}
 </div>
 {% endif %}
@@ -36,7 +36,7 @@
 <tr><th colspan='2'>Contact Information</th></tr>
 <tr><th>Website</th><td><a href="{{group.website_url}}">{{group.website_url}}</a></td></tr>
 <tr><th>Meeting times</th><td>{{group.meeting_times}}</td></tr>
-<tr><th>Officers' email list</th><td>{% if user.is_authenticated %}<a href='mailto:{{group.officer_email}}'>{{group.officer_email}}</a>{% else %}[<a href='{% url login %}?next={% firstof request.path '/' %}'>log in</a> to see emails]{% endif %}</td></tr>
+<tr><th>Officers' email list</th><td>{% if user.is_authenticated %}<a href='mailto:{{group.officer_email}}'>{{group.officer_email}}</a>{% else %}[<a href='{% url "login" %}?next={% firstof request.path '/' %}'>log in</a> to see emails]{% endif %}</td></tr>
 {% if viewpriv %}<tr class='private-info'>
     <th>Group email list</th>
     <td><a href='mailto:{{group.group_email}}'>{{group.group_email}}</a></td>
@@ -53,7 +53,7 @@
 </tr>
 {% endfor %}
 {% else %}
-<tr><td colspan='2'>[<a href='{% url login %}?next={% firstof request.path '/' %}'>log in</a> to see people involved]</td></tr>
+<tr><td colspan='2'>[<a href='{% url "login" %}?next={% firstof request.path '/' %}'>log in</a> to see people involved]</td></tr>
 {% endif %}
 
 <tr><th colspan='2'>Recognition</th></tr>
@@ -124,7 +124,7 @@
 {% if user.is_authenticated %}
 <p>No roles in this group.</p>
 {% else %}
-<p><a href='{% url login %}?next={% firstof request.path '/' %}'>Log in</a> to see any roles in this group.</p>
+<p><a href='{% url "login" %}?next={% firstof request.path '/' %}'>Log in</a> to see any roles in this group.</p>
 {% endif %}
 {% endif %}
 
@@ -146,7 +146,7 @@
 {% endif %}
 
 {% if perms.groups.add_groupnote %}
-<p><a href='{% url admin:groups_groupnote_add %}?author={{user.username|urlencode}}&amp;group={{group.pk}}'>Add note</a></p>
+<p><a href='{% url "admin:groups_groupnote_add" %}?author={{user.username|urlencode}}&amp;group={{group.pk}}'>Add note</a></p>
 {% endif %}
 
 </div>

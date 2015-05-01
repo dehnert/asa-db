@@ -18,8 +18,8 @@
 <tr>
     <th>{{cycle.name}}</th>
     <td>{{cycle.create_date}}</td>
-    <td><a href='{% url membership-issues cycle.slug %}'>Issues</a></td>
-    <td><a href='{% url membership-issues cycle.slug %}?accounts=1'>(with accounts)</a></td>
+    <td><a href='{% url "membership-issues" cycle.slug %}'>Issues</a></td>
+    <td><a href='{% url "membership-issues" cycle.slug %}?accounts=1'>(with accounts)</a></td>
 </tr>
 {% endfor %}
 </table>

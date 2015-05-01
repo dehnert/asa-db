@@ -14,7 +14,7 @@
 
 <p><strong>In the unlikely event that you have a username and password</strong>, you can log in below.</p>
 
-<form method="post" action="{% url login-password %}">
+<form method="post" action="{% url "login-password" %}">
 {% csrf_token %}
 <table>
 <tr>

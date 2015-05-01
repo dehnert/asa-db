@@ -20,7 +20,7 @@
     <tr>
         <th>{{startup.pk}}</th>
         <td>{{startup.group.name}}</td>
-        <td><a href='{% url groups:startup-recognize startup.pk %}'>Review</a></td>
+        <td><a href='{% url "groups:startup-recognize" startup.pk %}'>Review</a></td>
         <td>{{startup.group.description}}</td>
         <td>{{startup.president_name}} ({{startup.president_kerberos}})</td>
     </tr>

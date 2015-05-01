@@ -40,10 +40,10 @@
 </tr>
 {% for holder in holders %}
 <tr>
-    <td><a href='{% url groups:group-detail holder.group.pk %}'>{{holder.group.name}}</a></td>
+    <td><a href='{% url "groups:group-detail" holder.group.pk %}'>{{holder.group.name}}</a></td>
     <td>{{holder.group.group_status}}</td>
     <td>{{holder.role.display_name}}</td>
-    <td>{% if perms.groups.change_athenamoiraaccount %}<a href='{% url admin:groups_athenamoiraaccount_changelist %}?username={{holder.person}}'>{{holder.person}}</a>{% else %}{{holder.person}}{% endif %}</td>
+    <td>{% if perms.groups.change_athenamoiraaccount %}<a href='{% url "admin:groups_athenamoiraaccount_changelist" %}?username={{holder.person}}'>{{holder.person}}</a>{% else %}{{holder.person}}{% endif %}</td>
 </tr>
 {% endfor %}
 </table>

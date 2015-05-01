@@ -9,7 +9,7 @@
 
 <ul>
 {% for midway in midway_list %}
-    <li><a href='{% url midway-map midway.slug %}'>{{midway.name}}</a> ({{midway.date.date}})</li>
+    <li><a href='{% url "midway-map" midway.slug %}'>{{midway.name}}</a> ({{midway.date.date}})</li>
 {% endfor %}
 </ul>
 

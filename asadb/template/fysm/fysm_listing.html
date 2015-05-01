@@ -44,13 +44,13 @@ href="http://web.mit.edu/asa">our website</a>.</p>
 {% if category %}
 <h2>{{category.name}} Groups</h2>
 <p>{{category.blurb}}</p>
-<p><a href='{% url fysm year %}'>Return to all categories</a></p>
+<p><a href='{% url "fysm" year %}'>Return to all categories</a></p>
 {% else %}
 <h3>View by Category</h3>
 <p>In addition to the complete index below, you can click on one of these categories to look at a specific type of groups.</p>
 <ul>
 {% for cat in categories %}
-<li><a href='{% url fysm year cat.slug %}'>{{cat}}</a></li>
+<li><a href='{% url "fysm" year cat.slug %}'>{{cat}}</a></li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -62,7 +62,7 @@ href="http://web.mit.edu/asa">our website</a>.</p>
     If we were cooler, years when we had slides would still link them here.
     We're not that cool, though, so we just always link the join page.
     {% endcomment %}
-    <h3><a href='{% url fysm-link year "join" fysm.pk %}'>{{fysm.display_name}}</a></h3>
+    <h3><a href='{% url "fysm-link" year "join" fysm.pk %}'>{{fysm.display_name}}</a></h3>
     <div class='fysm-body'>
     <div class='logo'>
         {% if fysm.logo %}
@@ -72,7 +72,7 @@ href="http://web.mit.edu/asa">our website</a>.</p>
         {% endif %}
     </div>
     <p class='data'>{{fysm.description}}</p>
-    <p class='join'><a href='{% url fysm-link year "join" fysm.pk %}'>Learn more about {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
+    <p class='join'><a href='{% url "fysm-link" year "join" fysm.pk %}'>Learn more about {{fysm.display_name}}!</a> Have questions? Send them to <a href='mailto:{{fysm.contact_email}}'>{{fysm.contact_email}}</a>!</p>
     </div>
     {% if fysm.tags %}
     <p class='tags'>tags: {{fysm.tags}}</p>
