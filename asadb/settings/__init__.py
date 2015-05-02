@@ -134,7 +134,7 @@ INSTALLED_APPS = (
     'form_utils',
     'django_filters',
     'reversion',
-    'south',
+    #'south',
     'groups',
     'forms',
     'space',
