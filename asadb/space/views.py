@@ -95,14 +95,14 @@ def manage_access(request, pk, ):
 
 @permission_required('groups.view_group_private_info')
 def dump_locker_access(request, ):
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     space_users = space.dump_locker_access.gather_users()
     space.dump_locker_access.print_info(space_users, response)
     return response
 
 @permission_required('groups.view_group_private_info')
 def dump_office_access(request, ):
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     space.dump_office_access.print_info(response)
     return response
 

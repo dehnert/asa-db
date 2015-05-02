@@ -28,8 +28,8 @@ import mit
 # Create your models here.
 
 class ActiveGroupManager(models.Manager):
-    def get_query_set(self, ):
-        return super(ActiveGroupManager, self).get_query_set().filter(
+    def get_queryset(self, ):
+        return super(ActiveGroupManager, self).get_queryset().filter(
             group_status__slug='active',
         )
 
@@ -432,15 +432,15 @@ reversion.register(OfficerRole)
 
 
 class OfficeHolder_CurrentManager(models.Manager):
-    def get_query_set(self, ):
-        return super(OfficeHolder_CurrentManager, self).get_query_set().filter(
+    def get_queryset(self, ):
+        return super(OfficeHolder_CurrentManager, self).get_queryset().filter(
             start_time__lte=datetime.datetime.now,
             end_time__gte=datetime.datetime.now,
         )
 
     def filter_perm(self, perm=None, model=Group, codename=None, ):
         roles = OfficerRole.getRolesGrantingPerm(perm=perm, model=model, codename=codename)
-        return self.get_query_set().filter(role__in=roles)
+        return self.get_queryset().filter(role__in=roles)
 
 class OfficeHolder(models.Model):
     EXPIRE_OFFSET   = datetime.timedelta(seconds=1)
@@ -559,8 +559,8 @@ class GroupFunding(models.Model):
 
 
 class AthenaMoiraAccount_ActiveManager(models.Manager):
-    def get_query_set(self, ):
-        return super(AthenaMoiraAccount_ActiveManager, self).get_query_set().filter(del_date=None)
+    def get_queryset(self, ):
+        return super(AthenaMoiraAccount_ActiveManager, self).get_queryset().filter(del_date=None)
 
 def student_account_classes():
     year = datetime.datetime.now().year

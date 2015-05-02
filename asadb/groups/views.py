@@ -1000,7 +1000,7 @@ def view_signatories(request, ):
 
     officers = groups.models.OfficeHolder.objects.filter(start_time__lte=datetime.datetime.now(), end_time__gte=datetime.datetime.now())
     officers = officers.filter(group__in=the_groups)
-    officers = officers.select_related(depth=1)
+    officers = officers.select_related('group', 'role')
 
     role_slugs = ['president', 'treasurer', 'financial', 'reservation']
     roles = groups.models.OfficerRole.objects.filter(slug__in=role_slugs)
@@ -1022,6 +1022,7 @@ def view_signatories(request, ):
         'filter': groups_filterset,
         'pagename': 'groups',
     }
+
     return render_to_response('groups/groups_signatories.html', context, context_instance=RequestContext(request), )
 
 def search_groups(request, ):
@@ -1106,7 +1107,7 @@ def downloaded_constitutions_csv(request, ):
     constitutions = groups.models.GroupConstitution.objects.filter(group__in=active_groups)
     constitutions = constitutions.order_by('failure_reason', 'status_msg', 'failure_date', 'group__name', ).select_related('group', 'group__group_status')
 
-    response = HttpResponse(mimetype='text/csv')
+    response = HttpResponse(content_type='text/csv')
     writer = csv.writer(response)
 
     writer.writerow([
@@ -1338,11 +1339,11 @@ def reporting(request, ):
         # Handle output as CSV
         if output_format == 'csv':
             if output_disposition == 'download':
-                mimetype = 'text/csv'
+                content_type = 'text/csv'
             else:
                 # Firefox, at least, downloads text/csv regardless
-                mimetype = 'text/plain'
-            response = HttpResponse(mimetype=mimetype)
+                content_type = 'text/plain'
+            response = HttpResponse(content_type=content_type)
             if output_disposition == 'download':
                 response['Content-Disposition'] = 'attachment; filename=asa-db-report.csv'
             writer = csv.writer(response)

@@ -549,7 +549,7 @@ def group_confirmation_issues(request, slug, ):
         for problem in problems:
             output_issue(group, problem, num_confirms)
 
-    return HttpResponse(buf.getvalue(), mimetype='text/csv', )
+    return HttpResponse(buf.getvalue(), content_type='text/csv', )
 
 
 class PeopleStatusLookupForm(ModelForm):

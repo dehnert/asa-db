@@ -108,8 +108,8 @@ reversion.register(Space)
 
 
 class CurrentAssignmentManager(models.Manager):
-    def get_query_set(self, ):
-        return super(CurrentAssignmentManager, self).get_query_set().filter(
+    def get_queryset(self, ):
+        return super(CurrentAssignmentManager, self).get_queryset().filter(
             start__lte=datetime.date.today,
             end__gte=datetime.date.today,
         )
@@ -197,8 +197,8 @@ groups.models.filter_registry.register(
 
 
 class CurrentACLEntryManager(models.Manager):
-    def get_query_set(self, ):
-        return super(CurrentACLEntryManager, self).get_query_set().filter(
+    def get_queryset(self, ):
+        return super(CurrentACLEntryManager, self).get_queryset().filter(
             start__lte=datetime.datetime.now,
             end__gte=datetime.datetime.now,
         )

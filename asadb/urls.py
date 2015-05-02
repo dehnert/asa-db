@@ -14,7 +14,7 @@ import space.views
 about_patterns = patterns('',
     url(
         r'^data/$',
-        RedirectView.as_view(url='http://web.mit.edu/asa/database/use-of-data.html'),
+        RedirectView.as_view(url='http://web.mit.edu/asa/database/use-of-data.html', permanent=True, ),
         name='about-data',
     ),
     url(
