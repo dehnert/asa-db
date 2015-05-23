@@ -1,0 +1,29 @@
+- 0001_initial: create tables (groups_group, groups_activitycategory), send_create_signal (ActivityCategory)
+- 0002_add_officers: create tables and send signals (OfficeRole, OfficeHolder)
+- 0003_add_people: create table and signal (AthenaMoiraAccount)
+- 0004_add_require_student: create require_student column
+- 0005_add_role_user_grant: create grant_user column
+- 0006_add_group_perms: DATA: add view_group_private_info and admin_group perms
+- 0007_add_statusy_stuff: create some tables and columns and signals
+- 0008_add_statusy_stuff_data: DATA: add group classes/statuses/funding
+- 0009_add_notes: create/signal GroupNote
+- 0010_allow_null_updater: alter column
+- 0011_add_publicly_viewable: add column
+- 0012_group_startup: create/signal GroupStartup
+- 0013_add_submitter...: add column
+- 0014_recognize_nge_perm: DATA: add various permissions
+- 0015_add_recognize_group: DATA: add recognize_group perm
+- 0016_create_auth_groups: DATA: grant a bunch of perms
+- 0017_add_officerroles: DATA: create officerroles
+- 0018_recognition_datetime: alter column
+- 0019_initial_revs: DATA: create initial revisions (less necessary for brand-new DB)
+- 0020_constitutions: create/signal GroupConstitution
+- 0021_more_statuses: DATA: create new group statuses
+- 0022_add_shared_storage: DATA: add SSA officerrole
+- 0023_groupadmin: DATA: add GroupAdmin, TGA officerrole
+- 0024_add_indices: add indices
+- 0025_gather_constitutions_user: DATA: create user
+- 0026_lengthen_const_status: lengthen field
+- 0027_unusable_password: DATA: correctly use unusable_pw
+- 0028_officerrole_admins: DATA: create GBM proxy, delete temp-admin
+- 0029_athena_affiliation: create columns
