@@ -1,0 +1,11 @@
+- 0003_stub_auth_migration: DATA: ???
+- 0004_add_ebm_permissions: DATA: add asa-ebm perms
+- 0006_lock_types_setup: DATA: create rooms, lock types
+
+
+- 0001_initial: create/send
+- 0002_add_indices: add indices
+- 0003_stub_auth_migration: DATA: ???
+- 0004_add_ebm_permissions: DATA: add asa-ebm perms
+- 0005_add_lock_type: create/send + add col
+- 0006_lock_types_setup: DATA: create rooms, lock types
