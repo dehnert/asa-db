@@ -29,6 +29,12 @@ def grant_perms(apps, db_alias):
           (u'forms', u'groupmembershipupdate', u'add_groupmembershipupdate'),
           (u'forms', u'groupmembershipupdate', u'change_groupmembershipupdate'),
           (u'forms', u'groupmembershipupdate', u'delete_groupmembershipupdate'),
+          (u'forms', u'midway', u'add_midway'),
+          (u'forms', u'midway', u'change_midway'),
+          (u'forms', u'midway', u'delete_midway'),
+          (u'forms', u'midwayassignment', u'add_midwayassignment'),
+          (u'forms', u'midwayassignment', u'change_midwayassignment'),
+          (u'forms', u'midwayassignment', u'delete_midwayassignment'),
           (u'forms', u'pagepreview', u'add_pagepreview'),
           (u'forms', u'pagepreview', u'change_pagepreview'),
           (u'forms', u'pagepreview', u'delete_pagepreview'),
@@ -67,6 +73,15 @@ def grant_perms(apps, db_alias):
           (u'groups', u'officerrole', u'add_officerrole'),
           (u'groups', u'officerrole', u'change_officerrole'),
           (u'groups', u'officerrole', u'delete_officerrole'),
+          (u'space', u'space', u'add_space'),
+          (u'space', u'space', u'change_space'),
+          (u'space', u'space', u'delete_space'),
+          (u'space', u'spaceassignment', u'add_spaceassignment'),
+          (u'space', u'spaceassignment', u'change_spaceassignment'),
+          (u'space', u'spaceassignment', u'delete_spaceassignment'),
+          (u'space', u'spaceaccesslistentry', u'add_spaceaccesslistentry'),
+          (u'space', u'spaceaccesslistentry', u'change_spaceaccesslistentry'),
+          (u'space', u'spaceaccesslistentry', u'delete_spaceaccesslistentry'),
         ]),
         (u'mit', []),
         (u'autocreated', []),
@@ -201,6 +216,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('groups', '0001_initial'),
+        ('forms', '0001_initial'),
+        ('space', '0001_initial'),
         ('auth', '0006_require_contenttypes_0002'),
     ]
 
