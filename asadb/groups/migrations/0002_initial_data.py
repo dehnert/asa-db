@@ -4,23 +4,12 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.management import create_permissions
 
 def create_perms(apps, db_alias):
-    new_perms = (
-        ('view_group_private_info', 'View private group information'),
-        ('admin_group', 'Administer basic group information'),
-        ('recognize_nge', 'Recognize Non-Group Entity'),
-        ('recognize_group', 'Recognize recognize groups'),
-    )
-    perms = apps.get_model('auth', 'Permission').objects.using(db_alias)
-    contenttypes = apps.get_model('contenttypes', 'ContentType').objects.using(db_alias)
-    ct, created = contenttypes.get_or_create(model='group', app_label='groups')
-    for codename, verbose_name in new_perms:
-        perm, created = perms.get_or_create(
-            content_type=ct,
-            codename=codename,
-            defaults={'name':verbose_name},
-        )
+    apps.models_module = True
+    create_permissions(apps, verbosity=0)
+    apps.models_module = None
 
 def grant_perms(apps, db_alias):
     new_auth_groups = (
@@ -99,7 +88,6 @@ def grant_perms(apps, db_alias):
     for group_name, perms in new_auth_groups:
         group, created = group_man.get_or_create(name=group_name)
         for app_name, model_name, codename in perms:
-            print(group_name, app_name, model_name, codename)
             ct = ct_man.get(model=model_name, app_label=app_name)
             perm = perm_man.get(
                 content_type=ct,
@@ -108,8 +96,8 @@ def grant_perms(apps, db_alias):
             group.permissions.add(perm)
     
 def create_users(apps, db_alias):
-    user_manager = apps.get_model('auth' 'User').objects.using(db_alias)
-    group_manager = apps.get_model('auth' 'Group').objects.using(db_alias)
+    user_manager = apps.get_model('auth', 'User').objects.using(db_alias)
+    group_manager = apps.get_model('auth', 'Group').objects.using(db_alias)
     users = (
         ('gather-constitutions@SYSTEM', 'Gather', 'Constitutions', 'asa-db@mit.edu', ),
         ('groupadmin@SYSTEM', 'Group', 'Administrator', 'asa-db@mit.edu', ),
@@ -140,7 +128,7 @@ def create_officerroles(apps, db_alias):
         ('Reservation signatory', 'reservation', 'Reservation signatories are responsible for reserving space for the group to use.', 10000, False, None, True, ),
         ('Office access', 'office-access', 'People able to use their IDs to get into the offices of this group.', 10000, False, None, False, ),
         ('Shared Storage Access', 'locker-access', 'People with card access for W20-437 and W20-441 shared storage spaces for groups with locker/shelf space in those rooms.', 6, False, None, False, ),
-        ("Group Admin", "Group Admins have access to the ASA Group Database's group management functions. Use this to give access to officers besides the President and Treasurer. (This is unnecessary for President and Treasurer, who receive it through those roles instead.)", 3, True, 'groupadmin@SYSTEM', True, )
+        ("Group Admin", "group-admin", "Group Admins have access to the ASA Group Database's group management functions. Use this to give access to officers besides the President and Treasurer. (This is unnecessary for President and Treasurer, who receive it through those roles instead.)", 3, True, 'groupadmin@SYSTEM', True, ),
         ('GBM Proxy', 'gbm-proxy', 'Person authorized to vote for the group at ASA GBMs. We will only allow people listed as President, Treasurer, Group Admin, or GBM Proxy to be a voting representative of the group. Contact asa-exec@mit.edu or asa-elect@mit.edu with questions. (Additions are enabled starting shortly before each GBM.)', 0, False, None, True, ),
     ]
 
