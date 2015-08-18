@@ -99,8 +99,9 @@ def create_users(apps, db_alias):
     user_manager = apps.get_model('auth', 'User').objects.using(db_alias)
     group_manager = apps.get_model('auth', 'Group').objects.using(db_alias)
     users = (
-        ('gather-constitutions@SYSTEM', 'Gather', 'Constitutions', 'asa-db@mit.edu', ),
         ('groupadmin@SYSTEM', 'Group', 'Administrator', 'asa-db@mit.edu', ),
+        ('importer@SYSTEM', 'Data', 'Importer', 'asa-db@mit.edu', ),
+        ('gather-constitutions@SYSTEM', 'Gather', 'Constitutions', 'asa-db@mit.edu', ),
     )
     for user, first, last, email in users:
         unusable_pw = make_password(None)
