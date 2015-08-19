@@ -66,7 +66,7 @@ class FYSMView(models.Model):
     source_user = models.CharField(max_length=30, blank=True, )
 
     @staticmethod
-    @log_and_ignore_failures(logfile=settings.LOGFILE)
+    @log_and_ignore_failures(__name__)
     def record_metric(request, fysm=None, year=None, page=None, ):
         record = FYSMView()
         record.fysm = fysm

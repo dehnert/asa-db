@@ -32,7 +32,24 @@ COOKIES_PREFIX = "asadb_"
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 
-LOGFILE = "asa-db.log"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'asa-db.log',
+            'maxBytes': 20*1024**2,
+            'backupCount': 5,
+        },
+    },
+    'root': {
+        'handlers': ['file'],
+        'level': 'INFO',
+        'propagate': True,
+    },
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

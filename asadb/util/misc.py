@@ -1,15 +1,15 @@
-import traceback
+import logging
 import os, errno
 
-def log_and_ignore_failures(logfile):
+
+def log_and_ignore_failures(logger_name):
     def decorator(f):
         def new_f(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
             except Exception:
-                fd = open(logfile, 'a')
-                traceback.print_exc(file=fd, )
-                fd.close()
+                logger = logging.getLogger(logger_name)
+                logger.exception('error in log_and_ignore_failures; ignoring')
         return new_f
     return decorator
 
