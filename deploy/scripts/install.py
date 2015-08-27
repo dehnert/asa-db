@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+
+import argparse
+import os, os.path
+import random
+import subprocess
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="install the ASA DB on scripts")
+    parser.add_argument('--db', default=None, help='database name to use; by default, derived from ADDREND')
+    parser.add_argument('--legacy-db-exists', action='store_true', help='indicate that a pre-Django-1.8 database already exists, and it should merely be added to config and initial migrations marked as complete')
+    parser.add_argument('--locker', help='locker to install into')
+    parser.add_argument('--source', default='https://github.com/dehnert/asa-db@venv',
+        help='URL of the git repo to install the ASA DB from')
+    parser.add_argument('addrend', help='subdirectory of Scripts/django and web_scripts to install into')
+
+    args = parser.parse_args()
+    if not args.locker:
+        args.locker = os.environ['LOGNAME']
+
+    print args
+    return args
+
+def gen_secret_key():
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789@#%&-_=+'
+    return ''.join([random.choice(chars) for i in range(50)])
+
+class InstallASADB:
+    def __init__(self, args):
+        self.args = args
+
+    def _run_ssh_helper(self, func, cmd):
+        ssh = '/mit/scripts/bin/scripts-ssh'
+        cmd = [ssh, self.args.locker] + cmd
+        print(cmd)
+        return func(cmd)
+
+    def run_ssh(self, cmd):
+        return self._run_ssh_helper(subprocess.check_call, cmd)
+
+    def run_ssh_output(self, cmd):
+        return self._run_ssh_helper(subprocess.check_output, cmd)
+
+    def create_dirs(self):
+        perms = (
+            ('system:anyuser', 'none'),
+            ('system:authuser', 'none'),
+            ('daemon.scripts', 'write'),
+        )
+        django_dir = os.path.join('/mit', self.args.locker, 'Scripts/django')
+        install_dir = os.path.join(django_dir, self.args.addrend)
+        web_dir = os.path.join('/mit', self.args.locker, 'web_scripts', self.args.addrend)
+        os.makedirs(install_dir)
+        os.makedirs(web_dir)
+        for new_dir in (django_dir, install_dir, web_dir):
+            for group, bits in perms:
+                subprocess.check_call(['fs', 'setacl', new_dir, group, bits])
+
+    def create_db(self):
+        if self.args.legacy_db_exists:
+            print("Skipping DB creation, as requested")
+            self.db = self.args.db
+            return
+        getter = '/mit/scripts/sql/bin/get-next-database'
+        self.db = self.run_ssh_output([getter, self.args.db or self.args.addrend])
+        if self.args.db:
+            db_user, plus, db_name = self.args.db.partition('+')
+            if self.db != db_name:
+                raise ValueError('Database "%s" already exists' % (self.args.db, ))
+        print("Creating database %s" % (self.db, ))
+        creator = '/mit/scripts/sql/bin/create-database'
+        self.run_ssh([creator, self.db])
+
+    def install(self):
+        #self.create_dirs()
+        self.create_db()
+
+if __name__ == '__main__':
+    InstallASADB(parse_args()).install()
