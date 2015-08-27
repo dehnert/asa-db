@@ -13,7 +13,7 @@ touch "$settings/local_after.py"
 
 echo
 echo Creating database and doing basic sync...
-$base/manage.py syncdb && $base/manage.py migrate
+$base/manage.py migrate
 
 echo; echo
 echo Done!
