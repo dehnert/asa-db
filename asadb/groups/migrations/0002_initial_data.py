@@ -205,12 +205,34 @@ def create_group_statuses(apps, db_alias):
         objs.append(model(name=name, slug=slug, contact_email=contact_email, funding_list=funding_list, ))
     bulk_create(model, objs)
 
+def create_activity_categories(apps, db_alias):
+    activity_cats = [
+        'Academic',
+        'Activism',
+        'Arts',
+        'Athletic',
+        'Campus Media',
+        'Cultural',
+        'FSILG',
+        'Government',
+        'Interest',
+        'Recreational',
+        'Religious',
+        'Service',
+        'Social',
+        'Technology',
+        'Other',
+    ]
+    ActCat = apps.get_model('groups', 'ActivityCategory')
+    cats = [ActCat(name=name) for name in activity_cats]
+    ActCat.objects.using(db_alias).bulk_create(cats)
 
 def create_initial_data(apps, schema_editor):
     db_alias = schema_editor.connection.alias
     update_auth(apps, db_alias)
     create_officerroles(apps, db_alias)
     create_group_statuses(apps, db_alias)
+    create_activity_categories(apps, db_alias)
 
 class Migration(migrations.Migration):
 
