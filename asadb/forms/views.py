@@ -80,7 +80,7 @@ def fysm_by_years(request, year, category, ):
     forms.models.FYSMView.record_metric(request=request, fysm=None, year=year, page=category_name, )
     categories = forms.models.FYSMCategory.objects.all()
     context = {
-        "fysm":queryset,
+        "fysm_list":queryset,
         "year": year,
         "pagename": "fysm",
         "category": category_obj,
