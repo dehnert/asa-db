@@ -25,7 +25,7 @@ def gen_secret_key():
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789@#%&-_=+'
     return ''.join([random.choice(chars) for i in range(50)])
 
-class InstallASADB:
+class InstallASADB(object):
     def __init__(self, args):
         self.args = args
 
@@ -48,11 +48,11 @@ class InstallASADB:
             ('daemon.scripts', 'write'),
         )
         django_dir = os.path.join('/mit', self.args.locker, 'Scripts/django')
-        install_dir = os.path.join(django_dir, self.args.addrend)
-        web_dir = os.path.join('/mit', self.args.locker, 'web_scripts', self.args.addrend)
-        os.makedirs(install_dir)
-        os.makedirs(web_dir)
-        for new_dir in (django_dir, install_dir, web_dir):
+        self.install_dir = os.path.join(django_dir, self.args.addrend)
+        self.web_dir = os.path.join('/mit', self.args.locker, 'web_scripts', self.args.addrend)
+        os.makedirs(self.install_dir)
+        os.makedirs(self.web_dir)
+        for new_dir in (django_dir, self.install_dir, self.web_dir):
             for group, bits in perms:
                 subprocess.check_call(['fs', 'setacl', new_dir, group, bits])
 
@@ -71,9 +71,25 @@ class InstallASADB:
         creator = '/mit/scripts/sql/bin/create-database'
         self.run_ssh([creator, self.db])
 
+    def install_source(self):
+        subprocess.check_call(['virtualenv', '--prompt=(venv/asa)', self.install_dir])
+        pip = os.path.join(self.install_dir, 'bin/pip')
+        src = 'git+%s#egg=asa-db' % (self.args.source, )
+        subprocess.check_call([pip, 'install', '--editable', src])
+
+    def install_web_scripts(self):
+        install_base = "../Scripts/django/%s/src/asadb" % (self.args.addrend, )
+        os.symlink(os.path.join(install_base, "asadb/media/"), os.path.join(self.web_dir, 'media'))
+        os.symlink(os.path.join(install_base, "deploy/scripts/index.fcgi"), os.path.join(self.web_dir, 'index.fcgi'))
+
+    def configure(self):
+        pass
+
     def install(self):
-        #self.create_dirs()
-        self.create_db()
+        self.create_dirs()
+        #self.create_db()
+        self.install_source()
+        self.configure()
 
 if __name__ == '__main__':
     InstallASADB(parse_args()).install()
