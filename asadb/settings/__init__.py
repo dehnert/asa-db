@@ -35,6 +35,11 @@ SESSION_COOKIE_HTTPONLY = True
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(name)s %(process)d %(thread)d %(message)s'
+        },
+    },
     'handlers': {
         'file': {
             'level': 'DEBUG',
@@ -42,6 +47,7 @@ LOGGING = {
             'filename': 'asa-db.log',
             'maxBytes': 20*1024**2,
             'backupCount': 5,
+            'formatter': 'verbose',
         },
     },
     'root': {
