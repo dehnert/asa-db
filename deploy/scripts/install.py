@@ -72,23 +72,38 @@ class InstallASADB(object):
         self.run_ssh([creator, self.db])
 
     def install_source(self):
-        subprocess.check_call(['virtualenv', '--prompt=(venv/asa)', self.install_dir])
+        self.run_ssh(['virtualenv', '--prompt=(venv/asa)', self.install_dir])
         pip = os.path.join(self.install_dir, 'bin/pip')
         src = 'git+%s#egg=asa-db' % (self.args.source, )
-        subprocess.check_call([pip, 'install', '--editable', src])
+        self.run_ssh([pip, 'install', '--editable', src])
 
     def install_web_scripts(self):
-        install_base = "../Scripts/django/%s/src/asadb" % (self.args.addrend, )
+        install_base = "../Scripts/django/%s/src/asa-db" % (self.args.addrend, )
         os.symlink(os.path.join(install_base, "asadb/media/"), os.path.join(self.web_dir, 'media'))
         os.symlink(os.path.join(install_base, "deploy/scripts/index.fcgi"), os.path.join(self.web_dir, 'index.fcgi'))
 
     def configure(self):
-        pass
+        settings = dict(
+            # The template starts with this warning message so people don't try to actually use it
+            this_is_a_template_do_not_use_directly_see_deploy_scripts_install_py='',
+            # Real arguments
+            locker=self.args.locker,
+            db=self.db,
+            secret_key=gen_secret_key(),
+            addrend=self.args.addrend,
+        )
+        settings_dir = os.path.join(self.install_dir, 'src/asa-db/asadb/settings')
+        with open(os.path.join(settings_dir, 'local.scripts-template.py'), 'r') as tmpl_fp:
+            with open(os.path.join(settings_dir, 'local.py'), 'w') as output_fp:
+                template = tmpl_fp.read()
+                output_fp.write(template % settings)
+        os.symlink("local_after.scripts.py", os.path.join(settings_dir, 'local_after.py'))
 
     def install(self):
         self.create_dirs()
-        #self.create_db()
+        self.create_db()
         self.install_source()
+        self.install_web_scripts()
         self.configure()
 
 if __name__ == '__main__':
