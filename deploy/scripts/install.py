@@ -63,11 +63,12 @@ class InstallASADB(object):
             return
         getter = '/mit/scripts/sql/bin/get-next-database'
         self.db = self.run_ssh_output([getter, self.args.db or self.args.addrend])
+        assert self.db
         if self.args.db:
             db_user, plus, db_name = self.args.db.partition('+')
             if self.db != db_name:
                 raise ValueError('Database "%s" already exists' % (self.args.db, ))
-        print("Creating database %s" % (self.db, ))
+        print('Creating database "%s"' % (self.db, ))
         creator = '/mit/scripts/sql/bin/create-database'
         self.run_ssh([creator, self.db])
 
@@ -78,7 +79,7 @@ class InstallASADB(object):
         self.run_ssh([pip, 'install', '--editable', src])
 
     def install_web_scripts(self):
-        install_base = "../Scripts/django/%s/src/asa-db" % (self.args.addrend, )
+        install_base = "../../Scripts/django/%s/src/asa-db" % (self.args.addrend, )
         os.symlink(os.path.join(install_base, "asadb/media/"), os.path.join(self.web_dir, 'media'))
         os.symlink(os.path.join(install_base, "deploy/scripts/index.fcgi"), os.path.join(self.web_dir, 'index.fcgi'))
 
