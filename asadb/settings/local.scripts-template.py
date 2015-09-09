@@ -12,6 +12,10 @@ DATABASES = {
     }
 }
 
+ALLOWED_HOSTS = [
+    '%(locker)s.scripts.mit.edu'
+]
+
 # Mail sending
 # See https://docs.djangoproject.com/en/dev/topics/email/#email-backends
 send_mail = True

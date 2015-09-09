@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import argparse
 import os, os.path
@@ -18,7 +19,7 @@ def parse_args():
     if not args.locker:
         args.locker = os.environ['LOGNAME']
 
-    print args
+    print(args)
     return args
 
 def gen_secret_key():
@@ -32,8 +33,9 @@ class InstallASADB(object):
     def _run_ssh_helper(self, func, cmd):
         ssh = '/mit/scripts/bin/scripts-ssh'
         cmd = [ssh, self.args.locker] + cmd
-        print(cmd)
+        print("Run: " + cmd)
         return func(cmd)
+        print("\n[Completed]\n")
 
     def run_ssh(self, cmd):
         return self._run_ssh_helper(subprocess.check_call, cmd)
@@ -83,6 +85,13 @@ class InstallASADB(object):
         os.symlink(os.path.join(install_base, "asadb/media/"), os.path.join(self.web_dir, 'media'))
         os.symlink(os.path.join(install_base, "deploy/scripts/index.fcgi"), os.path.join(self.web_dir, 'index.fcgi'))
 
+        # We might prefer to use a name like scripts.htaccess and only symlink
+        # it in as .htaccess so it's more visible in the source tree, but the
+        # scripts AFS patch has an exception for names starting with ".ht",
+        # so using something else would require explicitly giving Apache bits,
+        # which I'd rather avoid.
+        os.symlink(os.path.join(install_base, "deploy/scripts/.htaccess"), os.path.join(self.web_dir, '.htaccess'))
+
     def configure(self):
         settings = dict(
             # The template starts with this warning message so people don't try to actually use it
@@ -100,12 +109,18 @@ class InstallASADB(object):
                 output_fp.write(template % settings)
         os.symlink("local_after.scripts.py", os.path.join(settings_dir, 'local_after.py'))
 
+    def db_setup(self):
+        python = os.path.join(self.install_dir, 'bin/python')
+        manage = os.path.join(self.install_dir, 'src/asa-db/asadb/manage.py')
+        self.run_ssh([python, manage, 'migrate'])
+
     def install(self):
         self.create_dirs()
         self.create_db()
         self.install_source()
         self.install_web_scripts()
         self.configure()
+        self.db_setup()
 
 if __name__ == '__main__':
     InstallASADB(parse_args()).install()
