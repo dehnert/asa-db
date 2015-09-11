@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name = "asa-db",
-    version = "1.0.2014-10-18",
+    version = "1.0.2015.09.11",
     packages = ["asadb"],
     install_requires = [
         # Server
@@ -15,6 +15,9 @@ setup(
         # on Ubuntu, try apt-get build-dep python-ldap
         "python-ldap"
     ],
+    extras_require = {
+        'scriptsmitedu': ["flup", "MySQL-python"],
+    }
 
     author = "ASA DB team",
     author_email = "asa-db@mit.edu",

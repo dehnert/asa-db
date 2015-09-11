@@ -33,9 +33,10 @@ class InstallASADB(object):
     def _run_ssh_helper(self, func, cmd):
         ssh = '/mit/scripts/bin/scripts-ssh'
         cmd = [ssh, self.args.locker] + cmd
-        print("Run: " + cmd)
-        return func(cmd)
+        print("Run:", cmd)
+        ret = func(cmd)
         print("\n[Completed]\n")
+        return ret
 
     def run_ssh(self, cmd):
         return self._run_ssh_helper(subprocess.check_call, cmd)
@@ -77,7 +78,7 @@ class InstallASADB(object):
     def install_source(self):
         self.run_ssh(['virtualenv', '--prompt=(venv/asa)', self.install_dir])
         pip = os.path.join(self.install_dir, 'bin/pip')
-        src = 'git+%s#egg=asa-db' % (self.args.source, )
+        src = 'git+%s#egg=asa-db[scriptsmitedu]' % (self.args.source, )
         self.run_ssh([pip, 'install', '--editable', src])
 
     def install_web_scripts(self):
