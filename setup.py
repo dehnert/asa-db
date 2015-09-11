@@ -17,7 +17,7 @@ setup(
     ],
     extras_require = {
         'scriptsmitedu': ["flup", "MySQL-python"],
-    }
+    },
 
     author = "ASA DB team",
     author_email = "asa-db@mit.edu",
